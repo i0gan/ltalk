@@ -1,30 +1,50 @@
-#采用的编译器
+# makefile for complie server
+# create time: 2020-04-20
+# author: i0gan
+
 CC = g++ 
-#导出的项目名称
-TARGET = IM-Server   
-#使用O2优化, c++11标准
+TARGET = ltalk-server
 CFLAGS = -O2 -std=c++11   
-#使用mysql库,和多线程库所需要的依赖
 LDFLAGS = -lmysqlclient -lpthread   
-#清除
 RM = rm -f 
 
-#获取src下所有的.cpp文件
-SRC = $(wildcard ./src/*.cpp)  
-#将所有的src对应的文件命名为.o文件
-OBJ = $(patsubst %.cpp, %.o, $(SRC)) 
-#链接所有.o文件
-$(TARGET):$(OBJ) 
-	$(CC) $^ -o $@ $(LDFLAGS) $(CFLAGS) 
-#编译所有.cpp文件为.o文件
-$(OBJ):%.o:%.cpp
+BUILD_PATH = ./build
+
+CORE_PATH   = ./src/core
+DB_PATH     = ./src/db
+CRYPTO_PATH = ./src/crypto
+XML_PATH    = ./src/xml
+MAIN_PATH   = ./src
+
+
+OBJS =
+
+# main
+MAIN_SRC = $(wildcard $(MAIN_PATH)/*.cpp)  
+MAIN_OBJ = $(patsubst %.cpp, %.o, $(MAIN_SRC)) 
+OBJS += $(MAIN_OBJ)
+
+# core 
+CORE_SRC = $(wildcard $(CORE_PATH)/*.cpp)  
+CORE_OBJ = $(patsubst %.cpp, %.o, $(CORE_SRC)) 
+OBJS += $(CORE_OBJ)
+
+
+
+
+# complie
+$(TARGET):$(OBJS)
+	$(CC) $^ -o $(BUILD_PATH)/$@ $(LDFLAGS) $(CFLAGS) 
+
+
+$(OBJS):%.o:%.cpp
 	$(CC) -c $^ -o $@ $(LDFLAGS) $(CFLAGS)
 
-#测试 SRC 与 OBJ的输出
+
 print:
-	@echo $(SRC)	
-	@echo $(OBJ)	
-#清除
+	@echo $(OBJS)	
+
+
 clean:
-	$(RM) $(TARGET) $(OBJ)
+	$(RM) $(BUILD_PATH)/$(TARGET) $(OBJS)
 
