@@ -1,5 +1,8 @@
 #include <iostream>
+#include "startup.h"
+
 int main(int argv, char **argc) {
-    std::cout << "Hello World!" << std::endl;
+    StartUp startup;
+    startup.init(argv, argc);
     return 0;
 }

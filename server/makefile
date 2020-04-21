@@ -3,7 +3,7 @@
 # author: i0gan
 
 CC = g++ 
-TARGET = ltalk-server
+TARGET = ltalks
 CFLAGS = -O2 -std=c++11   
 LDFLAGS = -lmysqlclient -lpthread   
 RM = rm -f 

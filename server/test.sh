@@ -1,0 +1,1 @@
+./build/ltalks -h
