@@ -14,5 +14,6 @@ SOURCES += \
 HEADERS += \
     startup.hh \
     db/db.hh \
+    json/json.hpp\
 
 

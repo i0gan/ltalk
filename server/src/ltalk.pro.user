@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE QtCreatorProject>
-<!-- Written by QtCreator 4.11.1, 2020-05-27T14:55:30. -->
+<!-- Written by QtCreator 4.11.1, 2020-05-27T17:11:13. -->
 <qtcreator>
  <data>
   <variable>EnvironmentId</variable>
@@ -297,7 +297,7 @@
     <value type="bool" key="RunConfiguration.UseQmlDebugger">false</value>
     <value type="bool" key="RunConfiguration.UseQmlDebuggerAuto">true</value>
     <value type="QString" key="RunConfiguration.WorkingDirectory"></value>
-    <value type="QString" key="RunConfiguration.WorkingDirectory.default">/media/disk2/code/github/ltalk/server/build-ltalk-Desktop-Debug</value>
+    <value type="QString" key="RunConfiguration.WorkingDirectory.default">/media/disk2/code/github/ltalk/server/build</value>
    </valuemap>
    <value type="int" key="ProjectExplorer.Target.RunConfigurationCount">1</value>
   </valuemap>

@@ -1,1 +1,5 @@
-./build/ltalks -r
+#! /bin/bash
+
+cd build
+
+./ltalks -r
