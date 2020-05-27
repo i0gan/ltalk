@@ -1,12 +1,13 @@
-#include "startup.h"
+#include "startup.hh"
 StartUp::StartUp() {
 
 }
+
 StartUp::~StartUp() {
 
 }
 
-bool StartUp::init(int argv, char **argc) {
+bool StartUp::Init(int argv, char **argc) {
 
     if(argv < 2) {
         std::cout << "-h get more info" << std::endl;
@@ -21,7 +22,7 @@ bool StartUp::init(int argv, char **argc) {
                      "-h, --help   help of ltalk server\n"
                   ;
     }else if(arg == "-r" || arg == "--run") {
-        this->run();
+        this->Run();
     }else if(arg == "-s" || arg == "--stop") {
 
     }else if(arg == "-p" || arg == "--print") {
@@ -33,31 +34,31 @@ bool StartUp::init(int argv, char **argc) {
     return true;
 }
 
-bool StartUp::run() {
+bool StartUp::Run() {
 
     std::cout << "Load config file" << std::endl;
-    this->loadConfig();
+    this->LoadConfig();
     std::cout << "init network" << std::endl;
-    this->initNetwork();
+    this->InitNetwork();
     std::cout << "Init database" << std::endl;
-    this->initDatabase();
+    this->InitDatabase();
     std::cout << "Init log" << std::endl;
-    this->initLog();
+    this->InitLog();
 
     return true;
 }
 
 
-bool StartUp::loadConfig() {
+bool StartUp::LoadConfig() {
     return true;
 }
-bool StartUp::initNetwork() {
+bool StartUp::InitNetwork() {
     return true;
 }
-bool StartUp::initDatabase() {
+bool StartUp::InitDatabase() {
     return true;
 }
-bool StartUp::initLog() {
+bool StartUp::InitLog() {
     return true;
 }
 

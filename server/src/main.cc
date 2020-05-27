@@ -1,8 +1,8 @@
 #include <iostream>
-#include "startup.h"
+#include "startup.hh"
 
 int main(int argv, char **argc) {
     StartUp startup;
-    startup.init(argv, argc);
+    startup.Init(argv, argc);
     return 0;
 }
