@@ -5,6 +5,7 @@
 
 namespace Ui {
 class login;
+
 }
 
 class login : public QWidget

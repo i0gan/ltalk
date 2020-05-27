@@ -1,10 +1,15 @@
+#ifndef STARTUP_H
+#define STARTUP_H
+
 #include <iostream>
 #include <unistd.h>
 #include <netinet/in.h>
 #include <sys/time.h>
 #include <sys/socket.h>
+#include "core/epoll.h"
 
-class StartUp {
+
+class StartUp final{
 public:
      StartUp();
     ~StartUp();
@@ -24,3 +29,5 @@ private:
     std::string path = "/";
 
 };
+
+#endif

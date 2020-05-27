@@ -9,8 +9,12 @@ CONFIG += c++11
 SOURCES += \
     main.cpp \
     startup.cpp \
+    core/network.cpp \
+    core/epoll.cpp \
 
 HEADERS += \
     startup.h \
+    core/network.h \
+    core/epoll.h \
 
 

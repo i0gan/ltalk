@@ -4,6 +4,8 @@
 const int MAXEVENTS = 5000;
 const int LISTENQ   = 1024;
 
+typedef unsigned int uint32;
+
 int epoll_init();
 int epoll_add(int epoll_fd, int fd, void *request, uint32 events);
 int epoll_mod(int epoll_fd, int fd, void *request, uint32 events);

@@ -12,18 +12,28 @@
 #include <QtCore/QVariant>
 #include <QtWidgets/QApplication>
 #include <QtWidgets/QWidget>
+#include <phonon/seekslider.h>
+#include <phonon/videoplayer.h>
 
 QT_BEGIN_NAMESPACE
 
 class Ui_login
 {
 public:
+    Phonon::SeekSlider *seekSlider;
+    Phonon::VideoPlayer *videoPlayer;
 
     void setupUi(QWidget *login)
     {
         if (login->objectName().isEmpty())
             login->setObjectName(QString::fromUtf8("login"));
-        login->resize(600, 400);
+        login->resize(600, 480);
+        seekSlider = new Phonon::SeekSlider(login);
+        seekSlider->setObjectName(QString::fromUtf8("seekSlider"));
+        seekSlider->setGeometry(QRect(170, 280, 241, 81));
+        videoPlayer = new Phonon::VideoPlayer(login);
+        videoPlayer->setObjectName(QString::fromUtf8("videoPlayer"));
+        videoPlayer->setGeometry(QRect(110, 40, 381, 241));
 
         retranslateUi(login);
 

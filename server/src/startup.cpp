@@ -20,8 +20,7 @@ bool StartUp::init(int argv, char **argc) {
                      "-s, --stop   stop ltalk server\n"
                      "-h, --help   help of ltalk server\n"
                   ;
-    }
-    if(arg == "-r" || arg == "--run") {
+    }else if(arg == "-r" || arg == "--run") {
         this->run();
     }else if(arg == "-s" || arg == "--stop") {
 
@@ -35,6 +34,16 @@ bool StartUp::init(int argv, char **argc) {
 }
 
 bool StartUp::run() {
+
+    std::cout << "Load config file" << std::endl;
+    this->loadConfig();
+    std::cout << "init network" << std::endl;
+    this->initNetwork();
+    std::cout << "Init database" << std::endl;
+    this->initDatabase();
+    std::cout << "Init log" << std::endl;
+    this->initLog();
+
     return true;
 }
 
