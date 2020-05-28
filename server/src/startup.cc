@@ -39,7 +39,12 @@ bool Ltalk::StartUp::Run() {
     std::cout << "Load config file" << std::endl;
     this->LoadConfig();
     std::cout << "init network" << std::endl;
-    this->InitNetwork();
+
+    if(false == this->InitNetwork()) {
+        std::cout << "init network fail!\n";
+        abort();
+    }
+
     std::cout << "Init database" << std::endl;
     this->InitDatabase();
     std::cout << "Init log" << std::endl;
@@ -80,8 +85,8 @@ bool Ltalk::StartUp::LoadConfig() {
     }
     //解析json
     try {
-       std::string http_port = obj["server"]["http port"];
-       http_port_ = atoi(http_port.c_str());
+       std::string tcp_port = obj["server"]["tcp port"];
+       tcp_port_ = atoi(tcp_port.c_str());
 
        std::string udp_port = obj["server"]["udp port"];
        udp_port_ = atoi(udp_port.c_str());
@@ -90,6 +95,8 @@ bool Ltalk::StartUp::LoadConfig() {
        thread_num_ = atoi(thread_num.c_str());
 
        log_path_ = obj["server"]["log path"];
+
+
        db_host_ = obj["database"]["host"];
 
        std::string db_port = obj["database"]["port"];
@@ -107,7 +114,9 @@ bool Ltalk::StartUp::LoadConfig() {
     return true;
 }
 bool Ltalk::StartUp::InitNetwork() {
-    return true;
+    Ltalk::Net net;
+    net.Init(tcp_port_);
+    return net.Listen();
 }
 bool Ltalk::StartUp::InitDatabase() {
     return true;

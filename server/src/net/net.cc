@@ -4,12 +4,19 @@ Ltalk::Net::Net() {
 
 }
 
+Ltalk::Net::Net(int port) {
+    tcp_port_ = port;
+}
+
+
 Ltalk::Net::~Net() {
 
 }
-
-bool Ltalk::Net::TcpNetListen(int port) {
-    if(port < 0 || port > 65535) {
+void Ltalk::Net::Init(int port) {
+    tcp_port_ = port;
+}
+bool Ltalk::Net::Listen() {
+    if(tcp_port_ < 0 || tcp_port_ > 65535) {
         std::cout << "listen port is not right\n";
         return false;
     }
@@ -20,8 +27,8 @@ bool Ltalk::Net::TcpNetListen(int port) {
         return false;
     }
     // cancel bind show "Address already in use" err
-    bool optval = 1;
-    if(setsockopt(listen_fd, SOL_SOCKET, SO_REUSEADDR, &optval, sizeof(bool)) == -1) {
+    int optval = 1;
+    if(setsockopt(listen_fd, SOL_SOCKET, SO_REUSEADDR, &optval, sizeof(int)) == -1) {
         close(listen_fd);
         perror("setsockopt: ");
         return false;

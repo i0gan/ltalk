@@ -11,6 +11,7 @@
 #include <sys/mman.h>
 
 #include "json/json.hpp"
+#include "net/net.hh"
 
 #define d_cout(str) std::cout << __FILE__ << " : " << __LINE__ << " " << str << std::endl;
 
@@ -30,7 +31,7 @@ public:
 private:
     int thread_num_ = 4;
     int queue_size_ = 65535;
-    int http_port_ = 8080;
+    int tcp_port_ = 8080;
     int udp_port_ = 8000;
 
     std::string db_host_;
@@ -40,6 +41,6 @@ private:
     std::string db_name_;
 
     std::string log_path_ = "/";
-    std::string config_file_ = "./config";
+    std::string config_file_ = "./config.json";
 };
 };

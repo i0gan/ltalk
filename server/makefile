@@ -32,8 +32,8 @@ OBJS += $(MAIN_OBJ)
 
 # net src
 NET_SRC := $(wildcard $(NET_PATH)/*.cc)  
-NET_OBJ := $(patsubst %.cc, %.o, $(CORE_SRC)) 
-OBJS += $(CORE_OBJ)
+NET_OBJ := $(patsubst %.cc, %.o, $(NET_SRC)) 
+OBJS += $(NET_OBJ)
 
 
 

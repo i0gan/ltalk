@@ -14,10 +14,13 @@ namespace Ltalk {
 class Net {
 public:
     Net();
+    Net(int port);
     ~Net();
+    void Init(int port);
+    bool Listen();
 
 private:
-    bool TcpNetListen(int port);
+
     bool is_listen_ = false;
     int  tcp_port_;
 };
