@@ -1,6 +1,5 @@
-# Ltalk
+# Ltalk (devloping)
 
----
 
 Ltalk is a very simple aross platform internet message software
 
@@ -16,7 +15,7 @@ Suport platform
 
 ## Download
 
----
+
 
 For detailed instructions and requirements, see Ltalk's [download and setup docs page]().
 
@@ -28,25 +27,24 @@ You can download a bin file from github's [releases page]().
 
 ## How do I  complie Ltalk?
 
----
+
 
 
 
 ## Compatibility
 
----
+
 
 
 
 ## Build
 
----
+
 
 
 
 ## Samples
 
----
 
 
 
@@ -54,7 +52,6 @@ You can download a bin file from github's [releases page]().
 
 ## Development
 
----
 
 
 
@@ -62,7 +59,7 @@ You can download a bin file from github's [releases page]().
 
 ## Getting Help
 
----
+
 
 
 
@@ -70,13 +67,9 @@ You can download a bin file from github's [releases page]().
 
 ## Author
 
----
-
 I0gan (徐绿国)
 
 ## License
-
----
 
 BSD, part MIT and Apache 2.0. 
 
