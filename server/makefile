@@ -22,6 +22,7 @@ CRYPTO_PATH :=  ./src/crypto
 JSON_PATH   :=  ./src/json
 MAIN_PATH   :=  ./src
 
+
 OBJS :=
 
 # main
@@ -29,10 +30,11 @@ MAIN_SRC := $(wildcard $(MAIN_PATH)/*.cc)
 MAIN_OBJ := $(patsubst %.cc, %.o, $(MAIN_SRC)) 
 OBJS += $(MAIN_OBJ)
 
-# core src
-NET_SRC := $(wildcard $(CORE_PATH)/*.cc)  
+# net src
+NET_SRC := $(wildcard $(NET_PATH)/*.cc)  
 NET_OBJ := $(patsubst %.cc, %.o, $(CORE_SRC)) 
 OBJS += $(CORE_OBJ)
+
 
 
 # complie

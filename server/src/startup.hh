@@ -14,6 +14,7 @@
 
 #define d_cout(str) std::cout << __FILE__ << " : " << __LINE__ << " " << str << std::endl;
 
+namespace Ltalk {
 class StartUp final{
 public:
      StartUp();
@@ -27,11 +28,6 @@ public:
     bool InitLog();
 
 private:
-    bool load_config_();
-    bool init_network_();
-    bool init_database_();
-    bool init_log_();
-
     int thread_num_ = 4;
     int queue_size_ = 65535;
     int http_port_ = 8080;
@@ -45,4 +41,5 @@ private:
 
     std::string log_path_ = "/";
     std::string config_file_ = "./config";
+};
 };

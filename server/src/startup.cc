@@ -1,14 +1,14 @@
 #include "startup.hh"
 
-StartUp::StartUp() {
+Ltalk::StartUp::StartUp() {
 
 }
 
-StartUp::~StartUp() {
+Ltalk::StartUp::~StartUp() {
 
 }
 
-bool StartUp::Init(int argv, char **argc) {
+bool Ltalk::StartUp::Init(int argv, char **argc) {
 
     if(argv < 2) {
         std::cout << "-h get more info" << std::endl;
@@ -34,7 +34,7 @@ bool StartUp::Init(int argv, char **argc) {
     return true;
 }
 
-bool StartUp::Run() {
+bool Ltalk::StartUp::Run() {
 
     std::cout << "Load config file" << std::endl;
     this->LoadConfig();
@@ -49,7 +49,7 @@ bool StartUp::Run() {
 }
 
 // 加载配置文件
-bool StartUp::LoadConfig() {
+bool Ltalk::StartUp::LoadConfig() {
     using json = nlohmann::json;
     struct stat sbuf;
     if(stat(config_file_.c_str(), &sbuf) < 0) {
@@ -106,16 +106,15 @@ bool StartUp::LoadConfig() {
     //std::cout << "http_port " << http_port_ << std::endl;
     return true;
 }
-bool StartUp::InitNetwork() {
+bool Ltalk::StartUp::InitNetwork() {
     return true;
 }
-bool StartUp::InitDatabase() {
+bool Ltalk::StartUp::InitDatabase() {
     return true;
 }
-bool StartUp::InitLog() {
+bool Ltalk::StartUp::InitLog() {
     return true;
 }
-
 
 //int socket_bind_listen(int port) {
 //    if(port < 1024 || port > 65535)
