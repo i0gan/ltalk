@@ -19,6 +19,7 @@ HEADERS += \
     net/eventloop.hh \
     net/eventloop_thread.hh \
     net/eventloop_threadpool.hh \
+    net/timer.hh \
 
 
 SOURCES += \
@@ -34,6 +35,7 @@ SOURCES += \
     net/eventloop.cc \
     net/eventloop_thread.cc \
     net/eventloop_threadpool.cc \
+    net/timer.cc \
 
 
 

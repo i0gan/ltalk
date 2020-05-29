@@ -1,12 +1,11 @@
-#ifndef Db_H
-#define Db_H
+#pragma once
 
 #include <mysql/mysql.h>
 #include <iostream>
 #include <unistd.h>
-
 #define DB_WAIT_TIMES 1000 // wait times
 #define DB_WAIT_TIME  10   // will usleep(WAIT_TIME)
+namespace Ltalk {
 
 //对mysql的一些常用操作进行了封装
 class Query {
@@ -53,5 +52,4 @@ class Db {
         bool is_connected_;  //是否连接
         bool db_lock_;          //储存是否还在使用数据库, 以免多线程访问数据库时,造成数据库处理不过来.
 };
-
-#endif
+};

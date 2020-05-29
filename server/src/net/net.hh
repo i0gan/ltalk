@@ -11,7 +11,7 @@
 #include <cstring>
 
 namespace Ltalk {
-class Net {
+class Net final{
 public:
     Net();
     Net(int port);
