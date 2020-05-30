@@ -17,6 +17,8 @@ INSTALL_PATH := /usr/share/ltalks
 
 # src path
 NET_PATH    :=  ./src/net
+THREAD_PATH :=  ./src/thread
+PROCESS_PATH := ./src/process
 DB_PATH     :=  ./src/db
 CRYPTO_PATH :=  ./src/crypto
 JSON_PATH   :=  ./src/json
@@ -35,6 +37,15 @@ NET_SRC := $(wildcard $(NET_PATH)/*.cc)
 NET_OBJ := $(patsubst %.cc, %.o, $(NET_SRC)) 
 OBJS += $(NET_OBJ)
 
+# thread src
+THREAD_SRC := $(wildcard $(THREAD_PATH)/*.cc)  
+THREAD_OBJ := $(patsubst %.cc, %.o, $(THREAD_SRC)) 
+OBJS += $(THREAD_OBJ)
+
+# process src
+PROCESS_SRC := $(wildcard $(PROCESS)/*.cc)  
+PROCESS_OBJ := $(patsubst %.cc, %.o, $(PROCESS_SRC)) 
+OBJS += $(PROCESS_OBJ)
 
 
 # complie

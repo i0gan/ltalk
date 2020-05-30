@@ -20,13 +20,21 @@ Ltalk::Net::Net(int port,int thread_number, EventLoop *eventloop) :
 
     accept_channel_->set_fd(listen_fd);
     IgnoreSigpipe();
-
+    if(!SetFdNonBlocking(listen_fd)) {
+        std::cout << "SetFdNonBlocking error\n";
+        abort();
+    }
 }
 
 
 Ltalk::Net::~Net() {
 
 }
+
+void Ltalk::Net::Start() {
+    //up_eventloop_threadpool_->start();
+}
+
 int Ltalk::Net::Listen() {
     if(port_ < 0 || port_ > 65535) {
         std::cout << "listen port is not right\n";

@@ -21,7 +21,6 @@ public:
     Net();
     Net(int port,int thread_number, EventLoop *eventloop);
     ~Net();
-    int Listen();
     void Start();
     void get_eventloop();
     void set_eventloop(EventLoop *eventloop);
@@ -29,6 +28,7 @@ public:
     void HandleThisConnection();
 
 private:
+    int Listen();
     bool is_started = false;
     bool is_listen_ = false;
     int port_;

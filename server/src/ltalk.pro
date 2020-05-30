@@ -21,6 +21,12 @@ HEADERS += \
     net/eventloop_thread.hh \
     net/eventloop_threadpool.hh \
     net/timer.hh \
+    \
+    thread/noncopyable.hh \
+    thread/thread.hh \
+    thread/mutex_lock.hh \
+    thread/condition.hh \
+
 
 
 SOURCES += \
@@ -37,6 +43,10 @@ SOURCES += \
     net/eventloop_thread.cc \
     net/eventloop_threadpool.cc \
     net/timer.cc \
+    \
+    thread/thread.cc \
+    thread/mutex_lock.cc \
+    thread/condition.cc \
 
 
 
