@@ -34,3 +34,49 @@ void Ltalk::Channel::HandleConnect() {
         connect_handler_();
     }
 }
+void Ltalk::Channel::HandleError() {
+    if(error_handler_) {
+        error_handler_();
+    }
+}
+
+void Ltalk::Channel::HandleEvent() {
+    event_ = 0;
+    if((revent_ & EPOLLHUP) && !(revent_ & EPOLLIN)) {
+        event_ = 0;
+        return;
+    }
+    if(revent_ & EPOLLERR) {
+        if(error_handler_) HandleError();
+        event_ = 0;
+        return ;
+    }
+    if(revent_ & (EPOLLIN | EPOLLPRI | EPOLLRDHUP)) {
+        HandleRead();
+    }
+    if(revent_ & EPOLLOUT) {
+        HandleWrite();
+    }
+    //*******
+    HandleConnect();
+}
+
+void Ltalk::Channel::set_revent(__uint32_t revent) {
+    revent_ = revent;
+}
+void Ltalk::Channel::set_event(__uint32_t event) {
+    event_ = event;
+}
+
+__uint32_t Ltalk::Channel::get_event() {
+    return event_;
+}
+
+__uint32_t Ltalk::Channel::get_last_event() {
+    return last_event_;
+}
+
+void Ltalk::Channel::UpdateLastEvnet() {
+    last_event_ = event_;
+}
+

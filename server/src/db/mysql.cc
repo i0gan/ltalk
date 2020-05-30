@@ -1,6 +1,6 @@
-#include "db.hh"
+#include "mysql.hh"
 
-bool Db::Connect(std::string host,
+bool Ltalk::Mysql::Connect(std::string host,
 				std::string user,
                 std::string password,
 				std::string name,
@@ -14,7 +14,6 @@ bool Db::Connect(std::string host,
     this->name_ = name;
     this->port_ = port;
 
-    //初始化mysql
     if(nullptr == mysql_init(this->mysql_)) {
         std::cout << "mysql init fail!"	 << mysql_error(this->mysql_) <<std::endl;
 		return false;
@@ -34,32 +33,31 @@ bool Db::Connect(std::string host,
 
 		return false;
 	}
-    db_lock_ = false; //初始化数据库没有在使用
+    db_lock_ = false;
 	return true;
 }
 
-void Db::Disconnect() {
+void Ltalk::Mysql::Disconnect() {
     mysql_close(this->mysql_);
 }
 
-bool Db::Exec(std::string sqlstr) {
+bool Ltalk::Mysql::Exec(std::string sqlstr) {
     if(!Wait()) { // If wait out of time will give up to select
 		return false; 
 	}
 
-    //设置为处理中
     db_lock_ = true;
     int flag = mysql_real_query(this->mysql_, sqlstr.c_str(), sqlstr.length());
 		if(0 != flag) { //if successful return 0
             std::cout << "mysql_real_query : " << mysql_error(this->mysql_) << std::endl;
-            db_lock_ = false; //处理完成
+            db_lock_ = false;
             return false;
     }
-    db_lock_ = false; //处理完成
+    db_lock_ = false;
 	return true;
 }
 
-bool Db::Wait() {
+bool Ltalk::Mysql::Wait() {
     //等待处理
     int i = 0;
     while(true) {
@@ -75,42 +73,38 @@ bool Db::Wait() {
 	return true;
 }
 
-MYSQL_RES *Db::select(std::string sqlstr) {
+MYSQL_RES *Ltalk::Mysql::select(std::string sqlstr) {
     if(!Wait()) { // If wait out of time will give up to select
 		return nullptr; 
 	}
-
-    //设置为处理中
     db_lock_ = true;
 
     //HIDE std::cout << sqlstr << std::endl;
     int flag = mysql_real_query(this->mysql_, sqlstr.c_str(), sqlstr.length());
 	if(flag != 0) { //if seccessful return 0
         std::cout << "mysql_real_query : " << mysql_error(this->mysql_) << std::endl;
-        db_lock_ = false; //处理完成
+        db_lock_ = false;
         return nullptr;
 	}
-    //判断执行选择的结果
+
     MYSQL_RES *res = mysql_store_result(this->mysql_);
 
 	if(nullptr == res) {
         std::cout << "mysql_store_result : " << mysql_error(this->mysql_) << std::endl;
     }
-    db_lock_ = false; //处理完成
+    db_lock_ = false;
     return res;
 }
 
-
-//******************** Query **********************
 /*
 	This Class to deal with database res
 */
 
-Query::Query() : isInUse(false), res_(nullptr) {
+Ltalk::Mysql_Res::Mysql_Res() : isInUse(false), res_(nullptr) {
 
 }
 
-Query::Query(MYSQL_RES *res) {
+Ltalk::Mysql_Res::Mysql_Res(MYSQL_RES *res) {
     this->isInUse = true;
     this->res_ = res;
     this->row_ = nullptr;
@@ -120,19 +114,19 @@ Query::Query(MYSQL_RES *res) {
     }
 }
 
-void Query::operator=(Query &query) {
+void Ltalk::Mysql_Res::operator=(Mysql_Res &query) {
     this->isInUse = query.isInUse;
     this->row_ = query.row_;
     this->res_ = query.res_;
 }
 
-Query::~Query() {
+Ltalk::Mysql_Res::~Mysql_Res() {
     if(this->res_ != nullptr && this->isInUse == true) {
         mysql_free_result(res_); //release res
 	}
 }
 
-void Query::operator=(MYSQL_RES *res){
+void Ltalk::Mysql_Res::operator=(MYSQL_RES *res){
     if(this->res_ != nullptr && this->isInUse == true) {
         mysql_free_result(res); //release res
         num_of_fields_ = static_cast<int>(mysql_num_fields(res));
@@ -140,7 +134,7 @@ void Query::operator=(MYSQL_RES *res){
     this->res_ = res;
 }
 
-MYSQL_ROW Query::Next() {
+MYSQL_ROW Ltalk::Mysql_Res::Next() {
 
     if(nullptr == res_) {
 		return nullptr;
@@ -149,10 +143,9 @@ MYSQL_ROW Query::Next() {
     return row_;
 }
 
-
-char* Query::GetOne(int idx) {
+char* Ltalk::Mysql_Res::GetOne(int idx) {
     if((num_of_fields_ - 1) < idx) {
-        std::cout << "资源越界: " << idx << " / " << num_of_fields_ << std::endl;
+        std::cout << "out_of_range: " << idx << " / " << num_of_fields_ << std::endl;
         return nullptr;
     }
     return row_[idx];

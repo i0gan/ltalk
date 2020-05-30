@@ -14,4 +14,4 @@ public:
     void RunInLoop(CallBack &&fun);
 
 };
-};
+}

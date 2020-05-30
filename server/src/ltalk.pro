@@ -8,7 +8,7 @@ CONFIG += c++11
 
 HEADERS += \
     startup.hh \
-    db/db.hh \
+    db/mysql.hh \
     json/json.hpp\
     process/http.hh \
     \
@@ -19,13 +19,13 @@ HEADERS += \
     net/eventloop.hh \
     net/eventloop_thread.hh \
     net/eventloop_threadpool.hh \
-    net/timer.hh \
+    net/net_timer.hh \
 
 
 SOURCES += \
     main.cc \
     startup.cc \
-    db/db.cc \
+    db/mysql.cc \
     process/http.cc \
     \
     net/epoll.cc \
@@ -35,7 +35,7 @@ SOURCES += \
     net/eventloop.cc \
     net/eventloop_thread.cc \
     net/eventloop_threadpool.cc \
-    net/timer.cc \
+    net/net_timer.cc \
 
 
 

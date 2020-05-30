@@ -24,6 +24,6 @@ private:
     SPHttp sp_https[EPOLL_MAX_FDS];
 
 };
-};
+}
 
 

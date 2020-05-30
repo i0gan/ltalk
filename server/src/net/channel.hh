@@ -2,6 +2,7 @@
 #include <functional>
 #include <unordered_map>
 #include <memory>
+#include <sys/epoll.h>
 
 #include "eventloop.hh"
 #include "../process/http.hh"
@@ -9,6 +10,7 @@
  * This class is a event callback function to control read, write and new connect
  *
  */
+
 class Channel;
 typedef std::shared_ptr<Channel> SPChannel;
 
@@ -24,13 +26,20 @@ public:
     void HandleRead();
     void HandleWrite();
     void HandleConnect(); // handle new connect
+    void HandleEvent();
+    void HandleError();
+    void set_revent(__uint32_t revent);
+    void set_event(__uint32_t event);
+    __uint32_t get_event();
+    __uint32_t get_last_event();
+    void UpdateLastEvnet();
 
 private:
     EventLoop *eventloop_ = nullptr;
     int fd_ = -1;
-    __uint32_t evnets_ = 0;
-    __uint32_t revents_ = 0;
-    __uint32_t last_evnets = 0;
+    __uint32_t event_ = 0;
+    __uint32_t revent_ = 0;
+    __uint32_t last_event_ = 0;
     std::weak_ptr<Ltalk::Http> holder_;
     CallBack read_handler_ = nullptr;
     CallBack write_handler_ = nullptr;
