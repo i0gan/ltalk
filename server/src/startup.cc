@@ -113,7 +113,7 @@ bool Ltalk::StartUp::LoadConfig() {
 }
 bool Ltalk::StartUp::InitNetwork() {
     Ltalk::Net net;
-    return net.Listen();
+    return true; //net.Listen();
 }
 bool Ltalk::StartUp::InitDatabase() {
     return true;

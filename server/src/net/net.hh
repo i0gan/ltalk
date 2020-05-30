@@ -11,7 +11,9 @@
 #include <cstring>
 
 #include "../ltalk.hh"
+#include "channel.hh"
 #include "eventloop_threadpool.hh"
+#include "util.hh"
 
 namespace Ltalk {
 class Net final{
@@ -19,7 +21,7 @@ public:
     Net();
     Net(int port,int thread_number, EventLoop *eventloop);
     ~Net();
-    bool Listen();
+    int Listen();
     void Start();
     void get_eventloop();
     void set_eventloop(EventLoop *eventloop);
