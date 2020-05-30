@@ -1,4 +1,5 @@
 #include "channel.hh"
+
 Ltalk::Channel::Channel(EventLoop *eventloop) {
     eventloop_ = eventloop;
 }
@@ -17,6 +18,15 @@ void Ltalk::Channel::set_fd(int fd) {
 
 int Ltalk::Channel::get_fd() {
     return fd_;
+}
+
+void Ltalk::Channel::set_holder(SPHttp sp_http) {
+    holder_ = sp_http;
+}
+
+Ltalk::SPHttp Ltalk::Channel::get_holder() {
+    SPHttp ret = holder_.lock();
+    return ret;
 }
 
 void Ltalk::Channel::HandleRead() {

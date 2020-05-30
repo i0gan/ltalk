@@ -6,23 +6,26 @@
 
 #include "eventloop.hh"
 #include "../process/http.hh"
+#include "../ltalk.hh"
+
 /*
  * This class is a event callback function to control read, write and new connect
  *
  */
 
-class Channel;
-typedef std::shared_ptr<Channel> SPChannel;
-
 namespace Ltalk {
 class Channel {
     typedef std::function<void()> CallBack;
 public:
+    Channel() {};
     Channel(EventLoop *eventloop);
     Channel(EventLoop *eventloop, int fd);
     ~Channel();
     void set_fd(int fd);
     int get_fd();
+    SPHttp get_holder();
+    void set_holder(SPHttp  sp_http);
+
     void HandleRead();
     void HandleWrite();
     void HandleConnect(); // handle new connect

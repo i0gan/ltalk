@@ -7,6 +7,7 @@ DEFINES += QT_NO_WARNING_OUTPUT\ QT_NO_DEBUG_OUTPUT #deal with macro name is mis
 CONFIG += c++11
 
 HEADERS += \
+    ltalk.hh \
     startup.hh \
     db/mysql.hh \
     json/json.hpp\
@@ -19,7 +20,7 @@ HEADERS += \
     net/eventloop.hh \
     net/eventloop_thread.hh \
     net/eventloop_threadpool.hh \
-    net/net_timer.hh \
+    net/timer.hh \
 
 
 SOURCES += \
@@ -35,7 +36,7 @@ SOURCES += \
     net/eventloop.cc \
     net/eventloop_thread.cc \
     net/eventloop_threadpool.cc \
-    net/net_timer.cc \
+    net/timer.cc \
 
 
 

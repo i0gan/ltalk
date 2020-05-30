@@ -42,5 +42,6 @@ private:
 
     std::string log_path_ = "/";
     std::string config_file_ = "./config.json";
+
 };
 };

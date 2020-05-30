@@ -4,19 +4,22 @@ Ltalk::Net::Net() {
 
 }
 
-Ltalk::Net::Net(int port) {
-    tcp_port_ = port;
+Ltalk::Net::Net(int port,int thread_number, EventLoop *eventloop) :
+    is_started(false),
+    port_(port),
+    thread_number_(thread_number),
+    eventloop_(eventloop)
+    //accept_channel_(new Channel(eventloop_))
+{
+    //Channel a(eventloop_);
 }
 
 
 Ltalk::Net::~Net() {
 
 }
-void Ltalk::Net::Init(int port) {
-    tcp_port_ = port;
-}
 bool Ltalk::Net::Listen() {
-    if(tcp_port_ < 0 || tcp_port_ > 65535) {
+    if(port_ < 0 || port_ > 65535) {
         std::cout << "listen port is not right\n";
         return false;
     }
@@ -38,7 +41,7 @@ bool Ltalk::Net::Listen() {
     bzero(&server_addr, sizeof(server_addr));
     server_addr.sin_family = AF_INET;
     server_addr.sin_addr.s_addr = htonl(INADDR_ANY);
-    server_addr.sin_port = htons(static_cast<uint16_t>(tcp_port_));
+    server_addr.sin_port = htons(static_cast<uint16_t>(port_));
 
     if(bind(listen_fd, (struct sockaddr *)&server_addr, sizeof (server_addr)) == -1) {
         close(listen_fd);

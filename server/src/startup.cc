@@ -95,8 +95,6 @@ bool Ltalk::StartUp::LoadConfig() {
        thread_num_ = atoi(thread_num.c_str());
 
        log_path_ = obj["server"]["log path"];
-
-
        db_host_ = obj["database"]["host"];
 
        std::string db_port = obj["database"]["port"];
@@ -115,7 +113,6 @@ bool Ltalk::StartUp::LoadConfig() {
 }
 bool Ltalk::StartUp::InitNetwork() {
     Ltalk::Net net;
-    net.Init(tcp_port_);
     return net.Listen();
 }
 bool Ltalk::StartUp::InitDatabase() {

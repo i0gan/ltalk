@@ -1,4 +1,4 @@
-#include "net_timer.hh"
+#include "timer.hh"
 Ltalk::NetTimer::NetTimer() {
 
 }
@@ -38,5 +38,12 @@ bool Ltalk::NetTimer::is_deleted() {
     return deleted_;
 }
 
+Ltalk::NetTimerManager::NetTimerManager() {
+
+}
+
+Ltalk::NetTimerManager::~NetTimerManager() {
+
+}
 
 

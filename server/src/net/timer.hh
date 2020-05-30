@@ -4,6 +4,8 @@
 #include <sys/time.h>
 #include <unistd.h>
 #include "../process/http.hh"
+#include "../ltalk.hh"
+using namespace Ltalk;
 
 /*
  *  Network Timer Class set
@@ -45,6 +47,5 @@ public:
     void HandleExpired();
 private:
     //std::priority_queue<SPTimer, std::deque<SPTimer>,
-
 };
 }

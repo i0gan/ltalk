@@ -10,18 +10,30 @@
 #include <errno.h>
 #include <cstring>
 
+#include "../ltalk.hh"
+#include "eventloop_threadpool.hh"
+
 namespace Ltalk {
 class Net final{
 public:
     Net();
-    Net(int port);
+    Net(int port,int thread_number, EventLoop *eventloop);
     ~Net();
-    void Init(int port);
     bool Listen();
+    void Start();
+    void get_eventloop();
+    void set_eventloop(EventLoop *eventloop);
+    void HandleNewConnection();
+    void HandleThisConnection();
 
 private:
-
+    bool is_started = false;
     bool is_listen_ = false;
-    int  tcp_port_;
+    int port_;
+    int thread_number_;
+    EventLoop *eventloop_;
+    int listen_fd;
+    SPChannel accept_channel_;
+    std::unique_ptr<EventLoopThreadPool> up_eventloop_threadpool_;
 };
 }
