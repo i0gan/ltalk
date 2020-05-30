@@ -1,15 +1,13 @@
-
 TARGET = ltalk
-TEMPLATE = app
-
-DEFINES += QT_DEPRECATED_WARNINGS
-DEFINES += QT_NO_WARNING_OUTPUT\ QT_NO_DEBUG_OUTPUT #deal with macro name is missing
 CONFIG += c++11
 
 HEADERS += \
     ltalk.hh \
     startup.hh \
-    db/mysql.hh \
+    \
+    db/mysql/mysql.hh \
+    db/redis/redis.hh \
+    \
     json/json.hpp\
     process/http.hh \
     \
@@ -32,7 +30,10 @@ HEADERS += \
 SOURCES += \
     main.cc \
     startup.cc \
-    db/mysql.cc \
+    \
+    db/mysql/mysql.cc \
+    db/redis/redis.cc \
+    \
     process/http.cc \
     \
     net/epoll.cc \

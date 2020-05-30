@@ -8,13 +8,13 @@
 #include "../process/http.hh"
 #include "../ltalk.hh"
 #include <iostream>
+
 /*
  * This class is a event callback function to control read, write and new connect
  *
  */
 
 namespace Ltalk {
-typedef std::function<void()> CallBack;
 class Channel {
 public:
     Channel(EventLoop *eventloop);
