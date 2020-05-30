@@ -8,6 +8,7 @@
 /*
  *  Network Timer Class set
  */
+
 namespace Ltalk {
 class NetTimer;
 using SPNetTimer = std::shared_ptr<NetTimer>;
