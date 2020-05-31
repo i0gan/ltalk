@@ -24,6 +24,7 @@ HEADERS += \
     thread/thread.hh \
     thread/mutex_lock.hh \
     thread/condition.hh \
+    thread/count_down_latch.hh \
 
 
 
@@ -48,6 +49,7 @@ SOURCES += \
     thread/thread.cc \
     thread/mutex_lock.cc \
     thread/condition.cc \
+    thread/count_down_latch.cc \
 
 
 

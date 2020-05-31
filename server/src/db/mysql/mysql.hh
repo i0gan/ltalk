@@ -7,23 +7,6 @@
 #define DB_WAIT_TIMES 1000 // wait times
 #define DB_WAIT_TIME  10   // will usleep(WAIT_TIME)
 namespace Ltalk {
-class Mysql_Res {
-public:
-    Mysql_Res();
-    Mysql_Res(MYSQL_RES *res);
-    ~Mysql_Res();
-    MYSQL_ROW Next();
-    char* GetOne(int idx);
-    void operator=(Mysql_Res &mysql_res);
-    void operator=(MYSQL_RES *res);
-private:
-    int get_fields();
-    bool isInUse;
-    MYSQL_RES *res_;
-    MYSQL_ROW row_;
-    int num_of_fields_;
-};
-
 class Mysql {
 	public:
         Mysql() : mysql_(new MYSQL), is_connected_(false) {}
@@ -51,4 +34,22 @@ class Mysql {
         bool is_connected_;
         bool db_lock_;
 };
+
+class MysqlRes {
+public:
+    MysqlRes();
+    MysqlRes(MYSQL_RES *res);
+    ~MysqlRes();
+    MYSQL_ROW Next();
+    char* GetOne(int idx);
+    void operator=(MysqlRes &mysql_res);
+    void operator=(MYSQL_RES *res);
+private:
+    int get_fields();
+    bool isInUse;
+    MYSQL_RES *res_;
+    MYSQL_ROW row_;
+    int num_of_fields_;
+};
+
 };

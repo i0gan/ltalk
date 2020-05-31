@@ -100,11 +100,11 @@ MYSQL_RES *Ltalk::Mysql::select(std::string sqlstr) {
 	This Class to deal with database res
 */
 
-Ltalk::Mysql_Res::Mysql_Res() : isInUse(false), res_(nullptr) {
+Ltalk::MysqlRes::MysqlRes() : isInUse(false), res_(nullptr) {
 
 }
 
-Ltalk::Mysql_Res::Mysql_Res(MYSQL_RES *res) {
+Ltalk::MysqlRes::MysqlRes(MYSQL_RES *res) {
     this->isInUse = true;
     this->res_ = res;
     this->row_ = nullptr;
@@ -114,19 +114,19 @@ Ltalk::Mysql_Res::Mysql_Res(MYSQL_RES *res) {
     }
 }
 
-void Ltalk::Mysql_Res::operator=(Mysql_Res &query) {
+void Ltalk::MysqlRes::operator=(MysqlRes &query) {
     this->isInUse = query.isInUse;
     this->row_ = query.row_;
     this->res_ = query.res_;
 }
 
-Ltalk::Mysql_Res::~Mysql_Res() {
+Ltalk::MysqlRes::~MysqlRes() {
     if(this->res_ != nullptr && this->isInUse == true) {
         mysql_free_result(res_); //release res
 	}
 }
 
-void Ltalk::Mysql_Res::operator=(MYSQL_RES *res){
+void Ltalk::MysqlRes::operator=(MYSQL_RES *res){
     if(this->res_ != nullptr && this->isInUse == true) {
         mysql_free_result(res); //release res
         num_of_fields_ = static_cast<int>(mysql_num_fields(res));
@@ -134,7 +134,7 @@ void Ltalk::Mysql_Res::operator=(MYSQL_RES *res){
     this->res_ = res;
 }
 
-MYSQL_ROW Ltalk::Mysql_Res::Next() {
+MYSQL_ROW Ltalk::MysqlRes::Next() {
 
     if(nullptr == res_) {
 		return nullptr;
@@ -143,7 +143,7 @@ MYSQL_ROW Ltalk::Mysql_Res::Next() {
     return row_;
 }
 
-char* Ltalk::Mysql_Res::GetOne(int idx) {
+char* Ltalk::MysqlRes::GetOne(int idx) {
     if((num_of_fields_ - 1) < idx) {
         std::cout << "out_of_range: " << idx << " / " << num_of_fields_ << std::endl;
         return nullptr;

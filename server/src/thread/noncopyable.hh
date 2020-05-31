@@ -1,5 +1,6 @@
 #pragma once
 
+namespace Ltalk {
 class Noncopyable {
 protected:
     Noncopyable() {}
@@ -8,3 +9,4 @@ private:
     Noncopyable(const Noncopyable &);
     const Noncopyable &operator=(const Noncopyable&);
 };
+}

@@ -12,5 +12,14 @@ public:
     bool IsStarted();
     pid_t get_tid;
     const std::string & get_name();
+private:
+    void SetDefaultName();
+    bool started_;
+    bool joined_;
+    pthread_t pthread_id;
+    pid_t tid_;
+    CallBack func_;
+    std::string name_;
+
 };
 }
