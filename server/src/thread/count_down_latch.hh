@@ -7,10 +7,10 @@
  * in the thread really starts before the start of the outer layer returns.
  */
 namespace Ltalk {
-class CountDownLtach : Noncopyable {
+class CountDownLatch : Noncopyable {
 public:
-    explicit CountDownLtach(int count);
-    ~CountDownLtach();
+    explicit CountDownLatch(int count);
+    ~CountDownLatch();
     void Wait();
     void CountDown();
 private:
