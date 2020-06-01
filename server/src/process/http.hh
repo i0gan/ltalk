@@ -1,6 +1,8 @@
 #pragma once
 #include <memory>
 #include <unordered_map>
+#include <map>
+#include <pthread.h>
 
 #include "../ltalk.hh"
 #include "../net/eventloop.hh"
@@ -8,23 +10,23 @@
 
 namespace Ltalk {
 enum class HttpProcessState {
-    STATE_PARSE_URI = 0,
-    STATE_PARSE_HEADERS,
-    STATE_RECV_BODY,
-    STATE_ANALYSIS,
-    STATE_FINISH
+    PARSE_URI = 0,
+    PARSE_HEADERS,
+    RECV_BODY,
+    ANALYSIS,
+    FINISH
 };
 
 enum class HttpURIState {
-    PARSE_URI_AGAIN = 0,
-    PARSE_URI_ERROR,
-    PARSE_URI_SUCCESS,
+    AGAIN = 0,
+    ERROR,
+    SUCCESS,
 };
 
 enum class HttpHeaderState {
-    PARSE_HEADER_SUCCESS = 0,
-    PARSE_HEADER_AGAIN,
-    PARSE_HEADER_ERROR
+    SUCCESS = 0,
+    AGAIN,
+    ERROR
 };
 
 enum class HttpAnalysisState {
@@ -33,44 +35,43 @@ enum class HttpAnalysisState {
 };
 
 enum class HttpParseState {
-    H_START = 0,
-    H_KEY,
-    H_COLON,
-    H_SPACES_AFTER_COLON,
-    H_VALUE,
-    H_CR,
-    H_LF,
-    H_END_CR,
-    H_END_LF
+    START = 0,
+    KEY,
+    COLON,
+    SPACES_AFTER_COLON,
+    VALUE,
+    CR,
+    LF,
+    END_CR,
+    END_LF
 };
 
 enum class HttpConnectionState {
-    H_CONNECTED = 0,
-    H_DISCONNECTING,
-    H_DISCONNECTED
+    CONNECTED = 0,
+    DISCONNECTING,
+    DISCONNECTED
 };
 
 enum class HttpMethod {
-    METHOD_POST = 0,
-    METHOD_GET,
-    METHOD_HEAD
+    GET = 0,
+    POST,
+    HEAD
 };
 
 enum class HttpVersion {
-    METHOD_POST = 0,
-    METHOD_GET,
-    METHOD_HEAD
+    V_1_0 = 0,
+    V_1_1
 };
 class HttpContentType {
 public:
     static std::string GetType(const std::string name);
 private:
-    static void Init();
     static std::unordered_map<std::string, std::string> type_;
     static pthread_once_t once_control_;
+    static void Init();
 };
 
-class Http final{
+class Http final : public std::enable_shared_from_this<Http> {
 public:
     Http(int fd,EventLoop *eventloop);
     ~Http();
@@ -92,8 +93,8 @@ private:
     HttpConnectionState http_connection_state_;
     HttpMethod http_method_;
     HttpVersion http_version_;
-    HttpParseState http_parse_state_;
     HttpProcessState http_process_state_;
+    HttpParseState http_parse_state_;
     HttpURIState http_uri_state_;
     HttpHeaderState http_header_state_;
     HttpAnalysisState http_analysis_state_;
@@ -101,6 +102,8 @@ private:
     std::string file_name_;
     std::string path_;
     int read_postioin_;
+    std::map<std::string, std::string> map_headers_;
+    std::weak_ptr<NetTimer> wp_net_timer_;
 
     void HandleRead();
     void HandleWrite();

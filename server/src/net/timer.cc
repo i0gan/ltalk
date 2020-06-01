@@ -34,7 +34,7 @@ void Ltalk::NetTimer::set_deleted() {
     deleted_ = true;
 }
 
-bool Ltalk::NetTimer::is_deleted() {
+bool Ltalk::NetTimer::IsDeleted() {
     return deleted_;
 }
 

@@ -20,9 +20,9 @@ public:
     NetTimer(NetTimer &nt);
     void Update(int ms_timeout);
     bool IsValid();
-    void ClearRequest();
+    void Clear();
     void set_deleted();
-    bool is_deleted();
+    bool IsDeleted();
     time_t GetExpiredTime();
 private:
     bool deleted_;

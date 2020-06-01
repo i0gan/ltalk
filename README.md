@@ -1,17 +1,22 @@
-# Ltalk (devloping)
+# Ltalk 
 
 
 Ltalk is a very simple aross platform internet message software
 
 Suport platform
 
+* linux 
+* windows
+* mac os
 * android
 
-* windows
+## devloping  2 %
 
-* linux
-
-
+* server 1.9 %
+* linux  0.1 %
+* windows 0.0 %
+* mac os 0.0 %
+* android 0.0%
 
 ## Download
 
