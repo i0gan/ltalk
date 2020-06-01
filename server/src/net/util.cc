@@ -1,19 +1,19 @@
 #include "util.hh"
 
-ssize_t Ltalk::ReadData(int fd, void *buf, size_t n) {
+ssize_t Ltalk::Util::ReadData(int fd, void *buf, size_t n) {
     return 1;
 }
-ssize_t Ltalk::ReadData(int fd, std::string &buf) {
+ssize_t Ltalk::Util::ReadData(int fd, std::string &buf) {
     return 1;
 }
-ssize_t Ltalk::WriteData(int fd, void *buf, size_t n) {
+ssize_t Ltalk::Util::WriteData(int fd, void *buf, size_t n) {
     return 1;
 }
-ssize_t Ltalk::WriteData(int fd, std::string &buf) {
+ssize_t Ltalk::Util::WriteData(int fd, std::string &buf) {
     return 1;
 }
 
-void Ltalk::IgnoreSigpipe() {
+void Ltalk::Util::IgnoreSigpipe() {
     struct sigaction sa;
     bzero(&sa, sizeof(sa));
     sa.sa_handler = SIG_IGN;
@@ -21,7 +21,7 @@ void Ltalk::IgnoreSigpipe() {
     sigaction(SIGPIPE, &sa, NULL);
 }
 
-bool Ltalk::SetFdNonBlocking(int listen_fd) {
+bool Ltalk::Util::SetFdNonBlocking(int listen_fd) {
     do {
     int flag = fcntl(listen_fd, F_GETFL, 0);
     if(flag == - 1)

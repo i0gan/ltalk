@@ -7,37 +7,6 @@ __thread const char *Ltalk::CurrentThread::name;
 
 
 
-pid_t Ltalk::CurrentThread::get_tid() {
-    return static_cast<pid_t>(CurrentThread::tid);
-}
-
-const char *Ltalk::CurrentThread::get_string() {
-    return CurrentThread::string;
-}
-
-int Ltalk::CurrentThread::get_string_length() {
-    return CurrentThread::string_length;
-}
-
-void Ltalk::CurrentThread::CacheTid() {
-    if(CurrentThread::tid == 0) {
-       CurrentThread::tid = ::syscall(SYS_gettid);
-       CurrentThread::string_length = snprintf(CurrentThread::string, sizeof (CurrentThread::string),
-                                               "%5d ", CurrentThread::tid);
-
-    }
-}
-
-void Ltalk::CurrentThread::set_tid() {
-/* #define likely(x) __builtin_expect(!!(x), 1)   //x likely as true
- * #define unlikely(x) __builtin_expect(!!(x), 0) //x likely as false
- */
-    if(__builtin_expect(CurrentThread::tid == 0, 0)) {
-        CurrentThread::CacheTid();
-    }
-}
-
-
 Ltalk::Thread::Thread(const CallBack &call_back, const std::string &name) :
     started_(false),
     joined_(false),
@@ -49,8 +18,10 @@ Ltalk::Thread::Thread(const CallBack &call_back, const std::string &name) :
 
     SetDefaultName();
 }
-Ltalk::Thread::~Thread() {
 
+Ltalk::Thread::~Thread() {
+    if(started_ && !joined_)
+        pthread_detach(pthread_id);
 }
 
 void Ltalk::Thread::SetDefaultName() {
@@ -95,7 +66,6 @@ Ltalk::ThreadData::~ThreadData() {
 }
 
 void Ltalk::ThreadData::Run() {
-    CurrentThread::set_tid();
     *tid_ = CurrentThread::get_tid();
     count_down_latch_->CountDown();
 

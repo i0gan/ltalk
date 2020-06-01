@@ -22,7 +22,7 @@ public:
     Net(int port,int thread_number, EventLoop *eventloop);
     ~Net();
     void Start();
-    void get_eventloop();
+    EventLoop * get_eventloop();
     void set_eventloop(EventLoop *eventloop);
     void HandleNewConnection();
     void HandleThisConnection();
