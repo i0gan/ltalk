@@ -24,9 +24,8 @@ CRYPTO_PATH :=  ./src/crypto
 JSON_PATH   :=  ./src/json
 MAIN_PATH   :=  ./src
 
-
+#---------------------OBJ-------------------------
 OBJS :=
-
 # main
 MAIN_SRC := $(wildcard $(MAIN_PATH)/*.cc)  
 MAIN_OBJ := $(patsubst %.cc, %.o, $(MAIN_SRC)) 
@@ -43,19 +42,18 @@ THREAD_OBJ := $(patsubst %.cc, %.o, $(THREAD_SRC))
 OBJS += $(THREAD_OBJ)
 
 # process src
-PROCESS_SRC := $(wildcard $(PROCESS)/*.cc)  
+PROCESS_SRC := $(wildcard $(PROCESS_PATH)/*.cc)  
 PROCESS_OBJ := $(patsubst %.cc, %.o, $(PROCESS_SRC)) 
 OBJS += $(PROCESS_OBJ)
 
-
 # complie
 $(TARGET):$(OBJS)
+	@echo -e "\033[33m\t linking all \033[0m"
 	$(CC) $^ -o $(BUILD_PATH)/$@ $(LDFLAGS) $(CFLAGS) 
-
+	@echo -e "\033[34m\t finished \033[0m"
 
 $(OBJS):%.o:%.cc
-	$(CC) -c $^ -o $@ $(LDFLAGS) $(CFLAGS)
-
+	$(CC) -c $^ -o $@ 
 
 print:
 	@echo $(OBJS)	

@@ -1,10 +1,15 @@
 #pragma once
+
 #include <memory>
 #include <queue>
+#include <deque>
+
 #include <sys/time.h>
 #include <unistd.h>
-#include "../process/http.hh"
 #include "../ltalk.hh"
+#include "../process/http.hh"
+
+
 using namespace Ltalk;
 
 /*
@@ -15,9 +20,10 @@ namespace Ltalk {
 
 class NetTimer {
 public:
-    NetTimer();
+    NetTimer(SPHttp sp_http, int ms_timeout);
+    NetTimer(NetTimer &net_timer);
     ~NetTimer();
-    NetTimer(NetTimer &nt);
+
     void Update(int ms_timeout);
     bool IsValid();
     void Clear();
@@ -39,11 +45,12 @@ public:
 
 class NetTimerManager {
 public:
-    NetTimerManager();
+    explicit NetTimerManager();
     ~NetTimerManager();
-    void AddTimer(SPHttp sp_http, int timeout);
-    void HandleExpired();
+    void AddTimer(std::shared_ptr<Http> sp_http, int ms_timeout);
+    void HandleExpiredEvent();
 private:
-    //std::priority_queue<SPTimer, std::deque<SPTimer>,
+    std::priority_queue<SPNetTimer, std::deque<SPNetTimer>, NetTimerCompare>
+    sort_sp_timer_queue;
 };
 }

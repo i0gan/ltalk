@@ -66,7 +66,7 @@ class HttpContentType {
 public:
     static std::string GetType(const std::string name);
 private:
-    static std::unordered_map<std::string, std::string> type_;
+    static std::unordered_map<std::string, std::string> umap_type_;
     static pthread_once_t once_control_;
     static void Init();
 };
@@ -76,7 +76,7 @@ public:
     Http(int fd,EventLoop *eventloop);
     ~Http();
     void Reset();
-    void Seperatetime();
+    void UnlinkTimer();
     void LinkTimer(SPNetTimer sp_net_timer);
     SPChannel get_sp_channel();
     EventLoop *get_eventloop();
