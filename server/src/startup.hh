@@ -12,8 +12,8 @@
 
 #include "json/json.hpp"
 #include "net/net.hh"
-
-#define d_cout(str) std::cout << __FILE__ << " : " << __LINE__ << " " << str << std::endl;
+#include "net/eventloop.hh"
+#include "ltalk.hh"
 
 namespace Ltalk {
 class StartUp final{

@@ -58,7 +58,6 @@ Ltalk::ThreadData::ThreadData(const CallBack &func, const std::string &name,
     name_(name),
     tid_(tid),
     count_down_latch_(count_down_latch) {
-
 }
 
 Ltalk::ThreadData::~ThreadData() {

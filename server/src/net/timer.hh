@@ -12,8 +12,6 @@ using namespace Ltalk;
  */
 
 namespace Ltalk {
-class NetTimer;
-using SPNetTimer = std::shared_ptr<NetTimer>;
 
 class NetTimer {
 public:

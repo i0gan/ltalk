@@ -58,19 +58,19 @@ bool Ltalk::StartUp::LoadConfig() {
     using json = nlohmann::json;
     struct stat sbuf;
     if(stat(config_file_.c_str(), &sbuf) < 0) {
-        d_cout("Config file [" + config_file_ + "] is not existed!");
+        d_cout << "Config file [" << config_file_ << "] is not existed!\n";
         abort();
     }
 
     int fd = open(config_file_.c_str(), O_RDONLY);
     if(-1 == fd) {
-        d_cout("Open Config file failed! ");
+        d_cout << "Open Config file failed!\n";
         abort();
     }
     void *mmap_ptr = mmap(NULL, sbuf.st_size, PROT_READ, MAP_PRIVATE, fd, 0);
     close(fd);
     if(mmap_ptr == (void *)-1) {
-        d_cout("mmap Config file failed!");
+        d_cout << "mmap Config file failed!\n";
         abort();
     }
     std::string file_json = static_cast<char *>(mmap_ptr);
@@ -80,7 +80,7 @@ bool Ltalk::StartUp::LoadConfig() {
     try{
         obj = json::parse(file_json);
     } catch(json::parse_error &e) {
-        d_cout(e.what());
+        d_cout << e.what() << '\n';
         abort();
     }
     //解析json
@@ -104,7 +104,7 @@ bool Ltalk::StartUp::LoadConfig() {
        db_name_ = obj["database"]["name"];
 
     }  catch (json::exception &e) {
-        d_cout(e.what());
+        d_cout << e.what() << '\n';
         abort();
     }
 
@@ -112,7 +112,10 @@ bool Ltalk::StartUp::LoadConfig() {
     return true;
 }
 bool Ltalk::StartUp::InitNetwork() {
-    Ltalk::Net net;
+    EventLoop eventloop;
+    Ltalk::Net net(tcp_port_, thread_num_, &eventloop);
+    net.Start();
+    eventloop.Loop();
     return true; //net.Listen();
 }
 bool Ltalk::StartUp::InitDatabase() {

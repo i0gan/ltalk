@@ -32,6 +32,10 @@ public:
     void HandleError();
     void set_revent(__uint32_t revent);
     void set_event(__uint32_t event);
+    void set_read_handler( CallBack &&read_handler);
+    void set_write_handler(CallBack &&write_handler);
+    void set_error_handler(CallBack &&error_handler);
+    void set_connect_handler(CallBack &&connect_handler);
     __uint32_t get_event();
     __uint32_t get_last_event();
     void UpdateLastEvnet();

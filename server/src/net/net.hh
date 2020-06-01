@@ -18,7 +18,6 @@
 namespace Ltalk {
 class Net final{
 public:
-    Net();
     Net(int port,int thread_number, EventLoop *eventloop);
     ~Net();
     void Start();
@@ -29,13 +28,14 @@ public:
 
 private:
     int Listen();
-    bool is_started = false;
-    bool is_listen_ = false;
+    bool started = false;
+    bool listened = false;
     int port_;
     int thread_number_;
     EventLoop *eventloop_;
     int listen_fd;
     SPChannel accept_channel_;
     std::unique_ptr<EventLoopThreadPool> up_eventloop_threadpool_;
+    int accept_fd_sum = 0;
 };
 }

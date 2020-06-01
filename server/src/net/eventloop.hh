@@ -5,7 +5,7 @@
 
 #include "../thread/thread.hh"
 #include "epoll.hh"
-
+#include "util.hh"
 namespace Ltalk {
 class EventLoop {
     typedef std::function<void()> CallBack;
@@ -30,10 +30,10 @@ private:
     bool event_handling_;
     const pid_t thread_id_;
     SPEpoll sp_epoll_;
+    SPChannel sp_awake_channel_;
     mutable MutexLock mutex_lock_;
     std::vector<CallBack> pending_callbacks_;
     bool calling_pending_callback_;
-    SPChannel sp_awake_channel_;
 
     void WakeUp(); //for write one byte to client
     void RunPendingCallBack();

@@ -78,6 +78,23 @@ void Ltalk::Channel::set_event(__uint32_t event) {
     event_ = event;
 }
 
+void Ltalk::Channel::set_read_handler(CallBack  &&read_handler) {
+    read_handler_ = read_handler;
+}
+
+void Ltalk::Channel::set_write_handler(CallBack  &&write_handler) {
+    write_handler_ = write_handler;
+}
+
+void Ltalk::Channel::set_error_handler(CallBack  &&error_handler) {
+    error_handler_ = error_handler;
+}
+
+void Ltalk::Channel::set_connect_handler(CallBack  &&connect_handler) {
+    connect_handler_ = connect_handler;
+}
+
+
 __uint32_t Ltalk::Channel::get_event() {
     return event_;
 }

@@ -1,12 +1,7 @@
 #include "net.hh"
 
-Ltalk::Net::Net() {
-    //Ltalk::Channel a;
-    //std::cout << "\nsssss\n";
-}
-
 Ltalk::Net::Net(int port,int thread_number, EventLoop *eventloop) :
-    is_started(false),
+    started(false),
     port_(port),
     thread_number_(thread_number),
     eventloop_(eventloop),
@@ -14,14 +9,14 @@ Ltalk::Net::Net(int port,int thread_number, EventLoop *eventloop) :
     accept_channel_(new Channel(eventloop_)) {
 
     if(listen_fd == -1) {
-        std::cout << "net init fail\n";
+        d_cout << "net init fail\n";
         abort();
     }
 
     accept_channel_->set_fd(listen_fd);
     Util::IgnoreSigpipe();
     if(!Util::SetFdNonBlocking(listen_fd)) {
-        std::cout << "SetFdNonBlocking error\n";
+        d_cout << "SetFdNonBlocking error\n";
         abort();
     }
 }
@@ -32,6 +27,7 @@ Ltalk::Net::~Net() {
 
 void Ltalk::Net::Start() {
     //up_eventloop_threadpool_->start();
+
 }
 
 Ltalk::EventLoop *Ltalk::Net::get_eventloop() {
@@ -44,7 +40,7 @@ void Ltalk::Net::set_eventloop(EventLoop *eventloop) {
 
 int Ltalk::Net::Listen() {
     if(port_ < 0 || port_ > 65535) {
-        std::cout << "listen port is not right\n";
+        d_cout << "listen port is not right\n";
         return -1;
     }
 
@@ -78,6 +74,34 @@ int Ltalk::Net::Listen() {
         perror("listen: ");
         return -1;
     }
-
+    listened = true;
     return listen_fd;
+}
+
+void Ltalk::Net::HandleNewConnection() {
+    struct sockaddr_in client_sockaddr;
+    bzero(&client_sockaddr, sizeof (client_sockaddr));
+    socklen_t client_sockaddr_len = sizeof (client_sockaddr);
+    int accept_fd = 0;
+    while(true) {
+        accept_fd = accept(listen_fd, (struct sockaddr *)&client_sockaddr, &client_sockaddr_len);
+        if(accept_fd == -1) {
+            perror("accept: ");
+            return;
+        }
+        d_cout << "new connection: " << inet_ntoa(client_sockaddr.sin_addr) << " : " << ntohs(client_sockaddr.sin_port)
+               << '\n';
+        if(accept_fd_sum > MAX_CONNECTED_FDS_NUM) {
+            close(accept_fd);
+            d_cout << "max_connect_fd refuseed connect\n";
+            continue;
+        }
+        if(!Util::SetFdNonBlocking(accept_fd)) {
+            d_cout << "SetFdNonBlocking error\n";
+        }
+        //set as no delay
+        Util::SetFdNoDelay(accept_fd);
+        //SPHttp sp_http(new Http());
+
+    }
 }
