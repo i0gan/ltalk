@@ -7,10 +7,13 @@ Ltalk::Condition::~Condition() {
 }
 
 void Ltalk::Condition::Wait() {
+    d_cout << "wait notify tid: " << pthread_self() << '\n';
     pthread_cond_wait(&cond_, mutex_.get_mutex());
+
 }
 
 void Ltalk::Condition::Notify() {
+    d_cout << "send notify tid: " << pthread_self() << '\n';
     pthread_cond_signal(&cond_);
 }
 

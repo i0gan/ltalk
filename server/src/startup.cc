@@ -38,17 +38,18 @@ bool Ltalk::StartUp::Run() {
 
     std::cout << "Load config file" << std::endl;
     this->LoadConfig();
-    std::cout << "init network" << std::endl;
 
-    if(false == this->InitNetwork()) {
+    std::cout << "Run database module" << std::endl;
+    this->RunDatabaseModule();
+    std::cout << "Run logger module" << std::endl;
+    this->RunLoggerModule();
+
+    std::cout << "Run network module" << std::endl;
+    if(false == this->RunNetworkModule()) {
         std::cout << "init network fail!\n";
         abort();
     }
 
-    std::cout << "Init database" << std::endl;
-    this->InitDatabase();
-    std::cout << "Init log" << std::endl;
-    this->InitLog();
 
     return true;
 }
@@ -58,19 +59,19 @@ bool Ltalk::StartUp::LoadConfig() {
     using json = nlohmann::json;
     struct stat sbuf;
     if(stat(config_file_.c_str(), &sbuf) < 0) {
-        d_cout << "Config file [" << config_file_ << "] is not existed!\n";
+        d_cout << "The config file [" << config_file_ << "] is not existed!\n";
         abort();
     }
 
     int fd = open(config_file_.c_str(), O_RDONLY);
     if(-1 == fd) {
-        d_cout << "Open Config file failed!\n";
+        d_cout << "Open config file failed!\n";
         abort();
     }
     void *mmap_ptr = mmap(NULL, sbuf.st_size, PROT_READ, MAP_PRIVATE, fd, 0);
     close(fd);
     if(mmap_ptr == (void *)-1) {
-        d_cout << "mmap Config file failed!\n";
+        d_cout << "mmap config file failed!\n";
         abort();
     }
     std::string file_json = static_cast<char *>(mmap_ptr);
@@ -91,8 +92,8 @@ bool Ltalk::StartUp::LoadConfig() {
        std::string udp_port = obj["server"]["udp port"];
        udp_port_ = atoi(udp_port.c_str());
 
-       std::string thread_num = obj["server"]["thread number"];
-       thread_num_ = atoi(thread_num.c_str());
+       std::string number_of_thread = obj["server"]["number of thread"];
+       number_of_thread_ = atoi(number_of_thread.c_str());
 
        log_path_ = obj["server"]["log path"];
        db_host_ = obj["database"]["host"];
@@ -111,17 +112,19 @@ bool Ltalk::StartUp::LoadConfig() {
     //std::cout << "http_port " << http_port_ << std::endl;
     return true;
 }
-bool Ltalk::StartUp::InitNetwork() {
+bool Ltalk::StartUp::RunNetworkModule() {
     EventLoop eventloop;
-    Ltalk::Net net(tcp_port_, thread_num_, &eventloop);
+    Ltalk::Net net(tcp_port_, number_of_thread_, &eventloop);
+    d_cout << "tcp port: " << tcp_port_ << "  number of thread: " << number_of_thread_ << '\n';
+
     net.Start();
-    eventloop.Loop();
+    //eventloop.Loop();
     return true; //net.Listen();
 }
-bool Ltalk::StartUp::InitDatabase() {
+bool Ltalk::StartUp::RunDatabaseModule() {
     return true;
 }
-bool Ltalk::StartUp::InitLog() {
+bool Ltalk::StartUp::RunLoggerModule() {
     return true;
 }
 

@@ -10,7 +10,6 @@
 #include "timer.hh"
 #include "../ltalk.hh"
 
-
 namespace Ltalk {
 class Epoll {
 public:

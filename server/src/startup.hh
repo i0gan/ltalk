@@ -24,12 +24,12 @@ public:
     bool Run();
     bool Stop();
     bool LoadConfig();
-    bool InitNetwork();
-    bool InitDatabase();
-    bool InitLog();
+    bool RunNetworkModule();
+    bool RunDatabaseModule();
+    bool RunLoggerModule();
 
 private:
-    int thread_num_ = 4;
+    int number_of_thread_ = 4;
     int queue_size_ = 65535;
     int tcp_port_ = 8080;
     int udp_port_ = 8000;

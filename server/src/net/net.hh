@@ -14,6 +14,7 @@
 #include "channel.hh"
 #include "eventloop_threadpool.hh"
 #include "util.hh"
+
 #include "../process/http.hh"
 
 namespace Ltalk {
@@ -29,10 +30,10 @@ public:
 
 private:
     int Listen();
-    bool started = false;
-    bool listened = false;
+    bool started_;
+    bool listened_;
     int port_;
-    int thread_number_;
+    int nunber_of_thread_;
     EventLoop *eventloop_;
     int listen_fd;
     SPChannel accept_channel_;

@@ -3,9 +3,12 @@
 #include <time.h>
 #include <errno.h>
 
+#include "../ltalk.hh"
 #include "noncopyable.hh"
 #include "mutex_lock.hh"
-
+/*
+ * Realize the synchronization mechanism through Condition class
+ */
 namespace Ltalk {
 class Condition : Noncopyable {
   public:

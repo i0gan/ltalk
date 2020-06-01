@@ -1,5 +1,6 @@
 #include <memory>
 #include <functional>
+#include <iostream>
 
 #define d_cout std::cout << __FILE__ << " | " << __LINE__ << " -> "
 #define MAX_CONNECTED_FDS_NUM 100000

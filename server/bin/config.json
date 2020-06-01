@@ -2,7 +2,7 @@
     "server" : {
         "tcp port" : "8080",
         "udp port" : "8000",
-        "thread number" : "8",
+        "number of thread" : "8",
         "log path" : "./"
     },
     "database" : {

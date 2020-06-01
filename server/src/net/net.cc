@@ -1,18 +1,21 @@
 #include "net.hh"
 
-Ltalk::Net::Net(int port,int thread_number, EventLoop *eventloop) :
-    started(false),
+Ltalk::Net::Net(int port,int nunber_of_thread, EventLoop *eventloop) :
+    started_(false),
+    listened_(false),
     port_(port),
-    thread_number_(thread_number),
+    nunber_of_thread_(nunber_of_thread),
     eventloop_(eventloop),
     listen_fd(Listen()),
-    accept_channel_(new Channel(eventloop_)) {
+    accept_channel_(new Channel(eventloop_)),
+    up_eventloop_threadpool_(new EventLoopThreadPool(eventloop, nunber_of_thread)) {
 
     if(listen_fd == -1) {
         d_cout << "net init fail\n";
         abort();
     }
 
+    listened_ = true;
     accept_channel_->set_fd(listen_fd);
     Util::IgnoreSigpipe();
     if(!Util::SetFdNonBlocking(listen_fd)) {
@@ -26,7 +29,14 @@ Ltalk::Net::~Net() {
 }
 
 void Ltalk::Net::Start() {
+    d_cout << "started server\n";
+    up_eventloop_threadpool_->Start();
 
+    accept_channel_->set_event(EPOLLIN | EPOLLET);
+    accept_channel_->set_read_handler(std::bind(&Net::HandleNewConnection, this));
+    accept_channel_->set_connect_handler(std::bind(&Net::HandleThisConnection, this));
+    eventloop_->AddToEpoll(accept_channel_, 0);
+    started_ = true;
 
 }
 
@@ -74,7 +84,7 @@ int Ltalk::Net::Listen() {
         perror("listen: ");
         return -1;
     }
-    listened = true;
+
     return listen_fd;
 }
 
@@ -91,6 +101,7 @@ void Ltalk::Net::HandleNewConnection() {
         }
         d_cout << "new connection: " << inet_ntoa(client_sockaddr.sin_addr) << " : " << ntohs(client_sockaddr.sin_port)
                << '\n';
+        // If the number of accept fd is greater than MAX_CONNECTED_FDS_NUM wiil be closed
         if(accept_fd_sum > MAX_CONNECTED_FDS_NUM) {
             close(accept_fd);
             d_cout << "max_connect_fd refuseed connect\n";
@@ -107,4 +118,10 @@ void Ltalk::Net::HandleNewConnection() {
         sp_http->get_sp_channel()->set_holder(sp_http);
         eventloop_->QueueInLoop(std::bind(&Http::NewEvnet, sp_http));
     }
+
+    accept_channel_->set_event(EPOLLIN | EPOLLET);
+}
+
+void Ltalk::Net::HandleThisConnection() {
+    eventloop_->UpdateEpoll(accept_channel_);
 }
