@@ -10,9 +10,9 @@ Suport platform
 * mac os
 * android
 
-## devloping  2 %
+## devloping  2.1 %
 
-* server 1.9 %
+* server 2.0 %
 * linux  0.1 %
 * windows 0.0 %
 * mac os 0.0 %
