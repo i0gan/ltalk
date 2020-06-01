@@ -39,6 +39,7 @@ public:
     __uint32_t get_event();
     __uint32_t get_last_event();
     void UpdateLastEvnet();
+    bool IsLastEvent();
 
 private:
     EventLoop *eventloop_ = nullptr;

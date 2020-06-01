@@ -2,20 +2,22 @@
 
 #include "../ltalk.hh"
 #include "eventloop.hh"
+#include "eventloop_thread.hh"
+
 namespace Ltalk {
 
 class EventLoopThreadPool {
 public:
-    EventLoopThreadPool();
+    EventLoopThreadPool(EventLoop *base_eventloop, int number_of_thread);
     ~EventLoopThreadPool();
     void Start();
     EventLoop *GetNextLoop();
 private:
-    EventLoop eventloop_;
     bool started_;
-    int number_of_thread;
+    EventLoop *base_eventloop_;
+    int number_of_thread_;
     int next_;
-    //std::vector<SPE
     std::vector<EventLoop *> v_eventloops_;
+    std::vector<SPEventLoopThread> v_sp_eventloop_threads_;
 };
 }

@@ -107,3 +107,7 @@ void Ltalk::Channel::UpdateLastEvnet() {
     last_event_ = event_;
 }
 
+bool Ltalk::Channel::IsLastEvent() {
+    return last_event_ == event_;
+}
+

@@ -52,6 +52,17 @@ void *Ltalk::Thread::Run(void *arg) {
     return nullptr;
 }
 
+int Ltalk::Thread::Join() {
+    assert(started_);
+    assert(!joined_);
+    joined_ = true;
+    return pthread_join(pthread_id, nullptr);
+}
+
+bool Ltalk::Thread::IsStarted() {
+    return started_;
+}
+
 Ltalk::ThreadData::ThreadData(const CallBack &func, const std::string &name,
                               pid_t *tid, CountDownLatch *count_down_latch) :
     func_(func),
@@ -75,4 +86,6 @@ void Ltalk::ThreadData::Run() {
     func_(); //run callback funciton
     CurrentThread::name = "finished";
 }
+
+
 

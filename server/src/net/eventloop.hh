@@ -21,8 +21,8 @@ public:
     void AssertInLoopThread();
     void Shutdown(SPChannel sp_channel);
     void RemoveFromEpoll(SPChannel sp_channel);
-    void UpdateEpoll(SPChannel sp_channel, int timeout = 0);
-    void AddToEpoll(SPChannel sp_channel, int timeout = 0);
+    void UpdateEpoll(SPChannel sp_channel, int ms_timeout = 0);
+    void AddToEpoll(SPChannel sp_channel, int ms_timeout = 0);
 private:
     bool looping_;
     int awake_fd_;

@@ -37,11 +37,11 @@ void Ltalk::EventLoop::HandleConnect() {
 
 }
 
-void Ltalk::EventLoop::UpdateEpoll(SPChannel sp_channel, int timeout) {
-    sp_epoll_->Mod(sp_channel, timeout);
+void Ltalk::EventLoop::UpdateEpoll(SPChannel sp_channel, int ms_timeout) {
+    sp_epoll_->Mod(sp_channel, ms_timeout);
 }
-void Ltalk::EventLoop::AddToEpoll(SPChannel sp_channel, int timeout) {
-    sp_epoll_->Add(sp_channel, timeout);
+void Ltalk::EventLoop::AddToEpoll(SPChannel sp_channel, int ms_timeout) {
+    sp_epoll_->Add(sp_channel, ms_timeout);
 }
 
 
@@ -51,4 +51,38 @@ int Ltalk::EventLoop::CreateEventFd() {
 
 void Ltalk::EventLoop::Loop() {
 
+}
+
+void Ltalk::EventLoop::Quit() {
+    quit_ = true;
+    if(IsInLoopThread() == false) {
+        WakeUp();
+    }
+}
+
+void Ltalk::EventLoop::QueueInLoop(CallBack &&func) {
+    MutexLockGuard mutex_lock_guard(mutex_lock_);
+    pending_callbacks_.emplace_back(std::move(func));
+    if(!IsInLoopThread() || calling_pending_callback_)
+        WakeUp();
+}
+
+bool Ltalk::EventLoop::IsInLoopThread() {
+    return thread_id_ == CurrentThread::get_tid();
+}
+
+void Ltalk::EventLoop::RemoveFromEpoll(SPChannel sp_channel) {
+    sp_epoll_->Del(sp_channel);
+}
+
+void Ltalk::EventLoop::WakeUp() {
+    char buf[8];
+    ssize_t write_len = Util::WriteData(awake_fd_, buf, sizeof (buf));
+    if(write_len != sizeof (buf)) {
+        d_cout << "eventloop::wakeup write:" << write_len << " instead of 8\n";
+    }
+}
+
+void Ltalk::EventLoop::AssertInLoopThread() {
+    assert(IsInLoopThread());
 }

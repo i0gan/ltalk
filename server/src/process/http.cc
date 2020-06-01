@@ -46,6 +46,10 @@ Ltalk::Http::Http(int fd,EventLoop *eventloop) :
     sp_channel_->set_connect_handler(std::bind(&Http::HandleConnect, this));
 
 }
+Ltalk::Http::~Http() {
+    close(fd_);
+}
+
 void Ltalk::Http::Reset() {
     file_name_.clear();
     path_.clear();
@@ -59,11 +63,20 @@ void Ltalk::Http::Reset() {
 }
 
 void Ltalk::Http::HandleClose() {
+    http_connection_state_ = HttpConnectionState::DISCONNECTED;
+    eventloop_->RemoveFromEpoll(sp_channel_);
+}
+
+void Ltalk::Http::NewEvnet() {
 
 }
 
 void Ltalk::Http::LinkTimer(SPNetTimer sp_net_timer) {
     wp_net_timer_ = sp_net_timer;
+}
+
+SPChannel Ltalk::Http::get_sp_channel() {
+    return sp_channel_;
 }
 
 void Ltalk::Http::UnlinkTimer() {

@@ -26,7 +26,7 @@ Ltalk::Net::~Net() {
 }
 
 void Ltalk::Net::Start() {
-    //up_eventloop_threadpool_->start();
+
 
 }
 
@@ -99,9 +99,12 @@ void Ltalk::Net::HandleNewConnection() {
         if(!Util::SetFdNonBlocking(accept_fd)) {
             d_cout << "SetFdNonBlocking error\n";
         }
+
         //set as no delay
         Util::SetFdNoDelay(accept_fd);
-        //SPHttp sp_http(new Http());
-
+        // add event to deal with
+        SPHttp sp_http(new Ltalk::Http(accept_fd, eventloop_));
+        sp_http->get_sp_channel()->set_holder(sp_http);
+        eventloop_->QueueInLoop(std::bind(&Http::NewEvnet, sp_http));
     }
 }

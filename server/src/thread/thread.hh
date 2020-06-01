@@ -12,9 +12,7 @@
 #include "count_down_latch.hh"
 #include "../ltalk.hh"
 
-
 namespace Ltalk {
-
 namespace CurrentThread {
 extern __thread pid_t  tid;
 extern __thread char string[32];
@@ -22,7 +20,7 @@ extern __thread int string_length;
 extern __thread const char *name;
 inline void CacheTid() {
     if(CurrentThread::tid == 0) {
-       CurrentThread::tid = ::syscall(SYS_gettid);
+       CurrentThread::tid = ::syscall(SYS_gettid);  //get real trhead id
        CurrentThread::string_length = snprintf(CurrentThread::string, sizeof (CurrentThread::string),
                                                "%5d ", CurrentThread::tid);
     }
