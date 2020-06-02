@@ -10,6 +10,7 @@ HEADERS += \
     \
     json/json.hpp\
     process/http.hh \
+    process/center.hh \
     \
     net/epoll.hh \
     net/net.hh \
@@ -36,6 +37,7 @@ SOURCES += \
     db/redis/redis.cc \
     \
     process/http.cc \
+    process/center.cc \
     \
     net/epoll.cc \
     net/net.cc \

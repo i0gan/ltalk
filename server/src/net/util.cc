@@ -23,11 +23,8 @@ ssize_t Ltalk::Util::ReadData(int fd, void *buffer, size_t length) {
 
     return read_sum;
 }
-ssize_t Ltalk::Util::ReadData(int fd, std::string &in_buffer) {
-    return 1;
-}
 
-ssize_t Ltalk::Util::ReadData(int fd, std::string &in_buffer, bool &is_zero) {
+ssize_t Ltalk::Util::ReadData(int fd, std::string &in_buffer) {
     ssize_t read_len = 0;
     ssize_t read_sum = 0;
     in_buffer.clear();
@@ -42,8 +39,8 @@ ssize_t Ltalk::Util::ReadData(int fd, std::string &in_buffer, bool &is_zero) {
             else
                 return -1;
         } else if (read_len == 0) {
-            is_zero = true;
-            break;
+            in_buffer.clear();
+            return 0;
         }
         read_sum += read_len;
         in_buffer += std::string(buffer, buffer + read_len);

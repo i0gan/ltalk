@@ -7,6 +7,8 @@
 #define MAX_CONNECTED_FDS_NUM 100000
 #define EPOLL_MAX_EVENT_NUM  4096
 #define EPOLL_WAIT_TIME 10000
+#define MAX_BUF_SIZE 4096
+
 
 namespace Ltalk {
 class StartUp;

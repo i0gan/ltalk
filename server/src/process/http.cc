@@ -105,10 +105,11 @@ Ltalk::Http::Http(int fd,EventLoop *eventloop) :
     eventloop_(eventloop),
     sp_channel_(new Channel(eventloop, fd)),
     http_connection_state_(HttpConnectionState::CONNECTED),
-    http_method_(HttpMethod::GET),
-    http_version_(HttpVersion::V_1_0),
     http_process_state_(HttpProcessState::PARSE_URI),
     http_parse_header_state_(HttpParseHeaderState::START),
+    http_method_(HttpMethod::GET),
+    http_version_(HttpVersion::V_1_0),
+
     keep_alive_(false) {
 
     //set callback function handler
@@ -167,12 +168,43 @@ void Ltalk::Http::UnlinkTimer() {
 }
 void Ltalk::Http::HandleRead() {
     __uint32_t &event = sp_channel_->get_event();
+    HandleError(HttpResponseCode::BAD_REQUEST, "Bad Request");
     do {
-        bool is_zero = false;
-        int read_len = Util::ReadData(fd_, in_buffer_, is_zero);
+        int read_len = Util::ReadData(fd_, in_buffer_);
         //d_cout << "Request: \n" << in_buffer_;
 
+        //if state as disconnecting will clean th in buffer
+        if(http_connection_state_ == HttpConnectionState::DISCONNECTING) {
+            in_buffer_.clear();
+            break;
+        }
+        if(read_len == 0) {
+            http_connection_state_ = HttpConnectionState::DISCONNECTING;
+            break;
+        }else if(read_len < 0) { // Read data error
+            perror("ReadData ");
+            error_ = true;
+            HandleError(HttpResponseCode::BAD_REQUEST, "Bad Request");
+        }
+
+        if(http_process_state_ == HttpProcessState::PARSE_URI) {
+            HttpParseURIResult http_parse_uri_result = this->ParseURI();
+            if(http_parse_uri_result == HttpParseURIResult::AGAIN)
+                break;
+            else if(http_parse_uri_result == HttpParseURIResult::ERROR) {
+                perror("ParseURI ");
+                error_ = true;
+                HandleError(HttpResponseCode::BAD_REQUEST, "Bad Request");
+            }
+        }
+
+
     } while(false);
+}
+
+Ltalk::HttpParseURIResult Ltalk::Http::ParseURI() {
+
+    return HttpParseURIResult::SUCCESS;
 }
 
 void Ltalk::Http::HandleWrite() {
@@ -214,6 +246,21 @@ void Ltalk::Http::HandleConnect() {
     }
 }
 
-void Ltalk::Http::HandleError() {
+void Ltalk::Http::HandleError(HttpResponseCode error_number, std::string message) {
+    message = " " + message;
+    std::string header_buffer, body_buffer;
+    body_buffer += "<html><title>Bad request</title>";
+    body_buffer += "<body bgcolor=\"dead00\">";
+    body_buffer += std::to_string(static_cast<int>(error_number)) + message;
+    body_buffer += "<hr><em> Linux x64 LYXF Ltalk Server </em>\n</body></html>";
 
+    header_buffer += "HTTP/1.1 " + std::to_string(static_cast<int>(error_number)) + message + "\r\n";
+    header_buffer += "Content-Type: text/html\r\n";
+    header_buffer += "Connection: Close\r\n";
+    header_buffer += "Content-Length: " + std::to_string(body_buffer.size()) + "\r\n";
+    header_buffer += "Server: Linux x64 LYXF Ltalk Server\r\n";
+    header_buffer += "\r\n";
+
+    Util::WriteData(fd_, header_buffer);
+    Util::WriteData(fd_, body_buffer);
 }

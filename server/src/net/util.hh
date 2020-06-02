@@ -8,17 +8,18 @@
 #include <sys/socket.h>
 #include <netinet/in.h>
 #include <netinet/tcp.h>
+#include "../ltalk.hh"
+
 /*
  * This file is static function set
  *
 */
-#define MAX_BUF_SIZE 4096
+
 namespace Ltalk {
 namespace Util {
 
 ssize_t ReadData(int fd, void *buffer, size_t length);
 ssize_t ReadData(int fd, std::string &in_buffer);
-ssize_t ReadData(int fd, std::string &in_buffer, bool &is_zero);
 
 ssize_t WriteData(int fd, void *buffer, size_t length);
 ssize_t WriteData(int fd, std::string &out_buffer);

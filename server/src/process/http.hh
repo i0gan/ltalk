@@ -66,6 +66,54 @@ enum class HttpVersion {
     V_1_1
 };
 
+enum class HttpResponseCode {
+    OK = 200,
+    CREATED,
+    ACCEPTED,
+    NON_AUTHORITATIVE_INFORMATION,
+    NO_CONTENT,
+    RESET_CONTENT,
+    PARTIAL_CONTENT,
+
+    MULTIPLE_CHOICES = 300,
+    MOVED_PERMANENTLY,
+    FOUND,
+    SEE_OTHER,
+    NOT_MODIFIED,
+    USE_PROXY,
+    SWITCH_PROXY,
+    TEMPORARY_REDIRCT,
+    RESUME_INCOMPLETE,
+
+    BAD_REQUEST = 400,
+    UNAUTHORIZED,
+    PAYMENT_REAUIRED,
+    FORBIDDEN,
+    NOT_FOUND,
+    METHOD_NOT_ALLOWED,
+    NOT_ACCEPTABLE,
+    PROXY_AUTHENTICATION_REQUIRED,
+    REQUEST_TIMEOUT,
+    CONFLICT,
+    GONE,
+    LENGTH_REQUIRED,
+    PRECONDITION_FAILED,
+    REQUEST_ENTITY_TOO_LARGE,
+    REQUEST_URI_TOO_LONG,
+    UNSUPPORTED_MEDIA_TYPE,
+    REQUESTED_RANGE_NOT_SATISFIABLE,
+    EXPECTATION_FAILED,
+
+    INTERNAL_SERVER_ERROR = 500,
+    NOT_IMPLEMENTED,
+    BAD_GATEWAY,
+    SERVICE_UNAVAILABLE,
+    GATEWAY_TIMEOUT,
+    HTTP_VERSION_NOT_SUPPORTED,
+    NETWORK_AUTHENTICATION_REQUIRED
+};
+
+
 class HttpContentType {
 public:
     static std::string GetType(const std::string name);
@@ -96,13 +144,11 @@ private:
     std::string out_buffer_;
     bool error_;
     HttpConnectionState http_connection_state_;
-    HttpMethod http_method_;
-    HttpVersion http_version_;
     HttpProcessState http_process_state_;
     HttpParseHeaderState http_parse_header_state_;
-    HttpParseURIResult http_parse_uri_result_;
-    HttpParseHeaderResult http_parse_header_result_;
-    HttpAnalysisResult http_analysis_result_;
+    HttpMethod http_method_;
+    HttpVersion http_version_;
+
 
     bool keep_alive_;
     std::string file_name_;
@@ -114,6 +160,7 @@ private:
     void HandleRead();
     void HandleWrite();
     void HandleConnect();
-    void HandleError();
+    void HandleError(HttpResponseCode error_number, std::string message);
+    HttpParseURIResult ParseURI();
 };
 }
