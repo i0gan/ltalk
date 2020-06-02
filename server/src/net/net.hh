@@ -20,20 +20,18 @@
 namespace Ltalk {
 class Net final{
 public:
-    Net(int port,int thread_number, EventLoop *eventloop);
+    Net(int port,int thread_number);
     ~Net();
     void Start();
-    EventLoop * get_eventloop();
-    void set_eventloop(EventLoop *eventloop);
     void HandleNewConnection();
     void HandleThisConnection();
 
 private:
-    int Listen();
-    bool started_;
-    bool listened_;
-    int port_;
-    int nunber_of_thread_;
+    int Listen();    // Bind port_ and listen
+    bool started_;   // Store state of net if started
+    bool listened_;  // Store state of net if listend
+    int port_;       // Listen port
+    int number_of_thread_; // The number of thread
     EventLoop *base_eventloop_;
     int listen_fd;
     SPChannel accept_channel_;

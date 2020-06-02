@@ -113,8 +113,7 @@ bool Ltalk::StartUp::LoadConfig() {
     return true;
 }
 bool Ltalk::StartUp::RunNetworkModule() {
-    EventLoop base_eventloop;
-    Ltalk::Net net(tcp_port_, number_of_thread_, &base_eventloop);
+    Ltalk::Net net(tcp_port_, number_of_thread_);
     d_cout << "tcp port: " << tcp_port_ << "  number of thread: " << number_of_thread_ << '\n';
     net.Start();
 

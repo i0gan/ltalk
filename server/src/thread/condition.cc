@@ -1,4 +1,5 @@
 #include "condition.hh"
+
 Ltalk::Condition::Condition(MutexLock &mutex_lock) : mutex_(mutex_lock) {
     pthread_cond_init(&cond_, nullptr);
 }

@@ -1,14 +1,14 @@
 #include "net.hh"
 
-Ltalk::Net::Net(int port,int nunber_of_thread, EventLoop *base_eventloop) :
+Ltalk::Net::Net(int port,int number_of_thread) :
     started_(false),
     listened_(false),
     port_(port),
-    nunber_of_thread_(nunber_of_thread),
-    base_eventloop_(base_eventloop),
+    number_of_thread_(number_of_thread),
+    base_eventloop_(new EventLoop()),
     listen_fd(Listen()),
-    accept_channel_(new Channel(base_eventloop)),
-    up_eventloop_threadpool_(new EventLoopThreadPool(base_eventloop, nunber_of_thread)) {
+    accept_channel_(new Channel(base_eventloop_)),
+    up_eventloop_threadpool_(new EventLoopThreadPool(base_eventloop_, number_of_thread)) {
 
     if(listen_fd == -1) {
         d_cout << "net init fail\n";
@@ -39,14 +39,6 @@ void Ltalk::Net::Start() {
     started_ = true;
     base_eventloop_->Loop();
 
-}
-
-Ltalk::EventLoop *Ltalk::Net::get_eventloop() {
-    return base_eventloop_;
-}
-
-void Ltalk::Net::set_eventloop(EventLoop *eventloop) {
-    base_eventloop_ = eventloop;
 }
 
 int Ltalk::Net::Listen() {
@@ -90,25 +82,22 @@ int Ltalk::Net::Listen() {
 }
 
 void Ltalk::Net::HandleNewConnection() {
+    d_cout << "handle new connection";
     struct sockaddr_in client_sockaddr;
     bzero(&client_sockaddr, sizeof (client_sockaddr));
     socklen_t client_sockaddr_len = sizeof (client_sockaddr);
     int accept_fd = 0;
-    while((accept_fd = accept(listen_fd, (struct sockaddr *)&client_sockaddr, &client_sockaddr_len))) {
+    while((accept_fd = accept(listen_fd, (struct sockaddr *)&client_sockaddr, &client_sockaddr_len)) > 0) {
 
-        if(accept_fd == -1) {
-            perror("accept: ");
-            break;
-        }
-        d_cout << "new connection: " << inet_ntoa(client_sockaddr.sin_addr) << " : " << ntohs(client_sockaddr.sin_port)
-               << '\n';
+        //d_cout << "new connection: " << inet_ntoa(client_sockaddr.sin_addr) << " : " << ntohs(client_sockaddr.sin_port)
+         //      << '\n';
+
         // If the number of accept fd is greater than MAX_CONNECTED_FDS_NUM wiil be closed
         if(accept_fd_sum > MAX_CONNECTED_FDS_NUM) {
             close(accept_fd);
-            d_cout << "max_connect_fd refuseed connect\n";
+            d_cout << "max_connect_fd refused to connect\n";
             continue;
         }
-
         if(!Util::SetFdNonBlocking(accept_fd)) {
             d_cout << "SetFdNonBlocking error\n";
         }

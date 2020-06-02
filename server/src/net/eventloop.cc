@@ -40,6 +40,7 @@ void Ltalk::EventLoop::HandleConnect() {
 void Ltalk::EventLoop::UpdateEpoll(SPChannel sp_channel, int ms_timeout) {
     sp_epoll_->Mod(sp_channel, ms_timeout);
 }
+
 void Ltalk::EventLoop::AddToEpoll(SPChannel sp_channel, int ms_timeout) {
     sp_epoll_->Add(sp_channel, ms_timeout);
 }
@@ -74,6 +75,12 @@ void Ltalk::EventLoop::Quit() {
     if(IsInLoopThread() == false) {
         WakeUp();
     }
+}
+void Ltalk::EventLoop::RunInLoop(CallBack &&func) {
+    if(IsInLoopThread())
+        func();
+    else
+        QueueInLoop(std::move(func));
 }
 
 void Ltalk::EventLoop::QueueInLoop(CallBack &&func) {

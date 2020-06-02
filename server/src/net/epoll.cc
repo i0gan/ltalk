@@ -36,6 +36,7 @@ void Ltalk::Epoll::Mod(SPChannel sp_channel, int ms_timeout) {
     int fd = sp_channel->get_fd();
     //If is not last event will be modified
     if(sp_channel->IsLastEvent() == false) {
+        sp_channel->UpdateLastEvnet(); // update last event
         struct epoll_event event;
         event.data.fd = fd;
         event.events = sp_channel->get_event();
@@ -43,7 +44,6 @@ void Ltalk::Epoll::Mod(SPChannel sp_channel, int ms_timeout) {
             perror("epoll_ctrl [EPOLL_CTL_MOD] ");
             sp_channels_[fd].reset();
         }
-        sp_channel->UpdateLastEvnet(); // update last event
     }
 }
 
