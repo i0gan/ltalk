@@ -33,11 +33,11 @@ private:
     SPEpoll sp_epoll_;
     SPChannel sp_awake_channel_;
     mutable MutexLock mutex_lock_;
-    std::vector<CallBack> pending_callbacks_;
-    bool calling_pending_callback_;
+    std::vector<CallBack> pending_callback_functions_;
+    bool calling_pending_callback_function_;
 
     void WakeUp(); //for write one byte to client
-    void RunPendingCallBack();
+    void RunPendingCallBackFunc();
     void HandleRead();
     void HandleConnect();
 };

@@ -50,7 +50,23 @@ int Ltalk::EventLoop::CreateEventFd() {
 }
 
 void Ltalk::EventLoop::Loop() {
+    assert(looping_ == false);
+    assert(IsInLoopThread());
+    looping_ = true;
+    quit_ = false;
+    std::vector<SPChannel> v_sp_event_channels;
+    while(!quit_) {
+        v_sp_event_channels.clear();
+        v_sp_event_channels = sp_epoll_->GetAllEventChannels(); // get all event
 
+        event_handling_ = true;
+        for (auto &sp_channel : v_sp_event_channels) {
+            sp_channel->HandleEvent(); // Handel event
+        }
+        event_handling_  = false;
+        RunPendingCallBackFunc(); // Run pending callback function
+        //sp_epoll
+    }
 }
 
 void Ltalk::EventLoop::Quit() {
@@ -62,8 +78,8 @@ void Ltalk::EventLoop::Quit() {
 
 void Ltalk::EventLoop::QueueInLoop(CallBack &&func) {
     MutexLockGuard mutex_lock_guard(mutex_lock_);
-    pending_callbacks_.emplace_back(std::move(func));
-    if(!IsInLoopThread() || calling_pending_callback_)
+    pending_callback_functions_.emplace_back(std::move(func));
+    if(!IsInLoopThread() || calling_pending_callback_function_)
         WakeUp();
 }
 
@@ -81,6 +97,19 @@ void Ltalk::EventLoop::WakeUp() {
     if(write_len != sizeof (buf)) {
         d_cout << "eventloop::wakeup write:" << write_len << " instead of 8\n";
     }
+}
+
+void Ltalk::EventLoop::RunPendingCallBackFunc() {
+    std::vector<CallBack> v_callback_functions;
+    calling_pending_callback_function_ = true;
+    MutexLockGuard mutex_lock_guard(mutex_lock_);
+
+    //Calling all functions in pending vecotr
+    v_callback_functions.swap(pending_callback_functions_);
+    for( size_t idx = 0; idx < v_callback_functions.size(); ++idx) {
+        v_callback_functions[idx]();
+    }
+    calling_pending_callback_function_ = false;
 }
 
 void Ltalk::EventLoop::AssertInLoopThread() {

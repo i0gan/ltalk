@@ -1,9 +1,9 @@
 ﻿#include "thread.hh"
 
-__thread pid_t  Ltalk::CurrentThread::tid;
-__thread char Ltalk::CurrentThread::string[32];
-__thread int Ltalk::CurrentThread::string_length;
-__thread const char *Ltalk::CurrentThread::name;
+__thread pid_t  Ltalk::CurrentThread::tid = 0;
+__thread char Ltalk::CurrentThread::string[32] = {0};
+__thread int Ltalk::CurrentThread::string_length = 0;
+__thread const char *Ltalk::CurrentThread::name = nullptr;
 
 
 
@@ -36,7 +36,7 @@ void Ltalk::Thread::Start() {
     assert(!started_); // if started will assert
     started_ = true;
     ThreadData *thread_data = new ThreadData(func_, name_, &tid_, &count_down_latch_);
-    if(pthread_create(&pthread_id, nullptr, &Run, thread_data)) {
+    if(pthread_create(&pthread_id, nullptr, &Thread::Run, thread_data)) {
         started_ = false;
         delete thread_data;
     }else {
@@ -76,6 +76,7 @@ Ltalk::ThreadData::~ThreadData() {
 }
 
 void Ltalk::ThreadData::Run() {
+
     *tid_ = CurrentThread::get_tid();
     count_down_latch_->CountDown();
 

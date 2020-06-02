@@ -4,7 +4,9 @@
 
 #define d_cout std::cout << __FILE__ << " | " << __LINE__ << " -> "
 #define MAX_CONNECTED_FDS_NUM 100000
-#define MAX_EVENT_NUM  4096
+#define EPOLL_MAX_EVENT_NUM  4096
+#define EPOLL_WAIT_TIME 10000
+
 namespace Ltalk {
 class StartUp;
 

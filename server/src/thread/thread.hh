@@ -18,20 +18,17 @@ extern __thread pid_t  tid;
 extern __thread char string[32];
 extern __thread int string_length;
 extern __thread const char *name;
-inline void CacheTid() {
-    if(CurrentThread::tid == 0) {
-       CurrentThread::tid = ::syscall(SYS_gettid);  //get real trhead id
-       CurrentThread::string_length = snprintf(CurrentThread::string, sizeof (CurrentThread::string),
-                                               "%5d ", CurrentThread::tid);
-    }
-}
 
 inline pid_t get_tid() {
 /* #define likely(x) __builtin_expect(!!(x), 1)   //x likely as true
  * #define unlikely(x) __builtin_expect(!!(x), 0) //x likely as false
  */
     if(__builtin_expect(CurrentThread::tid == 0, 0)) {
-        CurrentThread::CacheTid();
+
+        CurrentThread::tid = ::syscall(SYS_gettid);  //get real trhead id
+        CurrentThread::string_length = snprintf(CurrentThread::string, sizeof (CurrentThread::string),
+                                                "%5d ", CurrentThread::tid);
+        d_cout << "get tid as: " << CurrentThread::tid << '\n';
     }
     return CurrentThread::tid;
 }
