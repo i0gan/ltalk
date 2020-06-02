@@ -95,7 +95,7 @@ void Ltalk::Channel::set_connect_handler(CallBack  &&connect_handler) {
 }
 
 
-__uint32_t Ltalk::Channel::get_event() {
+__uint32_t &Ltalk::Channel::get_event() {
     return event_;
 }
 

@@ -25,7 +25,6 @@ EventLoop *Ltalk::EventLoopThread::StartLoop() {
     while(eventloop_ == nullptr)
         condition_.Wait();
 
-    d_cout << "start thread ok! \n";
     // return a new eventloop object ptr
     return eventloop_;
 }
@@ -34,8 +33,8 @@ void Ltalk::EventLoopThread::ThreadFunc() {
     // create a new eventloop
     EventLoop eventloop;
     eventloop_ = &eventloop;
-    condition_.Notify(); // Sync
-
+    condition_.Notify(); // Notify Main thread then realize Sync
+    d_cout << "start thread ok! \n";
     eventloop_->Loop(); //run event
     eventloop_ = nullptr;
 }

@@ -2,71 +2,94 @@
 
 ssize_t Ltalk::Util::ReadData(int fd, void *buf, size_t len) {
     ssize_t read_left = len;
-    ssize_t read_num = 0;
+    ssize_t read_len = 0;
     ssize_t read_sum = 0;
     char *read_ptr = static_cast<char *>(buf);
     while(read_left > 0) {
-        if((read_num = read(fd, read_ptr, MAX_BUF_SIZE)) < 0) {
+        if((read_len = read(fd, read_ptr, MAX_BUF_SIZE)) < 0) {
             if(errno == EINTR)
                 continue;
-            else if(errno == EAGAIN) {
+            else if(errno == EAGAIN)
                 return read_sum;
-            }else {
+            else
                 return -1;
-            }
-        } else if (read_num == 0) {
+        } else if (read_len == 0) {
             break;
         }
-        read_sum += read_num;
-        read_left -= read_num;
-        read_ptr += read_num;
+        read_sum += read_len;
+        read_left -= read_len;
+        read_ptr += read_len;
     }
 
     return read_sum;
 }
-//ssize_t Ltalk::Util::ReadData(int fd, std::string &buf) {
-//    return 1;
-//}
+ssize_t Ltalk::Util::ReadData(int fd, std::string &in_buffer) {
+    return 1;
+}
+
+ssize_t Ltalk::Util::ReadData(int fd, std::string &in_buffer, bool &is_zero) {
+    ssize_t read_len = 0;
+    ssize_t read_sum = 0;
+    in_buffer.clear();
+    char buffer[MAX_BUF_SIZE];
+
+    while(true) {
+        if((read_len = read(fd, buffer, MAX_BUF_SIZE)) < 0) {
+            if(errno == EINTR)
+                continue;
+            else if (errno == EAGAIN)
+                return read_sum;
+            else
+                return -1;
+        } else if (read_len == 0) {
+            is_zero = true;
+            break;
+        }
+        read_sum += read_len;
+        in_buffer += std::string(buffer, buffer + read_len);
+    }
+    return read_sum;
+}
 ssize_t Ltalk::Util::WriteData(int fd, void *buf, size_t len) {
     ssize_t write_left = len;
-    ssize_t write_num = 0;
+    ssize_t write_len = 0;
     ssize_t write_sum = 0;
     char *write_ptr = static_cast<char *>(buf);
     while(write_left > 0) {
-        if((write_num = write(fd, write_ptr, write_left)) < 0) {
+        if((write_len = write(fd, write_ptr, write_left)) < 0) {
             if(errno == EINTR)
                 continue;
             else if(errno == EAGAIN) {
-                return write_num;
+                return write_sum;
             }else {
                 return -1;
             }
         }
-        write_sum += write_num;
-        write_left -= write_num;
-        write_ptr += write_num;
+        write_sum += write_len;
+        write_left -= write_len;
+        write_ptr += write_len;
     }
 
     return write_sum;
 }
-ssize_t Ltalk::Util::WriteData(int fd, std::string &buf) {
-    ssize_t write_left = buf.size();
-    ssize_t write_num = 0;
+ssize_t Ltalk::Util::WriteData(int fd, std::string &out_buffer) {
+    ssize_t write_left = out_buffer.size();
+    ssize_t write_len = 0;
     ssize_t write_sum = 0;
-    char *write_ptr = const_cast<char *>(buf.c_str());
+    char *write_ptr = const_cast<char *>(out_buffer.c_str());
     while(write_left > 0) {
-        if((write_num = write(fd, write_ptr, write_left)) < 0) {
+        if((write_len = write(fd, write_ptr, write_left)) < 0) {
             if(errno == EINTR)
                 continue;
             else if(errno == EAGAIN) {
-                return write_num;
+                return write_sum;
             }else {
                 return -1;
             }
         }
-        write_sum += write_num;
-        write_left -= write_num;
-        write_ptr += write_num;
+        write_sum += write_len;
+        write_left -= write_len;
+        write_ptr += write_len;
     }
 
     return write_sum;

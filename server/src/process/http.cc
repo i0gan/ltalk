@@ -94,7 +94,13 @@ void Ltalk::Http::UnlinkTimer() {
     }
 }
 void Ltalk::Http::HandleRead() {
+    __uint32_t &events_ = sp_channel_->get_event();
+    do {
+        bool is_zero = false;
+        int read_len = Util::ReadData(fd_, in_buffer_, is_zero);
+        d_cout << "Request: \n" << in_buffer_;
 
+    } while(false);
 }
 
 void Ltalk::Http::HandleWrite() {

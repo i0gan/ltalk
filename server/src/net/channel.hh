@@ -36,7 +36,7 @@ public:
     void set_write_handler(CallBack &&write_handler);
     void set_error_handler(CallBack &&error_handler);
     void set_connect_handler(CallBack &&connect_handler);
-    __uint32_t get_event();
+    __uint32_t &get_event();
     __uint32_t get_last_event();
     void UpdateLastEvnet();
     bool IsLastEvent();
