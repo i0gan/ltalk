@@ -34,7 +34,7 @@ private:
     bool listened_;
     int port_;
     int nunber_of_thread_;
-    EventLoop *eventloop_;
+    EventLoop *base_eventloop_;
     int listen_fd;
     SPChannel accept_channel_;
     std::unique_ptr<EventLoopThreadPool> up_eventloop_threadpool_;

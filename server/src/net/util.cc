@@ -6,7 +6,7 @@ ssize_t Ltalk::Util::ReadData(int fd, void *buf, size_t len) {
     ssize_t read_sum = 0;
     char *read_ptr = static_cast<char *>(buf);
     while(read_left > 0) {
-        if((read_num = read(fd, buf, MAX_BUF_SIZE)) < 0) {
+        if((read_num = read(fd, read_ptr, MAX_BUF_SIZE)) < 0) {
             if(errno == EINTR)
                 continue;
             else if(errno == EAGAIN) {
@@ -21,16 +21,55 @@ ssize_t Ltalk::Util::ReadData(int fd, void *buf, size_t len) {
         read_left -= read_num;
         read_ptr += read_num;
     }
+
     return read_sum;
 }
 //ssize_t Ltalk::Util::ReadData(int fd, std::string &buf) {
 //    return 1;
 //}
-ssize_t Ltalk::Util::WriteData(int fd, void *buf, size_t n) {
-    return 1;
+ssize_t Ltalk::Util::WriteData(int fd, void *buf, size_t len) {
+    ssize_t write_left = len;
+    ssize_t write_num = 0;
+    ssize_t write_sum = 0;
+    char *write_ptr = static_cast<char *>(buf);
+    while(write_left > 0) {
+        if((write_num = write(fd, write_ptr, write_left)) < 0) {
+            if(errno == EINTR)
+                continue;
+            else if(errno == EAGAIN) {
+                return write_num;
+            }else {
+                return -1;
+            }
+        }
+        write_sum += write_num;
+        write_left -= write_num;
+        write_ptr += write_num;
+    }
+
+    return write_sum;
 }
 ssize_t Ltalk::Util::WriteData(int fd, std::string &buf) {
-    return 1;
+    ssize_t write_left = buf.size();
+    ssize_t write_num = 0;
+    ssize_t write_sum = 0;
+    char *write_ptr = const_cast<char *>(buf.c_str());
+    while(write_left > 0) {
+        if((write_num = write(fd, write_ptr, write_left)) < 0) {
+            if(errno == EINTR)
+                continue;
+            else if(errno == EAGAIN) {
+                return write_num;
+            }else {
+                return -1;
+            }
+        }
+        write_sum += write_num;
+        write_left -= write_num;
+        write_ptr += write_num;
+    }
+
+    return write_sum;
 }
 
 void Ltalk::Util::IgnoreSigpipe() {
@@ -57,4 +96,14 @@ bool Ltalk::Util::SetFdNonBlocking(int listen_fd) {
 void Ltalk::Util::SetFdNoDelay(int fd) {
     int enable = 1;
     setsockopt(fd, IPPROTO_TCP, TCP_NODELAY, (void *)&enable, sizeof (enable));
+}
+void Ltalk::Util::SetFdNoLinger(int fd) {
+    struct linger linger_s;
+    linger_s.l_onoff = 1;
+    linger_s.l_linger = 30;
+    setsockopt(fd, SOL_SOCKET, SO_LINGER, &linger_s, sizeof (linger_s));
+
+}
+void Ltalk::Util::ShutDownWriteFd(int fd) {
+    shutdown(fd, SHUT_WR);
 }

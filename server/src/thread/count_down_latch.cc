@@ -1,6 +1,7 @@
 #include "count_down_latch.hh"
 
-Ltalk::CountDownLatch::CountDownLatch(int count) : count_(count), mutex_(), condition_(mutex_) {
+Ltalk::CountDownLatch::CountDownLatch(int count) :
+    count_(count), mutex_(), condition_(mutex_) {
 
 }
 

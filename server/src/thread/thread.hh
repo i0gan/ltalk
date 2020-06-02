@@ -28,7 +28,6 @@ inline pid_t get_tid() {
         CurrentThread::tid = ::syscall(SYS_gettid);  //get real trhead id
         CurrentThread::string_length = snprintf(CurrentThread::string, sizeof (CurrentThread::string),
                                                 "%5d ", CurrentThread::tid);
-        d_cout << "get tid as: " << CurrentThread::tid << '\n';
     }
     return CurrentThread::tid;
 }

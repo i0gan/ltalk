@@ -9,6 +9,7 @@
 /*
  * Realize the synchronization mechanism through Condition class
  */
+
 namespace Ltalk {
 class Condition : Noncopyable {
   public:

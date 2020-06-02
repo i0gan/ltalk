@@ -3,6 +3,10 @@
 std::unordered_map<std::string, std::string> HttpContentType::umap_type_;
 pthread_once_t HttpContentType::once_control_;
 
+const __uint32_t EPOLL_DEFAULT_EVENT = EPOLLIN | EPOLLET | EPOLLONESHOT;
+const int DEFAULT_EXPIRED_TIME = 2000;              //ms
+const int DEFAULT_KEEP_ALIVE_TIME = 5 * 60 * 1000;  //ms
+
 void Ltalk::HttpContentType::Init() {
     //init http content type
     HttpContentType::umap_type_[".html"] = "text/html";
@@ -69,6 +73,9 @@ void Ltalk::Http::HandleClose() {
 
 void Ltalk::Http::NewEvnet() {
 
+    std::cout << "new ....@_@\n";
+    sp_channel_->set_event(EPOLL_DEFAULT_EVENT);
+    eventloop_->AddToEpoll(sp_channel_, DEFAULT_EXPIRED_TIME);
 }
 
 void Ltalk::Http::LinkTimer(SPNetTimer sp_net_timer) {

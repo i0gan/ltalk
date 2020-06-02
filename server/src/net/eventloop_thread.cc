@@ -19,7 +19,6 @@ Ltalk::EventLoopThread::~EventLoopThread() {
 EventLoop *Ltalk::EventLoopThread::StartLoop() {
     assert(thread_.IsStarted() == false);
     thread_.Start();
-    d_cout << "start thread: \n";
 
     //Waiting for run
     MutexLockGuard mutex_lock_guard(mutex_lock_);
@@ -34,7 +33,6 @@ EventLoop *Ltalk::EventLoopThread::StartLoop() {
 void Ltalk::EventLoopThread::ThreadFunc() {
     // create a new eventloop
     EventLoop eventloop;
-    d_cout << "ThreadFunc OK\n";
     eventloop_ = &eventloop;
     condition_.Notify(); // Sync
 

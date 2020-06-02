@@ -113,13 +113,12 @@ bool Ltalk::StartUp::LoadConfig() {
     return true;
 }
 bool Ltalk::StartUp::RunNetworkModule() {
-    EventLoop eventloop;
-    Ltalk::Net net(tcp_port_, number_of_thread_, &eventloop);
+    EventLoop base_eventloop;
+    Ltalk::Net net(tcp_port_, number_of_thread_, &base_eventloop);
     d_cout << "tcp port: " << tcp_port_ << "  number of thread: " << number_of_thread_ << '\n';
-
     net.Start();
-    //eventloop.Loop();
-    return true; //net.Listen();
+
+    return true;
 }
 bool Ltalk::StartUp::RunDatabaseModule() {
     return true;
