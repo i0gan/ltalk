@@ -1,7 +1,7 @@
-# Ltalk 
+# Ltalk ( very simple )
 
 
-Ltalk is a very simple aross platform internet message software
+ Ltalk is a very simple instant messaging software, the pursuit of small practical and learning 
 
 Suport platform
 
@@ -10,9 +10,19 @@ Suport platform
 * mac os
 * android
 
-## devloping  2.1 %
 
-* server 2.0 %
+
+## Brief introduction
+
+HTTP is used as the transport protocol, C + + is used as the language for server development. The epoll et model is used to achieve high concurrency, and JSON is used as the interaction protocol
+
+
+
+
+
+## devloping  2.3 %
+
+* server 2.2 %
 * linux  0.1 %
 * windows 0.0 %
 * mac os 0.0 %

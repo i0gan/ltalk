@@ -1,13 +1,17 @@
-#include <QCoreApplication>
+#include "center.h"
+
 #include <QApplication>
-#include "widget/login/login.h"
-#include <cstdlib>
 
 int main(int argc, char *argv[])
 {
-    QApplication a(argc, argv);
-    login login;
-    login.show();
+    QApplication app(argc, argv);
+    app.setApplicationName("Ltalk for linux");
+    app.setApplicationVersion("0.1");
+    app.setOrganizationName("LYXF");
+    //app.setApplicationDisplayName("Ltalk");
 
-    return a.exec();
+    Center center;
+    center.init();
+    center.start();
+    return app.exec();
 }
