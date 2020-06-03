@@ -28,6 +28,8 @@ class NetTimerManager;
 
 
 using CallBack = std::function<void()>;
+using WriteCallBack = std::function<void(const std::string &, const std::string &)>;
+
 using SPChannel = std::shared_ptr<Channel>;
 using SPHttp = std::shared_ptr<Http>;
 using SPEpoll = std::shared_ptr<Epoll>;

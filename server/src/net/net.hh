@@ -25,7 +25,6 @@ public:
     void Start();
     void HandleNewConnection();
     void HandleConnected();
-
 private:
     int Listen();    // Bind port_ and listen
     bool started_;   // Store state of net if started

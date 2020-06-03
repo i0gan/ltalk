@@ -34,6 +34,7 @@ void Ltalk::Channel::HandleRead() {
         read_handler_();
     }
 }
+
 void Ltalk::Channel::HandleWrite() {
     if(write_handler_) {
         write_handler_();

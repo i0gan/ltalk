@@ -8,7 +8,6 @@
 //#define DB_WAIT_TIMES 1000 // wait times
 //#define DB_WAIT_TIME  10   // will usleep(WAIT_TIME)
 extern MYSQL* global_mysql_ptr;
-MYSQL* global_mysql_ptr;
 
 namespace Ltalk {
 class Mysql {

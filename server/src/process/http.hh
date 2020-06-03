@@ -8,6 +8,7 @@
 #include "../ltalk.hh"
 #include "../net/eventloop.hh"
 #include "../net/timer.hh"
+#include "center.hh"
 
 namespace Ltalk {
 
@@ -140,10 +141,8 @@ private:
     std::map<std::string, std::string> map_header_info_;
     std::weak_ptr<NetTimer> wp_net_timer_;
 
-    std::string send_content_type_;
-    std::string send_content_;
-
     void HandleRead();
+    void Send(const std::string &send_content_type,const std::string &send_content);
     void HandleWrite();
     void HandleConnect();
     void HandleError(HttpResponseCode error_number, std::string message);

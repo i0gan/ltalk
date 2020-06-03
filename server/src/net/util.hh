@@ -23,6 +23,8 @@ ssize_t ReadData(int fd, std::string &in_buffer);
 
 ssize_t WriteData(int fd, void *buffer, size_t length);
 ssize_t WriteData(int fd, std::string &out_buffer);
+ssize_t WriteData(int fd,const std::string &header,const std::string &content);
+
 void IgnoreSigpipe(); //avoid server terminate with SIGPIPE signal
 bool SetFdNonBlocking(int listen_fd); //set fd as non bloking
 void SetFdNoDelay(int fd);
