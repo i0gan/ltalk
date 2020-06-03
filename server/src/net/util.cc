@@ -47,6 +47,34 @@ ssize_t Ltalk::Util::ReadData(int fd, std::string &in_buffer) {
     }
     return read_sum;
 }
+
+ssize_t Ltalk::Util::ReadData(int fd, std::string &in_buffer, int length) {
+    ssize_t read_len = 0;
+    ssize_t read_sum = 0;
+    ssize_t read_left = length;
+    in_buffer.clear();
+    char buffer[MAX_BUF_SIZE];
+
+    while(read_left > 0) {
+        if((read_len = read(fd, buffer, MAX_BUF_SIZE)) < 0) {
+            if(errno == EINTR)
+                continue;
+            else if (errno == EAGAIN)
+                return read_sum;
+            else
+                return -1;
+        } else if (read_len == 0) {
+            in_buffer.clear();
+            return 0;
+        }
+        read_sum += read_len;
+        read_left -= read_len;
+        in_buffer += std::string(buffer, buffer + read_len);
+    }
+    return read_sum;
+}
+
+
 ssize_t Ltalk::Util::WriteData(int fd, void *buffer, size_t length) {
     ssize_t write_left = length;
     ssize_t write_len = 0;

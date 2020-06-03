@@ -20,6 +20,7 @@ namespace Util {
 
 ssize_t ReadData(int fd, void *buffer, size_t length);
 ssize_t ReadData(int fd, std::string &in_buffer);
+ssize_t ReadData(int fd, std::string &in_buffer, int length);
 
 ssize_t WriteData(int fd, void *buffer, size_t length);
 ssize_t WriteData(int fd, std::string &out_buffer);

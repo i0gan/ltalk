@@ -133,9 +133,11 @@ private:
     SPChannel sp_channel_;
     std::string in_buffer_;
     std::string out_buffer_;
+    std::string in_content_buffer_;
     bool error_;
     HttpConnectionState http_connection_state_;
     HttpProcessState http_process_state_;
+    int content_length_;
 
     bool keep_alive_;
     std::map<std::string, std::string> map_header_info_;

@@ -53,6 +53,7 @@ Ltalk::Http::~Http() {
 
 void Ltalk::Http::Reset() {
     http_process_state_ = HttpProcessState::PARSE_HEADER;
+    in_content_buffer_.clear();
     map_header_info_.clear();
     if(wp_net_timer_.lock()) {
         SPNetTimer sp_net_timer(wp_net_timer_.lock());
@@ -95,19 +96,24 @@ void Ltalk::Http::HandleRead() {
     __uint32_t &event = sp_channel_->get_event();
     do {
         int read_len = Util::ReadData(fd_, in_buffer_);
+        //std::cout << "http_content:__[" << in_buffer_ << "]__";
         //if state as disconnecting will clean th in buffer
         if(http_connection_state_ == HttpConnectionState::DISCONNECTING) {
+            std::cout << "DISCONNECTING\n";
             in_buffer_.clear();
             break;
         }
         if(read_len == 0) {
             http_connection_state_ = HttpConnectionState::DISCONNECTING;
+            std::cout << "recv 0 DISCONNECTING\n";
+            in_buffer_.clear();
             break;
         }else if(read_len < 0) { // Read data error
             perror("ReadData ");
             error_ = true;
             HandleError(HttpResponseCode::BAD_REQUEST, "Bad Request");
         }
+
         // Parse http header
         if(http_process_state_ == HttpProcessState::PARSE_HEADER) {
             HttpParseHeaderResult http_parse_header_result = ParseHeader();
@@ -117,32 +123,49 @@ void Ltalk::Http::HandleRead() {
                 HandleError(HttpResponseCode::BAD_REQUEST, "Bad Request");
                 break;
             }
-        }
-        //std::cout << "content: [" << in_buffer_ << "]\n";
-        // Get content length
-        if(map_header_info_["methoed"] == "POST") {
-            int content_length = 0;
-            if(map_header_info_.find("Content-length") != map_header_info_.end()) {
-                content_length = std::stoi(map_header_info_["Content-length"]);
-            } else {
-                error_ = true;
-                HandleError(HttpResponseCode::BAD_REQUEST, "Bad Request");
+
+            // Judget if have content data
+            //std::cout << "method: " << map_header_info_["method"] << '\n';
+            if(map_header_info_["method"] == "POST") {
+                content_length_ = 0;
+
+                if(map_header_info_.find("Content-Length") != map_header_info_.end()) {
+                    content_length_ = std::stoi(map_header_info_["Content-Length"]);
+                } else {
+                    error_ = true;
+                    HandleError(HttpResponseCode::BAD_REQUEST, "Bad Request");
+                    break;
+                }
+
+                if(content_length_ < 0) {
+                    error_ = true;
+                    HandleError(HttpResponseCode::BAD_REQUEST, "Bad Request");
+                    break;
+                }
+                //std::cout << "have body data: Cotent-length: " << content_length_ << '\n';
+                http_process_state_ = HttpProcessState::RECV_BODY;
                 break;
             }
-            if(static_cast<int>(in_buffer_.size()) < content_length) {
-                error_ = true;
-                HandleError(HttpResponseCode::BAD_REQUEST, "Bad Request");
+            http_process_state_ = HttpProcessState::PROCESS;
+        }
+        // Recv body data
+        if(http_process_state_ == HttpProcessState::RECV_BODY) {
+            std::cout << "recved body data\n";
+            // Get content length
+            in_content_buffer_ += in_buffer_;
+            if(!error_ && static_cast<int>(in_content_buffer_.size()) >= content_length_) {
+                std::cout << "content: __[[" << in_content_buffer_ << "]]__";
+                http_process_state_ = HttpProcessState::PROCESS;
             }
         }
 
-        // The content length error
-        // Get content
-        http_process_state_ = HttpProcessState::PROCESS;
+        if(http_process_state_ == HttpProcessState::PROCESS) {
+            HandleProcess();
+            http_process_state_ = HttpProcessState::FINISH;
+        }
 
     } while(false);
-    // process
-    HandleProcess();
-    http_process_state_ = HttpProcessState::FINISH;
+
 
     // end
     if(!error_ && http_process_state_ == HttpProcessState::FINISH) {
@@ -150,7 +173,6 @@ void Ltalk::Http::HandleRead() {
     } else if (!error_ && http_connection_state_ != HttpConnectionState::DISCONNECTED) {
         event |= EPOLLIN;
     }
-
 }
 
 Ltalk::HttpParseHeaderResult Ltalk::Http::ParseHeader() {
@@ -240,7 +262,10 @@ Ltalk::HttpParseHeaderResult Ltalk::Http::ParseHeader() {
             result = HttpParseHeaderResult::ERROR;
             break;
         }
+        // sub str
         std::string one_line = recv_data.substr(0, key_end_pos);
+        recv_data = recv_data.substr(key_end_pos + 2);
+
         value_start_pos = one_line.find(':');
         // Last line have not  key and value
         if(value_start_pos < 0) {
@@ -250,15 +275,14 @@ Ltalk::HttpParseHeaderResult Ltalk::Http::ParseHeader() {
         std::string key = one_line.substr(0, value_start_pos);
         std::string value = one_line.substr(value_start_pos + 2);
         map_header_info_[key] = value;
-        // sub str
-        recv_data = recv_data.substr(key_end_pos + 2);
+
+
     }
     return result;
 }
 
-
 void Ltalk::Http::HandleProcess() {
-    Ltalk::Center center(map_header_info_, in_buffer_, std::bind(&Http::Send, this, std::placeholders::_1, std::placeholders::_2));
+    Ltalk::Center center(map_header_info_, in_content_buffer_, std::bind(&Http::Send, this, std::placeholders::_1, std::placeholders::_2));
     center.Process();
 }
 

@@ -2,6 +2,8 @@
 #include "../db/mysql/mysql.hh"
 #include <map>
 #include <string>
+#include "../json/json.hpp"
+#include <strstream>
 
 namespace Ltalk {
 class Center {
