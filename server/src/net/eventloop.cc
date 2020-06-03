@@ -17,7 +17,7 @@ Ltalk::EventLoop::EventLoop() :
     }
     sp_awake_channel_->set_event(EPOLLIN | EPOLLET);
     sp_awake_channel_->set_read_handler(std::bind(&EventLoop::HandleRead, this));
-    sp_awake_channel_->set_connect_handler(std::bind(&EventLoop::HandleConnect, this));
+    sp_awake_channel_->set_connected_handler(std::bind(&EventLoop::HandleConnect, this));
     sp_epoll_->Add(sp_awake_channel_, 0);
 }
 Ltalk::EventLoop::~EventLoop() {
@@ -47,7 +47,12 @@ void Ltalk::EventLoop::AddToEpoll(SPChannel sp_channel, int ms_timeout) {
 
 
 int Ltalk::EventLoop::CreateEventFd() {
-    return 0;
+    int event_fd = eventfd(0, EFD_NONBLOCK | EFD_CLOEXEC);
+    if(event_fd < 0) {
+        perror("eventfd:");
+        abort();
+    }
+    return event_fd;
 }
 
 void Ltalk::EventLoop::Loop() {
@@ -59,7 +64,6 @@ void Ltalk::EventLoop::Loop() {
     while(!quit_) {
         v_sp_event_channels.clear();
         v_sp_event_channels = sp_epoll_->GetAllEventChannels(); // get all event
-
         event_handling_ = true;
         for (auto &sp_channel : v_sp_event_channels) {
             sp_channel->HandleEvent(); // Handel event

@@ -14,7 +14,7 @@ namespace Ltalk {
 enum class HttpProcessState {
     PARSE_URI = 0,
     PARSE_HEADER,
-    RECVING_BODY,
+    RECV_BODY,
     ANALYSIS,
     FINISH
 };
@@ -162,5 +162,7 @@ private:
     void HandleConnect();
     void HandleError(HttpResponseCode error_number, std::string message);
     HttpParseURIResult ParseURI();
+    HttpParseHeaderResult ParseHeader();
+    //Http
 };
 }

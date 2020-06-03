@@ -115,7 +115,7 @@ Ltalk::Http::Http(int fd,EventLoop *eventloop) :
     //set callback function handler
     sp_channel_->set_read_handler(std::bind(&Http::HandleRead, this));
     sp_channel_->set_write_handler(std::bind(&Http::HandleWrite, this));
-    sp_channel_->set_connect_handler(std::bind(&Http::HandleConnect, this));
+    sp_channel_->set_connected_handler(std::bind(&Http::HandleConnect, this));
 
 }
 Ltalk::Http::~Http() {
@@ -168,7 +168,9 @@ void Ltalk::Http::UnlinkTimer() {
 }
 void Ltalk::Http::HandleRead() {
     __uint32_t &event = sp_channel_->get_event();
+    d_cout << "test\n";
     HandleError(HttpResponseCode::BAD_REQUEST, "Bad Request");
+
     do {
         int read_len = Util::ReadData(fd_, in_buffer_);
         //d_cout << "Request: \n" << in_buffer_;
@@ -188,16 +190,60 @@ void Ltalk::Http::HandleRead() {
         }
 
         if(http_process_state_ == HttpProcessState::PARSE_URI) {
-            HttpParseURIResult http_parse_uri_result = this->ParseURI();
+            HttpParseURIResult http_parse_uri_result = ParseURI();
             if(http_parse_uri_result == HttpParseURIResult::AGAIN)
                 break;
             else if(http_parse_uri_result == HttpParseURIResult::ERROR) {
                 perror("ParseURI ");
                 error_ = true;
                 HandleError(HttpResponseCode::BAD_REQUEST, "Bad Request");
+                break;
             }
+            http_process_state_ = HttpProcessState::PARSE_HEADER;
         }
 
+        // Parse http header
+        if(http_process_state_ == HttpProcessState::PARSE_HEADER) {
+            HttpParseHeaderResult http_parse_header_result = ParseHeader();
+            if(http_parse_header_result == HttpParseHeaderResult::AGAIN)
+                break;
+            else if(http_parse_header_result == HttpParseHeaderResult::ERROR) {
+                perror("ParseHeader ");
+                error_ = true;
+                HandleError(HttpResponseCode::BAD_REQUEST, "Bad Request");
+                break;
+            }
+
+
+            if(http_method_ == HttpMethod::POST)
+                http_process_state_ = HttpProcessState::RECV_BODY;
+            else
+                http_process_state_ = HttpProcessState::ANALYSIS;
+        }
+
+        if(http_process_state_ == HttpProcessState::RECV_BODY) {
+            // Get content length
+            int content_length = 0;
+            if(map_headers_.find("Content-length") != map_headers_.end()) {
+                content_length = std::stoi(map_headers_["Content-length"]);
+            } else {
+                error_ = true;
+                HandleError(HttpResponseCode::BAD_REQUEST, "Bad Request");
+                break;
+            }
+
+            // The content length error
+            if(static_cast<int>(in_buffer_.size()) < content_length) {
+
+                break;
+            }
+            // Get content
+            http_process_state_ = HttpProcessState::ANALYSIS;
+        }
+
+        if(http_process_state_ == HttpProcessState::ANALYSIS) {
+            //HttpAnalysisResult http_analysis_result =
+        }
 
     } while(false);
 }
@@ -207,12 +253,15 @@ Ltalk::HttpParseURIResult Ltalk::Http::ParseURI() {
     return HttpParseURIResult::SUCCESS;
 }
 
+Ltalk::HttpParseHeaderResult Ltalk::Http::ParseHeader() {
+
+    return HttpParseHeaderResult::SUCCESS;
+}
 void Ltalk::Http::HandleWrite() {
 
 }
 
 void Ltalk::Http::HandleConnect() {
-    d_cout << "Handle connect ***\n";
     int ms_timeout = 0;
     __uint32_t &event = sp_channel_->get_event();
 
@@ -239,7 +288,7 @@ void Ltalk::Http::HandleConnect() {
         eventloop_->UpdateEpoll(sp_channel_, ms_timeout);
     } else if (!error_ && http_connection_state_ == HttpConnectionState::DISCONNECTING
                && (event & EPOLLOUT)) {
-            event = (EPOLLOUT | EPOLLET);
+        event = (EPOLLOUT | EPOLLET);
     } else {
 
         eventloop_->RunInLoop(std::bind(&Http::HandleClose, shared_from_this()));

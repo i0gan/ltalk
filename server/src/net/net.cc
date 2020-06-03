@@ -29,12 +29,10 @@ Ltalk::Net::~Net() {
 }
 
 void Ltalk::Net::Start() {
-    d_cout << "started server\n";
     up_eventloop_threadpool_->Start();
-
     accept_channel_->set_event(EPOLLIN | EPOLLET);
     accept_channel_->set_read_handler(std::bind(&Net::HandleNewConnection, this));
-    accept_channel_->set_connect_handler(std::bind(&Net::HandleThisConnection, this));
+    accept_channel_->set_connected_handler(std::bind(&Net::HandleConnected, this));
     base_eventloop_->AddToEpoll(accept_channel_, 0);
     started_ = true;
     base_eventloop_->Loop();
@@ -82,7 +80,7 @@ int Ltalk::Net::Listen() {
 }
 
 void Ltalk::Net::HandleNewConnection() {
-    d_cout << "handle new connection";
+
     struct sockaddr_in client_sockaddr;
     bzero(&client_sockaddr, sizeof (client_sockaddr));
     socklen_t client_sockaddr_len = sizeof (client_sockaddr);
@@ -103,17 +101,21 @@ void Ltalk::Net::HandleNewConnection() {
         }
 
         //set as no delay
+
         Util::SetFdNoDelay(accept_fd);
         // add event to deal with
-        SPHttp sp_http(new Ltalk::Http(accept_fd, base_eventloop_));
+        d_cout << "handle new connection\n";
+        EventLoop *next_eventloop = up_eventloop_threadpool_->get_next_eventloop();
+        SPHttp sp_http(new Ltalk::Http(accept_fd, next_eventloop));
         sp_http->get_sp_channel()->set_holder(sp_http);
-        base_eventloop_->QueueInLoop(std::bind(&Http::NewEvnet, sp_http));
+        //sp_http->get_sp_channel()->set_read_handler(
+        next_eventloop->QueueInLoop(std::bind(&Http::NewEvnet, sp_http));
     }
 
     accept_channel_->set_event(EPOLLIN | EPOLLET);
 }
 
-void Ltalk::Net::HandleThisConnection() {
-    d_cout << "HandleThisConnection\n";
+void Ltalk::Net::HandleConnected() {
+    //d_cout << "HandleThisConnection\n";
     base_eventloop_->UpdateEpoll(accept_channel_);
 }

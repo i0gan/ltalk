@@ -3,21 +3,22 @@ Ltalk::EventLoopThreadPool::EventLoopThreadPool(EventLoop *base_eventloop, int n
     started_(false),
     base_eventloop_(base_eventloop),
     number_of_thread_(number_of_thread),
-    next_(0) {
+    next_thread_indx_(0) {
     if(number_of_thread <= 0) {
         d_cout << "The number of thread must be >= 1\n";
         abort();
     }
 }
 
-EventLoop *Ltalk::EventLoopThreadPool::get_next_loop() {
+EventLoop *Ltalk::EventLoopThreadPool::get_next_eventloop() {
     base_eventloop_->AssertInLoopThread();
     assert(started_);
     EventLoop *eventloop = base_eventloop_;
     if(v_eventloops_.empty() == false) {
-        eventloop = v_eventloops_[next_];
-        next_ = (next_ + 1) % number_of_thread_;
+        eventloop = v_eventloops_[next_thread_indx_];
+        next_thread_indx_ = (next_thread_indx_ + 1) % (number_of_thread_);
     }
+
     return eventloop;
 }
 

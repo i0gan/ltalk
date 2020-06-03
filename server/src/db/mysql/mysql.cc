@@ -1,12 +1,13 @@
 #include "mysql.hh"
 
 bool Ltalk::Mysql::Connect(std::string host,
-				std::string user,
-                std::string password,
-				std::string name,
-				int port,
-				const char *unix_socket,
-				std::size_t clientflag) {
+                           std::string user,
+                           std::string password,
+                           std::string name,
+                           int port,
+                           const char *unix_socket,
+                           std::size_t clientflag) {
+    bool return_value = false;
 
     this->host_ = host;
     this->user_ = user;
@@ -14,138 +15,127 @@ bool Ltalk::Mysql::Connect(std::string host,
     this->name_ = name;
     this->port_ = port;
 
-    if(nullptr == mysql_init(this->mysql_)) {
-        std::cout << "mysql init fail!"	 << mysql_error(this->mysql_) <<std::endl;
-		return false;
-	}
+    do {
+        if(nullptr == mysql_init(&mysql_)) {
+            std::cout << "mysql init fail!"	 << mysql_error(&mysql_) <<std::endl;
+            break;
+        }
+        //connect mysql
+        bool is_connect = mysql_real_connect(
+                    &mysql_,
+                    host.c_str(),
+                    user.c_str(),
+                    password.c_str(),
+                    name.c_str(),
+                    port, unix_socket, clientflag);
 
-	//connect mysql
-	bool isConnect = mysql_real_connect(
-            this->mysql_,
-			host.c_str(),
-			user.c_str(),
-            password.c_str(),
-			name.c_str(),
-			port, unix_socket, clientflag);
+        if(false == is_connect) {
+            std::cout << "mysql_real_connect:" << mysql_error(&mysql_) << std::endl;
+            break;
+        }
 
-	if(false ==isConnect) {
-        std::cout << "mysql_real_connect:" << mysql_error(this->mysql_) << std::endl;
+        return_value = true;
+    } while(false);
 
-		return false;
-	}
-    db_lock_ = false;
-	return true;
+    return return_value;
 }
 
 void Ltalk::Mysql::Disconnect() {
-    mysql_close(this->mysql_);
+    mysql_close(&mysql_);
 }
 
-bool Ltalk::Mysql::Exec(std::string sqlstr) {
-    if(!Wait()) { // If wait out of time will give up to select
-		return false; 
-	}
-
-    db_lock_ = true;
-    int flag = mysql_real_query(this->mysql_, sqlstr.c_str(), sqlstr.length());
-		if(0 != flag) { //if successful return 0
-            std::cout << "mysql_real_query : " << mysql_error(this->mysql_) << std::endl;
-            db_lock_ = false;
-            return false;
-    }
-    db_lock_ = false;
-	return true;
+MYSQL *Ltalk::Mysql::get_mysql() {
+    return &mysql_;
 }
 
-bool Ltalk::Mysql::Wait() {
-    //等待处理
-    int i = 0;
-    while(true) {
-        if(i > DB_WAIT_TIMES) {
-            return false;
-        }
-        if(false == db_lock_) {
-            break;
-        }
-        usleep(DB_WAIT_TIME);
-        ++i;
-    }
-	return true;
+void Ltalk::Mysql::set_mysql_as_global() {
+    global_mysql_ptr = &mysql_;
 }
 
-MYSQL_RES *Ltalk::Mysql::select(std::string sqlstr) {
-    if(!Wait()) { // If wait out of time will give up to select
-		return nullptr; 
-	}
-    db_lock_ = true;
 
-    //HIDE std::cout << sqlstr << std::endl;
-    int flag = mysql_real_query(this->mysql_, sqlstr.c_str(), sqlstr.length());
-	if(flag != 0) { //if seccessful return 0
-        std::cout << "mysql_real_query : " << mysql_error(this->mysql_) << std::endl;
-        db_lock_ = false;
-        return nullptr;
-	}
-
-    MYSQL_RES *res = mysql_store_result(this->mysql_);
-
-	if(nullptr == res) {
-        std::cout << "mysql_store_result : " << mysql_error(this->mysql_) << std::endl;
-    }
-    db_lock_ = false;
-    return res;
-}
-
-/*
-	This Class to deal with database res
-*/
-
-Ltalk::MysqlRes::MysqlRes() : isInUse(false), res_(nullptr) {
+Ltalk::Query::Query() :
+    res_(nullptr),
+    mysql_(global_mysql_ptr) {
 
 }
 
-Ltalk::MysqlRes::MysqlRes(MYSQL_RES *res) {
-    this->isInUse = true;
-    this->res_ = res;
-    this->row_ = nullptr;
-    this->num_of_fields_ = 0;
+Ltalk::Query::Query(MYSQL *mysql) :
+    res_(nullptr),
+    mysql_(mysql) {
+
+}
+
+Ltalk::Query::Query(MYSQL_RES *res) :
+    res_(res),
+    row_(nullptr),
+    number_of_fields_(0) {
+
     if(nullptr != res) {
-        num_of_fields_ = static_cast<int>(mysql_num_fields(res));
+        number_of_fields_ = static_cast<int>(mysql_num_fields(res));
     }
 }
 
-void Ltalk::MysqlRes::operator=(MysqlRes &query) {
-    this->isInUse = query.isInUse;
-    this->row_ = query.row_;
-    this->res_ = query.res_;
+
+void Ltalk::Query::operator=(Query &query) {
+    row_ = query.row_;
+    res_ = query.res_;
+    query.Clean();
 }
 
-Ltalk::MysqlRes::~MysqlRes() {
-    if(this->res_ != nullptr && this->isInUse == true) {
+Ltalk::Query::~Query() {
+    if(res_ != nullptr) {
         mysql_free_result(res_); //release res
-	}
-}
-
-void Ltalk::MysqlRes::operator=(MYSQL_RES *res){
-    if(this->res_ != nullptr && this->isInUse == true) {
-        mysql_free_result(res); //release res
-        num_of_fields_ = static_cast<int>(mysql_num_fields(res));
     }
-    this->res_ = res;
 }
 
-MYSQL_ROW Ltalk::MysqlRes::Next() {
+void Ltalk::Query::Clean() {
+    row_ = 0;
+    res_ = nullptr;
+    number_of_fields_ = 0;
+    mysql_ = nullptr;
+}
+
+bool Ltalk::Query::Exec(std::string sql) {
+    int ret = false;
+
+    int flag = mysql_real_query(this->mysql_, sql.c_str(), sql.length());
+    if(0 == flag) {
+        std::cout << "mysql_real_query : " << mysql_error(this->mysql_) << std::endl;
+        ret = true;
+    }
+    return ret;
+}
+
+bool Ltalk::Query::Select(std::string sql) {
+
+    int flag = mysql_real_query(this->mysql_, sql.c_str(), sql.length());
+    if(flag != 0) {
+        std::cout << "mysql_real_query : " << mysql_error(this->mysql_) << std::endl;
+        return false;
+    }
+
+    res_ = mysql_store_result(this->mysql_);
 
     if(nullptr == res_) {
-		return nullptr;
-	}
+        std::cout << "mysql_store_result : " << mysql_error(this->mysql_) << std::endl;
+    }
+    return true;
+}
+
+
+
+MYSQL_ROW Ltalk::Query::Next() {
+
+    if(nullptr == res_) {
+        return nullptr;
+    }
     row_ = mysql_fetch_row(res_);
     return row_;
 }
 
-char* Ltalk::MysqlRes::GetOne(int idx) {
-    if((num_of_fields_ - 1) < idx) {
-        std::cout << "out_of_range: " << idx << " / " << num_of_fields_ << std::endl;
+char* Ltalk::Query::GetOne(int idx) {
+    if((number_of_fields_ - 1) < idx) {
+        std::cout << "out_of_range: " << idx << " / " << number_of_fields_ << std::endl;
         return nullptr;
     }
     return row_[idx];

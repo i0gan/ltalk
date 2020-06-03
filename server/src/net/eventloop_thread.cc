@@ -34,7 +34,6 @@ void Ltalk::EventLoopThread::ThreadFunc() {
     EventLoop eventloop;
     eventloop_ = &eventloop;
     condition_.Notify(); // Notify Main thread then realize Sync
-    d_cout << "start thread ok! \n";
-    eventloop_->Loop(); //run event
+    eventloop_->Loop();  //run event
     eventloop_ = nullptr;
 }

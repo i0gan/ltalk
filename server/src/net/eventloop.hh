@@ -6,6 +6,8 @@
 #include "../thread/thread.hh"
 #include "epoll.hh"
 #include "util.hh"
+#include <sys/epoll.h>
+#include <sys/eventfd.h>
 
 namespace Ltalk {
 class EventLoop {

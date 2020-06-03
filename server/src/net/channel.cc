@@ -40,8 +40,8 @@ void Ltalk::Channel::HandleWrite() {
     }
 }
 void Ltalk::Channel::HandleConnect() {
-    if(connect_handler_) {
-        connect_handler_();
+    if(connected_handler_) {
+        connected_handler_();
     }
 }
 void Ltalk::Channel::HandleError() {
@@ -90,8 +90,9 @@ void Ltalk::Channel::set_error_handler(CallBack  &&error_handler) {
     error_handler_ = error_handler;
 }
 
-void Ltalk::Channel::set_connect_handler(CallBack  &&connect_handler) {
-    connect_handler_ = connect_handler;
+// For deal with connected client event
+void Ltalk::Channel::set_connected_handler(CallBack  &&connected_handler) {
+    connected_handler_ = connected_handler;
 }
 
 

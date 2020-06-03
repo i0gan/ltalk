@@ -24,7 +24,7 @@ public:
     ~Net();
     void Start();
     void HandleNewConnection();
-    void HandleThisConnection();
+    void HandleConnected();
 
 private:
     int Listen();    // Bind port_ and listen
