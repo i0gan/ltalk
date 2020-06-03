@@ -4,9 +4,11 @@
 #include <QObject>
 #include <QNetworkAccessManager>
 #include <QNetworkReply>
+#include <QNetworkConfiguration>
 
 #include <QJsonDocument>
 #include <QJsonArray>
+#include <QJsonObject>
 
 #include "ltalk.h"
 #include "login_page.h"
@@ -20,11 +22,12 @@ public:
     void start();
 
     void requestLogin(QString account, QString password);
-    void loginReply(QNetworkReply *reply);
+    void requestReply(QNetworkReply *reply);
 
 private:
     LoginPage *login_page_;
     bool opened_login_page_;
+    QNetworkAccessManager *network_access_mannager;
 signals:
 
 };
