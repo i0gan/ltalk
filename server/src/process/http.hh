@@ -14,7 +14,7 @@ namespace Ltalk {
 enum class HttpProcessState {
     PARSE_HEADER = 0,
     RECV_BODY,
-    ANALYSIS,
+    PROCESS,
     FINISH
 };
 
@@ -115,7 +115,7 @@ private:
 
 class Http final : public std::enable_shared_from_this<Http> {
 public:
-    Http(int fd,EventLoop *eventloop);
+    explicit Http(int fd,EventLoop *eventloop);
     ~Http();
     void Reset();
     void UnlinkTimer();
@@ -139,6 +139,9 @@ private:
     bool keep_alive_;
     std::map<std::string, std::string> map_header_info_;
     std::weak_ptr<NetTimer> wp_net_timer_;
+
+    std::string send_content_type_;
+    std::string send_content_;
 
     void HandleRead();
     void HandleWrite();

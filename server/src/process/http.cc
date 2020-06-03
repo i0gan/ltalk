@@ -160,11 +160,10 @@ void Ltalk::Http::UnlinkTimer() {
 }
 void Ltalk::Http::HandleRead() {
     __uint32_t &event = sp_channel_->get_event();
-    HandleError(HttpResponseCode::OK, "Just a test");
+    //HandleError(HttpResponseCode::OK, "Just a test");
     do {
         int read_len = Util::ReadData(fd_, in_buffer_);
         //d_cout << "Request: \n" << in_buffer_;
-
         //if state as disconnecting will clean th in buffer
         if(http_connection_state_ == HttpConnectionState::DISCONNECTING) {
             in_buffer_.clear();
@@ -182,15 +181,15 @@ void Ltalk::Http::HandleRead() {
         if(http_process_state_ == HttpProcessState::PARSE_HEADER) {
             HttpParseHeaderResult http_parse_header_result = ParseHeader();
             if(http_parse_header_result == HttpParseHeaderResult::ERROR) {
-                //perror("ParseHeader ");
+                perror("ParseHeader ");
                 error_ = true;
                 HandleError(HttpResponseCode::BAD_REQUEST, "Bad Request");
                 break;
             }
         }
-
-        if(http_process_state_ == HttpProcessState::RECV_BODY) {
-            // Get content length
+        //std::cout << "content: [" << in_buffer_ << "]\n";
+        // Get content length
+        if(map_header_info_["methoed"] == "POST") {
             int content_length = 0;
             if(map_header_info_.find("Content-length") != map_header_info_.end()) {
                 content_length = std::stoi(map_header_info_["Content-length"]);
@@ -199,21 +198,33 @@ void Ltalk::Http::HandleRead() {
                 HandleError(HttpResponseCode::BAD_REQUEST, "Bad Request");
                 break;
             }
-
-            // The content length error
             if(static_cast<int>(in_buffer_.size()) < content_length) {
-
-                break;
+                error_ = true;
+                HandleError(HttpResponseCode::BAD_REQUEST, "Bad Request");
             }
-            // Get content
-            http_process_state_ = HttpProcessState::ANALYSIS;
         }
 
-        if(http_process_state_ == HttpProcessState::ANALYSIS) {
-            //HttpAnalysisResult http_analysis_result =
-        }
+        // The content length error
+        // Get content
+        http_process_state_ = HttpProcessState::PROCESS;
 
     } while(false);
+    std::cout << "OKKK\n";
+    std::string a = "sss";
+    send_content_ = a;
+    HandleWrite();
+    std::cout << "End\n";
+    // end
+    if(!error_ && http_process_state_ == HttpProcessState::FINISH) {
+        this->Reset();
+        if(in_buffer_.size()) {
+            if(http_connection_state_ != HttpConnectionState::DISCONNECTING)
+                HandleRead();
+        }
+    } else if (!error_ && http_connection_state_ != HttpConnectionState::DISCONNECTED) {
+        event |= EPOLLIN;
+    }
+
 }
 
 Ltalk::HttpParseHeaderResult Ltalk::Http::ParseHeader() {
@@ -319,8 +330,44 @@ Ltalk::HttpParseHeaderResult Ltalk::Http::ParseHeader() {
     return result;
 }
 
-void Ltalk::Http::HandleWrite() {
 
+void Ltalk::Http::HandleProcess() {
+
+}
+void Ltalk::Http::HandleWrite() {
+    out_buffer_.clear();
+    //std::cout << "handle write";
+    if(error_ || http_connection_state_ == HttpConnectionState::DISCONNECTED) {
+        return;
+    }
+    __uint32_t &event = sp_channel_->get_event();
+    std::string header;
+    header += "HTTP/1.1 200 OK\r\n";
+    if (map_header_info_.find("Connection") != map_header_info_.end() &&
+            (map_header_info_["Connection"] == "Keep-Alive" ||
+             map_header_info_["Connection"] == "keep-alive")) {
+        keep_alive_ = true;
+        header += std::string("Connection: Keep-Alive\r\n") + "Keep-Alive: timeout=" +
+                std::to_string(DEFAULT_KEEP_ALIVE_TIME) + "\r\n";
+    }
+
+    header += HttpContentType::GetType(send_content_type_);
+    header += "Server: Linux x64 LYXF Ltalk server\r\n";
+    header += "Content-type: " + HttpContentType::GetType("default") + "\r\n";
+    header += "Content-Length: " +  std::to_string(send_content_.size()) + "\r\n";
+    header += "\r\n";
+
+    out_buffer_ += header;
+    out_buffer_ += send_content_;
+
+    if(Util::WriteData(fd_, out_buffer_) < 0) {
+        perror("write data");
+        event = 0;
+        error_ = true;
+    }
+
+    if (out_buffer_.size() > 0)
+        event |= EPOLLOUT;
 }
 
 void Ltalk::Http::HandleConnect() {

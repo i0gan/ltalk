@@ -18,7 +18,7 @@ Ltalk::NetTimer::NetTimer(NetTimer &net_timer) :
 
 Ltalk::NetTimer::~NetTimer() {
     if(sp_http_) {
-        //sp_http_->HandleClose();
+        sp_http_->HandleClose();
     }
 }
 

@@ -115,6 +115,6 @@ void Ltalk::Net::HandleNewConnection() {
 }
 
 void Ltalk::Net::HandleConnected() {
-    //d_cout << "HandleConnected\n";
+    d_cout << "HandleConnected\n";
     base_eventloop_->UpdateEpoll(accept_channel_);
 }

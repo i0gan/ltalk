@@ -70,7 +70,7 @@ void Ltalk::EventLoop::Loop() {
         }
         event_handling_  = false;
         RunPendingCallBackFunc(); // Run pending callback function
-        //sp_epoll
+        sp_epoll_->HandleExpiredEvent();
     }
 }
 
@@ -125,4 +125,8 @@ void Ltalk::EventLoop::RunPendingCallBackFunc() {
 
 void Ltalk::EventLoop::AssertInLoopThread() {
     assert(IsInLoopThread());
+}
+
+void Ltalk::EventLoop::Shutdown(SPChannel sp_channel) {
+    Util::ShutDownWriteFd(sp_channel->get_fd());
 }

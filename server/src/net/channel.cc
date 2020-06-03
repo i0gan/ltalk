@@ -39,6 +39,7 @@ void Ltalk::Channel::HandleWrite() {
         write_handler_();
     }
 }
+
 void Ltalk::Channel::HandleConnect() {
     if(connected_handler_) {
         connected_handler_();
