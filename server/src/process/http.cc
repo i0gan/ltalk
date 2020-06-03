@@ -105,11 +105,7 @@ Ltalk::Http::Http(int fd,EventLoop *eventloop) :
     eventloop_(eventloop),
     sp_channel_(new Channel(eventloop, fd)),
     http_connection_state_(HttpConnectionState::CONNECTED),
-    http_process_state_(HttpProcessState::PARSE_URI),
-    http_parse_header_state_(HttpParseHeaderState::START),
-    http_method_(HttpMethod::GET),
-    http_version_(HttpVersion::V_1_0),
-
+    http_process_state_(HttpProcessState::PARSE_HEADER),
     keep_alive_(false) {
 
     //set callback function handler
@@ -123,12 +119,8 @@ Ltalk::Http::~Http() {
 }
 
 void Ltalk::Http::Reset() {
-    file_name_.clear();
-    path_.clear();
-    read_postioin_ = 0;
-    http_process_state_ = HttpProcessState::PARSE_URI;
-    http_parse_header_state_ = HttpParseHeaderState::START;
-    map_headers_.clear();
+    http_process_state_ = HttpProcessState::PARSE_HEADER;
+    map_header_info_.clear();
     if(wp_net_timer_.lock()) {
         SPNetTimer sp_net_timer(wp_net_timer_.lock());
         sp_net_timer->Clear();
@@ -168,9 +160,7 @@ void Ltalk::Http::UnlinkTimer() {
 }
 void Ltalk::Http::HandleRead() {
     __uint32_t &event = sp_channel_->get_event();
-    d_cout << "test\n";
-    HandleError(HttpResponseCode::BAD_REQUEST, "Bad Request");
-
+    HandleError(HttpResponseCode::OK, "Just a test");
     do {
         int read_len = Util::ReadData(fd_, in_buffer_);
         //d_cout << "Request: \n" << in_buffer_;
@@ -184,48 +174,26 @@ void Ltalk::Http::HandleRead() {
             http_connection_state_ = HttpConnectionState::DISCONNECTING;
             break;
         }else if(read_len < 0) { // Read data error
-            perror("ReadData ");
+            //perror("ReadData ");
             error_ = true;
             HandleError(HttpResponseCode::BAD_REQUEST, "Bad Request");
         }
-
-        if(http_process_state_ == HttpProcessState::PARSE_URI) {
-            HttpParseURIResult http_parse_uri_result = ParseURI();
-            if(http_parse_uri_result == HttpParseURIResult::AGAIN)
-                break;
-            else if(http_parse_uri_result == HttpParseURIResult::ERROR) {
-                perror("ParseURI ");
-                error_ = true;
-                HandleError(HttpResponseCode::BAD_REQUEST, "Bad Request");
-                break;
-            }
-            http_process_state_ = HttpProcessState::PARSE_HEADER;
-        }
-
         // Parse http header
         if(http_process_state_ == HttpProcessState::PARSE_HEADER) {
             HttpParseHeaderResult http_parse_header_result = ParseHeader();
-            if(http_parse_header_result == HttpParseHeaderResult::AGAIN)
-                break;
-            else if(http_parse_header_result == HttpParseHeaderResult::ERROR) {
-                perror("ParseHeader ");
+            if(http_parse_header_result == HttpParseHeaderResult::ERROR) {
+                //perror("ParseHeader ");
                 error_ = true;
                 HandleError(HttpResponseCode::BAD_REQUEST, "Bad Request");
                 break;
             }
-
-
-            if(http_method_ == HttpMethod::POST)
-                http_process_state_ = HttpProcessState::RECV_BODY;
-            else
-                http_process_state_ = HttpProcessState::ANALYSIS;
         }
 
         if(http_process_state_ == HttpProcessState::RECV_BODY) {
             // Get content length
             int content_length = 0;
-            if(map_headers_.find("Content-length") != map_headers_.end()) {
-                content_length = std::stoi(map_headers_["Content-length"]);
+            if(map_header_info_.find("Content-length") != map_header_info_.end()) {
+                content_length = std::stoi(map_header_info_["Content-length"]);
             } else {
                 error_ = true;
                 HandleError(HttpResponseCode::BAD_REQUEST, "Bad Request");
@@ -248,15 +216,109 @@ void Ltalk::Http::HandleRead() {
     } while(false);
 }
 
-Ltalk::HttpParseURIResult Ltalk::Http::ParseURI() {
-
-    return HttpParseURIResult::SUCCESS;
-}
-
 Ltalk::HttpParseHeaderResult Ltalk::Http::ParseHeader() {
+    std::string &recv_data = in_buffer_;
+    Ltalk::HttpParseHeaderResult  result = HttpParseHeaderResult::SUCCESS;
 
-    return HttpParseHeaderResult::SUCCESS;
+    int first_line_read_pos = 0;
+    do {
+        first_line_read_pos = recv_data.find("\r\n");
+        if(first_line_read_pos < 0) {
+            result = HttpParseHeaderResult::ERROR;
+            break;
+        }
+        std::string header_line_1 = recv_data.substr(0, first_line_read_pos);
+        if(static_cast<int>(recv_data.size()) > first_line_read_pos + 2)
+            // sub first line str
+            recv_data = recv_data.substr(first_line_read_pos + 2);
+        else {
+            result = HttpParseHeaderResult::ERROR;
+            break;
+        }
+        // parse http method
+        do {
+            int http_method_pos = -1;
+            if((http_method_pos = header_line_1.find("GET")) >= 0) {
+                first_line_read_pos = http_method_pos;
+                map_header_info_["method"] = "GET";
+                break;
+            } else if((http_method_pos = header_line_1.find("POST")) >= 0) {
+                first_line_read_pos = http_method_pos;
+                map_header_info_["method"] = "POST";
+                break;
+            } else if((http_method_pos = header_line_1.find("HEAD")) >= 0) {
+                first_line_read_pos = http_method_pos;
+                map_header_info_["method"] = "HEAD";
+                break;
+            } else if((http_method_pos = header_line_1.find("DELETE")) >= 0){
+                first_line_read_pos = http_method_pos;
+                map_header_info_["method"] = "DELETE";
+                break;
+            } else {
+                break;
+            }
+        } while(false);
+
+        if(first_line_read_pos < 0) {
+            result = HttpParseHeaderResult::ERROR;
+            break;
+        }
+
+        int http_url_start_pos = header_line_1.find('/');
+        if(http_url_start_pos < 0) break;
+        // sub str
+        header_line_1 = header_line_1.substr(http_url_start_pos);
+
+        int http_url_end_pos = header_line_1.find (' ');
+        if(http_url_end_pos < 0) {
+            result = HttpParseHeaderResult::ERROR;
+            break;
+        }
+
+        map_header_info_["url"] = header_line_1.substr(0, http_url_end_pos);
+
+        // Parse http version
+        header_line_1 = header_line_1.substr(http_url_end_pos);
+        int http_version_pos = header_line_1.find('/');
+        if(http_version_pos < 0) {
+            result = HttpParseHeaderResult::ERROR;
+            break;
+        }
+
+        map_header_info_["version"]  = header_line_1.substr(http_version_pos + 1);
+    }  while(false);
+
+
+    // chceck is error
+    if (result == HttpParseHeaderResult::ERROR) {
+        map_header_info_.clear();
+        return result;
+    }
+
+    // Parse header key and value
+    while(true) {
+        int key_end_pos = -1, value_start_pos = -1;
+        key_end_pos = recv_data.find("\r\n");
+        if(key_end_pos < 0) {
+            result = HttpParseHeaderResult::ERROR;
+            break;
+        }
+        std::string one_line = recv_data.substr(0, key_end_pos);
+        value_start_pos = one_line.find(':');
+        // Last line have not  key and value
+        if(value_start_pos < 0) {
+            result = HttpParseHeaderResult::SUCCESS;
+            break;
+        }
+        std::string key = one_line.substr(0, value_start_pos);
+        std::string value = one_line.substr(value_start_pos + 2);
+        map_header_info_[key] = value;
+        // sub str
+        recv_data = recv_data.substr(key_end_pos + 2);
+    }
+    return result;
 }
+
 void Ltalk::Http::HandleWrite() {
 
 }

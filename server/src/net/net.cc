@@ -108,7 +108,6 @@ void Ltalk::Net::HandleNewConnection() {
         EventLoop *next_eventloop = up_eventloop_threadpool_->get_next_eventloop();
         SPHttp sp_http(new Ltalk::Http(accept_fd, next_eventloop));
         sp_http->get_sp_channel()->set_holder(sp_http);
-        //sp_http->get_sp_channel()->set_read_handler(
         next_eventloop->QueueInLoop(std::bind(&Http::NewEvnet, sp_http));
     }
 
@@ -116,6 +115,6 @@ void Ltalk::Net::HandleNewConnection() {
 }
 
 void Ltalk::Net::HandleConnected() {
-    //d_cout << "HandleThisConnection\n";
+    //d_cout << "HandleConnected\n";
     base_eventloop_->UpdateEpoll(accept_channel_);
 }

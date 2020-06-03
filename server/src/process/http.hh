@@ -12,8 +12,7 @@
 namespace Ltalk {
 
 enum class HttpProcessState {
-    PARSE_URI = 0,
-    PARSE_HEADER,
+    PARSE_HEADER = 0,
     RECV_BODY,
     ANALYSIS,
     FINISH
@@ -25,27 +24,13 @@ enum class HttpConnectionState {
     DISCONNECTED
 };
 
-enum class HttpParseHeaderState {
-    START = 0,
-    KEY,
-    COLON,
-    SPACES_AFTER_COLON,
-    VALUE,
-    CR,
-    LF,
-    END_CR,
-    END_LF
-};
-
 enum class HttpParseURIResult {
     SUCCESS = 0,
-    AGAIN,
     ERROR
 };
 
 enum class HttpParseHeaderResult {
     SUCCESS = 0,
-    AGAIN,
     ERROR
 };
 
@@ -58,7 +43,12 @@ enum class HttpAnalysisResult {
 enum class HttpMethod {
     GET = 0,
     POST,
-    HEAD
+    PUT,
+    HEAD,
+    DELETE,
+    CONNECT,
+    TRACE,
+    OPTIONS
 };
 
 enum class HttpVersion {
@@ -145,24 +135,17 @@ private:
     bool error_;
     HttpConnectionState http_connection_state_;
     HttpProcessState http_process_state_;
-    HttpParseHeaderState http_parse_header_state_;
-    HttpMethod http_method_;
-    HttpVersion http_version_;
-
 
     bool keep_alive_;
-    std::string file_name_;
-    std::string path_;
-    int read_postioin_;
-    std::map<std::string, std::string> map_headers_;
+    std::map<std::string, std::string> map_header_info_;
     std::weak_ptr<NetTimer> wp_net_timer_;
 
     void HandleRead();
     void HandleWrite();
     void HandleConnect();
     void HandleError(HttpResponseCode error_number, std::string message);
-    HttpParseURIResult ParseURI();
     HttpParseHeaderResult ParseHeader();
+    void HandleProcess();
     //Http
 };
 }
