@@ -14,6 +14,7 @@
 #include "net/net.hh"
 #include "net/eventloop.hh"
 #include "ltalk.hh"
+#include "db/mysql/mysql.hh"
 
 namespace Ltalk {
 class StartUp final{
@@ -24,15 +25,15 @@ public:
     bool Run();
     bool Stop();
     bool LoadConfig();
-    bool RunNetworkModule();
     bool RunDatabaseModule();
     bool RunLoggerModule();
+    bool RunNetworkModule();
 
 private:
-    int number_of_thread_ = 4;
-    int queue_size_ = 65535;
-    int tcp_port_ = 8080;
-    int udp_port_ = 8000;
+    int number_of_thread_;
+    int queue_size_;
+    int tcp_port_;
+    int udp_port_;
 
     std::string db_host_;
     int         db_port_;
@@ -40,8 +41,6 @@ private:
     std::string db_password_;
     std::string db_name_;
 
-    std::string log_path_ = "/";
-    std::string config_file_ = "./config.json";
-
+    std::string log_path_;
 };
 };

@@ -4,6 +4,10 @@
 #include <map>
 #include <pthread.h>
 #include <sys/epoll.h>
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <fcntl.h>
+
 
 #include "../ltalk.hh"
 #include "../net/eventloop.hh"
@@ -144,12 +148,14 @@ private:
     std::weak_ptr<NetTimer> wp_net_timer_;
 
     void HandleRead();
-    void Send(const std::string &send_content_type,const std::string &send_content);
+    void SendFile(const std::string &file_name);
     void HandleWrite();
     void HandleConnect();
     void HandleError(HttpResponseCode error_number, std::string message);
+    void HandleNotFound();
     HttpParseHeaderResult ParseHeader();
     void HandleProcess();
+    void SendData(const std::string &type,const std::string &content);
     //Http
 };
 }

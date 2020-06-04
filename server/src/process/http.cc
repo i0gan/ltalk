@@ -1,3 +1,4 @@
+
 #include "http.hh"
 //declare static variable
 std::unordered_map<std::string, std::string> HttpContentType::umap_type_;
@@ -10,6 +11,8 @@ const int DEFAULT_KEEP_ALIVE_TIME = 5 * 60 * 1000;  //ms
 void Ltalk::HttpContentType::Init() {
     //init http content type
     HttpContentType::umap_type_[".html"] = "text/html";
+    HttpContentType::umap_type_[".css"] = "text/css";
+    HttpContentType::umap_type_[".js"] = "application/x-javascript";
     HttpContentType::umap_type_[".avi"] = "video/x-msvideo";
     HttpContentType::umap_type_[".bmp"] = "image/bmp";
     HttpContentType::umap_type_[".c"] = "text/plain";
@@ -22,7 +25,8 @@ void Ltalk::HttpContentType::Init() {
     HttpContentType::umap_type_[".png"] = "image/png";
     HttpContentType::umap_type_[".txt"] = "text/plain";
     HttpContentType::umap_type_[".mp3"] = "audio/mp3";
-    HttpContentType::umap_type_["default"] = "text/json";
+    HttpContentType::umap_type_[".json"] = "application/json";
+    HttpContentType::umap_type_["default"] = "text/html";
 }
 
 std::string Ltalk::HttpContentType::GetType(const std::string name) {
@@ -37,6 +41,7 @@ Ltalk::Http::Http(int fd,EventLoop *eventloop) :
     fd_(fd),
     eventloop_(eventloop),
     sp_channel_(new Channel(eventloop, fd)),
+    error_(false),
     http_connection_state_(HttpConnectionState::CONNECTED),
     http_process_state_(HttpProcessState::PARSE_HEADER),
     keep_alive_(false) {
@@ -55,6 +60,7 @@ void Ltalk::Http::Reset() {
     http_process_state_ = HttpProcessState::PARSE_HEADER;
     in_content_buffer_.clear();
     map_header_info_.clear();
+    error_ = false;
     if(wp_net_timer_.lock()) {
         SPNetTimer sp_net_timer(wp_net_timer_.lock());
         sp_net_timer->Clear();
@@ -123,38 +129,38 @@ void Ltalk::Http::HandleRead() {
                 HandleError(HttpResponseCode::BAD_REQUEST, "Bad Request");
                 break;
             }
-
             // Judget if have content data
             //std::cout << "method: " << map_header_info_["method"] << '\n';
+            http_process_state_ = HttpProcessState::PROCESS;
             if(map_header_info_["method"] == "POST") {
                 content_length_ = 0;
-
                 if(map_header_info_.find("Content-Length") != map_header_info_.end()) {
                     content_length_ = std::stoi(map_header_info_["Content-Length"]);
                 } else {
+                    std::cout << "not found contnt-length\n";
                     error_ = true;
                     HandleError(HttpResponseCode::BAD_REQUEST, "Bad Request");
                     break;
                 }
 
                 if(content_length_ < 0) {
+                    std::cout << "not found contnt-length\n";
                     error_ = true;
                     HandleError(HttpResponseCode::BAD_REQUEST, "Bad Request");
                     break;
                 }
                 //std::cout << "have body data: Cotent-length: " << content_length_ << '\n';
                 http_process_state_ = HttpProcessState::RECV_BODY;
-                break;
             }
-            http_process_state_ = HttpProcessState::PROCESS;
         }
+
         // Recv body data
         if(http_process_state_ == HttpProcessState::RECV_BODY) {
-            std::cout << "recved body data\n";
+            //std::cout << "recved body data\n";
             // Get content length
             in_content_buffer_ += in_buffer_;
             if(!error_ && static_cast<int>(in_content_buffer_.size()) >= content_length_) {
-                std::cout << "content: __[[" << in_content_buffer_ << "]]__";
+                //std::cout << "content: __[[" << in_content_buffer_ << "]]__";
                 http_process_state_ = HttpProcessState::PROCESS;
             }
         }
@@ -166,11 +172,14 @@ void Ltalk::Http::HandleRead() {
 
     } while(false);
 
-
-    // end
-    if(!error_ && http_process_state_ == HttpProcessState::FINISH) {
+    if(error_) {
+        //std::cout << "error\n";
         this->Reset();
-    } else if (!error_ && http_connection_state_ != HttpConnectionState::DISCONNECTED) {
+    }
+    // end
+    if(http_process_state_ == HttpProcessState::FINISH) {
+        this->Reset();
+    } else if (!error_ && http_connection_state_ == HttpConnectionState::DISCONNECTED) {
         event |= EPOLLIN;
     }
 }
@@ -282,13 +291,14 @@ Ltalk::HttpParseHeaderResult Ltalk::Http::ParseHeader() {
 }
 
 void Ltalk::Http::HandleProcess() {
-    Ltalk::Center center(map_header_info_, in_content_buffer_, std::bind(&Http::Send, this, std::placeholders::_1, std::placeholders::_2));
+    Ltalk::Center center(map_header_info_, in_content_buffer_);
+    center.set_send_data_handler(std::bind(&Http::SendData, this, std::placeholders::_1, std::placeholders::_2));
+    center.set_send_file_handler(std::bind(&Http::SendFile, this, std::placeholders::_1));
     center.Process();
 }
 
 void Ltalk::Http::HandleWrite() {
     __uint32_t &event = sp_channel_->get_event();
-
     if(error_ || http_connection_state_ == HttpConnectionState::DISCONNECTED) {
         return;
     }
@@ -300,15 +310,55 @@ void Ltalk::Http::HandleWrite() {
     }
     if (out_buffer_.size() > 0)
         event |= EPOLLOUT;
+}
+
+void Ltalk::Http::SendData(const std::string &type,const std::string &content) {
 
 }
 
-void Ltalk::Http::Send(const std::string &send_content_type,const std::string &send_content) {
-    //std::cout << "handle write";
+void Ltalk::Http::SendFile(const std::string &file_name) {
     if(error_ || http_connection_state_ == HttpConnectionState::DISCONNECTED) {
         return;
     }
 
+    std::string file_content;
+    std::string suffix = file_name;
+    bool error = false;
+    char buf[MAX_BUF_SIZE];
+    int fd = open(file_name.c_str(), O_RDONLY);
+    do {
+        if(fd == -1) {
+            int fd_2 = open(global_web_404_page.c_str(), O_RDONLY);
+            if(fd_2 == -1) {
+                SendFile(global_web_404_page.c_str());
+                return;
+            }
+            file_content = "not found";
+            break;
+        }
+        int read_len = 0;
+        while(true) {
+            if((read_len = read(fd, buf, MAX_BUF_SIZE)) <= 0) {
+                break;
+            }
+            file_content += std::string(buf, buf + read_len);
+        }
+        close(fd);
+    } while(false);
+    // get suffix name
+    if(!error) {
+        while (true) {
+            int suffix_pos = suffix.find('.');
+            if(suffix_pos < 0)
+                break;
+            suffix = suffix.substr(suffix_pos + 1);
+        }
+    }
+    suffix = '.' + suffix;
+
+
+    //std::cout << "suffix: [" << suffix << "] file_name: [" << file_name << "]\n";
+    //std::cout << "handle write";
     std::string header;
     header += "HTTP/1.1 200 OK\r\n";
     if (map_header_info_.find("Connection") != map_header_info_.end() &&
@@ -320,14 +370,18 @@ void Ltalk::Http::Send(const std::string &send_content_type,const std::string &s
     }
 
     header += "Server: Linux x64 LYXF Ltalk server\r\n";
-    header += "Content-type: " + HttpContentType::GetType(send_content_type) + "\r\n";
-    header += "Content-Length: " +  std::to_string(send_content.size()) + "\r\n";
+    header += "Content-type: " + HttpContentType::GetType(suffix) + "\r\n";
+    //header += "Content-Length: " +  std::to_string(100) + "\r\n";
     header += "\r\n";
 
     out_buffer_.clear();
     out_buffer_ += header;
-    out_buffer_ += send_content;
+    std::cout << "send:[" << header << "]";
     HandleWrite();
+
+
+    //out_buffer_ += send_content;
+
 }
 
 void Ltalk::Http::HandleConnect() {
@@ -380,4 +434,9 @@ void Ltalk::Http::HandleError(HttpResponseCode error_number, std::string message
 
     Util::WriteData(fd_, header_buffer);
     Util::WriteData(fd_, body_buffer);
+}
+
+
+void Ltalk::Http::HandleNotFound() {
+
 }

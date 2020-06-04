@@ -7,9 +7,10 @@
 
 //#define DB_WAIT_TIMES 1000 // wait times
 //#define DB_WAIT_TIME  10   // will usleep(WAIT_TIME)
-extern MYSQL* global_mysql_ptr;
 
 namespace Ltalk {
+extern MYSQL* global_mysql_ptr;
+#define MYSQL_DEFAULT_CONNECT_PORT 3306
 class Mysql {
 	public:
         Mysql() : is_connected_(false) {}
@@ -18,7 +19,7 @@ class Mysql {
                 std::string user,
                 std::string password,
                 std::string name,
-                int port,
+                int port = MYSQL_DEFAULT_CONNECT_PORT,
                 const char *unix_socket = nullptr,
                 std::size_t client_flag = 0);
         void Disconnect();

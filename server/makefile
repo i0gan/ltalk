@@ -19,7 +19,10 @@ INSTALL_PATH := /usr/share/ltalks
 NET_PATH    :=  ./src/net
 THREAD_PATH :=  ./src/thread
 PROCESS_PATH := ./src/process
-DB_PATH     :=  ./src/db
+
+DB_MYSQL_PATH     :=  ./src/db/mysql
+DB_REDIS_PATH     :=  ./src/db/redis
+
 CRYPTO_PATH :=  ./src/crypto
 JSON_PATH   :=  ./src/json
 MAIN_PATH   :=  ./src
@@ -40,6 +43,10 @@ OBJS += $(NET_OBJ)
 THREAD_SRC := $(wildcard $(THREAD_PATH)/*.cc)  
 THREAD_OBJ := $(patsubst %.cc, %.o, $(THREAD_SRC)) 
 OBJS += $(THREAD_OBJ)
+# db src
+DB_MYSQL_SRC := $(wildcard $(DB_MYSQL_PATH)/*.cc)  
+DB_MYSQL_OBJ := $(patsubst %.cc, %.o, $(DB_MYSQL_SRC)) 
+OBJS += $(DB_MYSQL_OBJ)
 
 # process src
 PROCESS_SRC := $(wildcard $(PROCESS_PATH)/*.cc)  

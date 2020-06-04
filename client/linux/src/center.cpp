@@ -33,19 +33,27 @@ void Center::requestLogin(QString account, QString password) {
     QNetworkRequest request;
     request.setRawHeader("Origin", "http://lyxf.xyz");
     request.setRawHeader("Accept", "*/*");
-    request.setRawHeader("Referer", "http://google.com");
-    request.setRawHeader("Content-Type", "application/x-www-form-urlencoded");
+    request.setRawHeader("Referer", "http://ltalk.lyxf.xyz");
+    request.setRawHeader("Content-Type", "text/json");
     request.setRawHeader("User-Agent", "Mozilla/5.0 (Linux x64)");
     //request.setRawHeader("")
 
-    request.setUrl(QUrl(SERVER_REQUEST_URL));
-    network_access_mannager->post(request, "I love you AAAAAA");
     //mannager->post()
     QJsonDocument json_document;
     QJsonObject json_object;
-//    json_object.
-//    json_document.setArray()
-    //json_document = QString("sss");
+    json_object.insert("Account", 11343);
+    json_object.insert("Password", password.toUtf8().toBase64().data());
+    json_object.insert("Request", "login");
+    json_object.insert("Platform", QString("Ltalk for linux x64"));
+    json_object.insert("Client-Version", 0.1);
+    json_object.insert("Token", QString("none"));
+    json_object.insert("Date", QDateTime::currentDateTime().toString("yy-MM-dd dd:mm:ss"));
+
+    json_document.setObject(json_object);
+    QByteArray byte_array = json_document.toJson(QJsonDocument::Compact);
+    qDebug() << byte_array.data();
+    request.setUrl(QUrl(SERVER_REQUEST_URL));
+    network_access_mannager->post(request, byte_array);
 }
 
 void Center::requestReply(QNetworkReply *reply) {

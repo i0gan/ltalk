@@ -1,0 +1,18 @@
+{
+    "server" : {
+        "tcp_port" : 80,
+        "udp_port" : 8000,
+        "number_of_thread": 8,
+        "log_path" : "data",
+        "web_root" : "data/web",
+        "web_page" : "index.html",
+        "web_404_page" : "data/web/404.html"
+    },
+    "database" : {
+        "host" : "127.0.0.1",
+        "port" : 3306,
+        "user" : "ltalk",
+        "password" : "123456",
+        "name" : "ltalk"
+    }
+}

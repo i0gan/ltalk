@@ -2,4 +2,4 @@
 
 cd bin
 
-./ltalks -r
+sudo ./ltalks -r

@@ -3,13 +3,6 @@
 
  Ltalk is a very simple instant messaging software, the pursuit of small practical and learning 
 
-Suport platform
-
-* linux 
-* windows
-* mac os
-* android
-
 
 
 ## Brief introduction
@@ -18,12 +11,10 @@ HTTP is used as the transport protocol, C + + is used as the language for server
 
 
 
+## devloping  3.0 %
 
-
-## devloping  2.3 %
-
-* server 2.2 %
-* linux  0.1 %
+* server 2.5 %
+* linux  0.5 %
 * windows 0.0 %
 * mac os 0.0 %
 * android 0.0%
@@ -38,23 +29,26 @@ You can download a bin file from github's [releases page]().
 
 
 
-
-
-## How do I  complie Ltalk?
-
-
-
-
-
 ## Compatibility
 
+Suport platform
 
+* linux
+* windows
+* mac os
+* android
 
 
 
 ## Build
 
+[complie server]()
 
+[complie clinent for linux]()
+
+[complie clinent for windows]()
+
+[complie clinent for android]()
 
 
 
@@ -73,8 +67,6 @@ You can download a bin file from github's [releases page]().
 
 
 ## Getting Help
-
-
 
 
 
