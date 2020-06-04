@@ -23,6 +23,11 @@ enum class HttpProcessState {
     FINISH
 };
 
+enum class HttpSendState {
+    SEND_HEADER = 0,
+    SEND_CONTENT
+};
+
 enum class HttpConnectionState {
     CONNECTED = 0,
     DISCONNECTING,
@@ -136,19 +141,22 @@ private:
     EventLoop *eventloop_;
     SPChannel sp_channel_;
     std::string in_buffer_;
-    std::string out_buffer_;
+    std::string send_header_buffer_;
+    std::string send_content_buffer_;
     std::string in_content_buffer_;
     bool error_;
     HttpConnectionState http_connection_state_;
     HttpProcessState http_process_state_;
+    HttpSendState http_send_state_;
     int content_length_;
 
     bool keep_alive_;
     std::map<std::string, std::string> map_header_info_;
     std::weak_ptr<NetTimer> wp_net_timer_;
 
+
     void HandleRead();
-    void SendFile(const std::string &file_name);
+
     void HandleWrite();
     void HandleConnect();
     void HandleError(HttpResponseCode error_number, std::string message);
@@ -156,6 +164,7 @@ private:
     HttpParseHeaderResult ParseHeader();
     void HandleProcess();
     void SendData(const std::string &type,const std::string &content);
+    void SendFile(const std::string &file_name);
     //Http
 };
 }

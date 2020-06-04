@@ -13,6 +13,8 @@ void Ltalk::HttpContentType::Init() {
     HttpContentType::umap_type_[".html"] = "text/html";
     HttpContentType::umap_type_[".css"] = "text/css";
     HttpContentType::umap_type_[".js"] = "application/x-javascript";
+    HttpContentType::umap_type_[".woff"] = "application/font-woff";
+    HttpContentType::umap_type_[".woff2"] = "application/font-woff2";
     HttpContentType::umap_type_[".avi"] = "video/x-msvideo";
     HttpContentType::umap_type_[".bmp"] = "image/bmp";
     HttpContentType::umap_type_[".c"] = "text/plain";
@@ -102,7 +104,7 @@ void Ltalk::Http::HandleRead() {
     __uint32_t &event = sp_channel_->get_event();
     do {
         int read_len = Util::ReadData(fd_, in_buffer_);
-        //std::cout << "http_content:__[" << in_buffer_ << "]__";
+        std::cout << "http_content:__[" << in_buffer_ << "]__";
         //if state as disconnecting will clean th in buffer
         if(http_connection_state_ == HttpConnectionState::DISCONNECTING) {
             std::cout << "DISCONNECTING\n";
@@ -302,49 +304,70 @@ void Ltalk::Http::HandleWrite() {
     if(error_ || http_connection_state_ == HttpConnectionState::DISCONNECTED) {
         return;
     }
-
-    if(Util::WriteData(fd_, out_buffer_) < 0) {
-        perror("write data");
-        event = 0;
-        error_ = true;
+    if(http_send_state_ == HttpSendState::SEND_HEADER) {
+        if(Util::WriteData(fd_, send_header_buffer_) < 0) {
+            perror("write header data");
+            event = 0;
+            error_ = true;
+        }
+    }else if (http_send_state_ == HttpSendState::SEND_CONTENT) {
+        if(Util::WriteData(fd_, send_content_buffer_) < 0) {
+            perror("write conetent data");
+            event = 0;
+            error_ = true;
+        }
     }
-    if (out_buffer_.size() > 0)
+    if (send_header_buffer_.size() > 0 || send_content_buffer_.size() > 0)
         event |= EPOLLOUT;
 }
 
 void Ltalk::Http::SendData(const std::string &type,const std::string &content) {
+    send_header_buffer_.clear();
+    send_header_buffer_ += "HTTP/1.1 200 OK\r\n";
+    if (map_header_info_.find("Connection") != map_header_info_.end() &&
+            (map_header_info_["Connection"] == "Keep-Alive" ||
+             map_header_info_["Connection"] == "keep-alive")) {
+        keep_alive_ = true;
+        send_header_buffer_ += std::string("Connection: Keep-Alive\r\n") + "Keep-Alive: timeout=" +
+                std::to_string(DEFAULT_KEEP_ALIVE_TIME) + "\r\n";
+    }
 
+    send_header_buffer_ += "Server: Linux x64 LYXF Ltalk server\r\n";
+    send_header_buffer_ += "Content-type: " + HttpContentType::GetType(type) + "\r\n";
+    send_header_buffer_ += "Content-Length: " +  std::to_string(send_content_buffer_.size()) + "\r\n";
+    send_header_buffer_ += "\r\n";
+    std::cout << "send_data:[" << send_header_buffer_ << "]";
+    http_send_state_ = HttpSendState::SEND_HEADER;
+    HandleWrite();
+    send_content_buffer_ = content;
+    http_send_state_ = HttpSendState::SEND_CONTENT;
+    HandleWrite();
 }
 
 void Ltalk::Http::SendFile(const std::string &file_name) {
     if(error_ || http_connection_state_ == HttpConnectionState::DISCONNECTED) {
         return;
     }
-
-    std::string file_content;
+    send_content_buffer_.clear();
     std::string suffix = file_name;
     bool error = false;
     char buf[MAX_BUF_SIZE];
     int fd = open(file_name.c_str(), O_RDONLY);
     do {
         if(fd == -1) {
-            int fd_2 = open(global_web_404_page.c_str(), O_RDONLY);
-            if(fd_2 == -1) {
-                SendFile(global_web_404_page.c_str());
-                return;
-            }
-            file_content = "not found";
-            break;
+            HandleError(HttpResponseCode::NOT_FOUND, "Not found!");
+            return;
         }
         int read_len = 0;
         while(true) {
             if((read_len = read(fd, buf, MAX_BUF_SIZE)) <= 0) {
                 break;
             }
-            file_content += std::string(buf, buf + read_len);
+            send_content_buffer_ += std::string(buf, buf + read_len);
         }
         close(fd);
     } while(false);
+
     // get suffix name
     if(!error) {
         while (true) {
@@ -356,32 +379,28 @@ void Ltalk::Http::SendFile(const std::string &file_name) {
     }
     suffix = '.' + suffix;
 
-
-    //std::cout << "suffix: [" << suffix << "] file_name: [" << file_name << "]\n";
-    //std::cout << "handle write";
-    std::string header;
-    header += "HTTP/1.1 200 OK\r\n";
+    std::cout << "suffix: [" << suffix << "] file_name: [" << file_name << "]\n";
+    // send header
+    send_header_buffer_.clear();
+    send_header_buffer_ += "HTTP/1.1 200 OK\r\n";
     if (map_header_info_.find("Connection") != map_header_info_.end() &&
             (map_header_info_["Connection"] == "Keep-Alive" ||
              map_header_info_["Connection"] == "keep-alive")) {
         keep_alive_ = true;
-        header += std::string("Connection: Keep-Alive\r\n") + "Keep-Alive: timeout=" +
+        send_header_buffer_ += std::string("Connection: Keep-Alive\r\n") + "Keep-Alive: timeout=" +
                 std::to_string(DEFAULT_KEEP_ALIVE_TIME) + "\r\n";
     }
 
-    header += "Server: Linux x64 LYXF Ltalk server\r\n";
-    header += "Content-type: " + HttpContentType::GetType(suffix) + "\r\n";
-    //header += "Content-Length: " +  std::to_string(100) + "\r\n";
-    header += "\r\n";
+    send_header_buffer_ += "Server: Linux x64 LYXF Ltalk server\r\n";
+    send_header_buffer_ += "Content-type: " + HttpContentType::GetType(suffix) + "\r\n";
+    send_header_buffer_ += "Content-Length: " +  std::to_string(send_content_buffer_.size()) + "\r\n";
+    send_header_buffer_ += "\r\n";
+    //std::cout << "send_file:[" << send_header_buffer_ << "]";
 
-    out_buffer_.clear();
-    out_buffer_ += header;
-    std::cout << "send:[" << header << "]";
+    http_send_state_ = HttpSendState::SEND_HEADER;
     HandleWrite();
-
-
-    //out_buffer_ += send_content;
-
+    http_send_state_ = HttpSendState::SEND_CONTENT;
+    HandleWrite();
 }
 
 void Ltalk::Http::HandleConnect() {
