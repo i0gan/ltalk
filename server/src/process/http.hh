@@ -24,11 +24,6 @@ enum class HttpRecvState {
     FINISH
 };
 
-enum class HttpSendState {
-    SEND = 0,
-    FINISH
-};
-
 enum class HttpConnectionState {
     CONNECTED = 0,
     DISCONNECTING,
@@ -148,7 +143,6 @@ private:
     bool send_error_;
     HttpConnectionState http_connection_state_;
     HttpRecvState http_process_state_;
-    HttpSendState http_send_state_;
     int content_length_;
 
     bool keep_alive_;

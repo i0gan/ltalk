@@ -105,7 +105,7 @@ void Ltalk::Http::HandleRead() {
     __uint32_t &event = sp_channel_->get_event();
     do {
         int read_len = Util::ReadData(fd_, in_buffer_);
-        //std::cout << "http_content:__[" << in_buffer_ << "]__";
+        std::cout << "http_content:__[" << in_buffer_ << "]__";
         //if state as disconnecting will clean th in buffer
         if(http_connection_state_ == HttpConnectionState::DISCONNECTING) {
             std::cout << "DISCONNECTING\n";
@@ -298,6 +298,7 @@ void Ltalk::Http::HandleProcess() {
 
 void Ltalk::Http::HandleWrite() {
     //std::cout << "write: \n";
+    __uint32_t &event = sp_channel_->get_event();
     if(send_error_ || http_connection_state_ == HttpConnectionState::DISCONNECTED) {
         return;
     }
@@ -308,14 +309,13 @@ void Ltalk::Http::HandleWrite() {
         if(Util::WriteData(fd_, out_buffer_) < 0) {
             perror("write header data");
             sp_channel_->set_event(0);
-            send_error_ = true;
+            out_buffer_.clear();
         }
     }
 
     if (out_buffer_.size() > 0) {
         std::cout << "left size: " << out_buffer_.size() << "] end\n";
-        Util::WriteData(fd_, out_buffer_);
-//        //sp_channel_->set_event(EPOLLOUT);
+        event |= EPOLLOUT;
     }
 }
 
@@ -342,13 +342,11 @@ void Ltalk::Http::SendData(const std::string &type,const std::string &content) {
         out_buffer_ << std::string("Connection: Keep-Alive\r\n") + "Keep-Alive: timeout=" +
                 std::to_string(DEFAULT_KEEP_ALIVE_TIME) + "\r\n";
     }
-
     out_buffer_ << "Server: Linux x64 LYXF Ltalk server\r\n";
     out_buffer_ << "Content-type: " + HttpContentType::GetType(type) + "\r\n";
     out_buffer_ << "Content-Length: " +  std::to_string(content.size()) + "\r\n";
     out_buffer_ << "\r\n";
     //std::cout << "send_data:[" << send_header_buffer_ << "]";
-    http_send_state_ = HttpSendState::SEND;
     out_buffer_ << content;
     HandleWrite();
 }
@@ -392,7 +390,6 @@ void Ltalk::Http::SendFile(const std::string &file_name) {
         if(stat_buf.st_size < (1024 * 1024 * 100)) {
             out_buffer_.append(file_mmap_ptr, stat_buf.st_size);
             //wait
-            http_send_state_ = HttpSendState::SEND;
             HandleWrite();
             munmap(file_mmap_ptr, stat_buf.st_size);
             close(fd);
@@ -437,7 +434,6 @@ void Ltalk::Http::HandleConnect() {
 
 void Ltalk::Http::HandleError(HttpResponseCode error_number, std::string message) {
     out_buffer_.clear();
-
     message = " " + message;
     std::string header_buffer, body_buffer;
     body_buffer += "<html><title>Bad request</title>";
@@ -457,5 +453,5 @@ void Ltalk::Http::HandleError(HttpResponseCode error_number, std::string message
 }
 
 void Ltalk::Http::HandleNotFound() {
-
+    out_buffer_.clear();
 }

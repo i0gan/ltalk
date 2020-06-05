@@ -10,6 +10,7 @@
 #include <QJsonArray>
 #include <QJsonObject>
 
+#include <QDateTime>
 #include "ltalk.h"
 #include "login_page.h"
 class Center : public QObject
@@ -28,6 +29,7 @@ private:
     LoginPage *login_page_;
     bool opened_login_page_;
     QNetworkAccessManager *network_access_mannager;
+    QString getTime();
 signals:
 
 };

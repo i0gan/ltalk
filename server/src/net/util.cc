@@ -74,7 +74,6 @@ ssize_t Ltalk::Util::ReadData(int fd, std::string &in_buffer, int length) {
     return read_sum;
 }
 
-
 ssize_t Ltalk::Util::WriteData(int fd, void *buffer, size_t length) {
     ssize_t write_left = length;
     ssize_t write_len = 0;
@@ -108,7 +107,8 @@ ssize_t Ltalk::Util::WriteData(int fd, Ltalk::Vessel &out_buffer) {
             if(errno == EINTR)
                 continue;
             else if(errno == EAGAIN) {
-                continue;
+                //std::cout << "EAGAIN\n";
+                return write_sum;
             }else {
                 return -1;
             }
@@ -124,49 +124,6 @@ ssize_t Ltalk::Util::WriteData(int fd, Ltalk::Vessel &out_buffer) {
 
     return write_sum;
 }
-ssize_t Ltalk::Util::WriteData(int fd,const std::string &header,const std::string &content) {
-    ssize_t write_left = header.size();
-    ssize_t write_len = 0;
-    ssize_t write_sum_1 = 0;
-    ssize_t write_sum_2 = 0;
-    char *write_ptr = const_cast<char *>(header.c_str());
-    while(write_left > 0) {
-        if((write_len = write(fd, write_ptr, write_left)) < 0) {
-            if(errno == EINTR)
-                continue;
-            else if(errno == EAGAIN) {
-                return write_sum_1;
-            }else {
-                return -1;
-            }
-        }
-        write_sum_1 += write_len;
-        write_left -= write_len;
-        write_ptr += write_len;
-    }
-
-    // write content
-    write_left = content.size();
-    write_len = 0;
-    write_ptr = const_cast<char *>(content.c_str());
-    while(write_left > 0) {
-        if((write_len = write(fd, write_ptr, write_left)) < 0) {
-            if(errno == EINTR)
-                continue;
-            else if(errno == EAGAIN) {
-                return write_sum_2;
-            }else {
-                return -1;
-            }
-        }
-        write_sum_2 += write_len;
-        write_left -= write_len;
-        write_ptr += write_len;
-    }
-
-    return write_sum_1 + write_sum_2;
-}
-
 
 void Ltalk::Util::IgnoreSigpipe() {
     struct sigaction sa;

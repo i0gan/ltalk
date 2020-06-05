@@ -34,9 +34,11 @@ void Center::requestLogin(QString account, QString password) {
     request.setRawHeader("Origin", "http://lyxf.xyz");
     request.setRawHeader("Accept", "*/*");
     request.setRawHeader("Referer", "http://ltalk.lyxf.xyz");
-    request.setRawHeader("Content-Type", "text/json");
-    request.setRawHeader("User-Agent", "Mozilla/5.0 (Linux x64)");
-    //request.setRawHeader("")
+    request.setRawHeader("Content-Type", "application/json");
+    request.setRawHeader("User-Agent", "Ltalk Client For Linux x64");
+    request.setRawHeader("Accept", "application/json");
+    request.setRawHeader("Cookie", "None");
+    request.setRawHeader("Date", getTime().toUtf8().data());
 
     //mannager->post()
     QJsonDocument json_document;
@@ -52,12 +54,17 @@ void Center::requestLogin(QString account, QString password) {
     json_document.setObject(json_object);
     QByteArray byte_array = json_document.toJson(QJsonDocument::Compact);
     qDebug() << byte_array.data();
-    request.setUrl(QUrl(SERVER_REQUEST_URL));
+    QUrl url;
+    url = SERVER_REQUEST_URL + QString(SERVER_BASE_URL_VALUE);
+    request.setUrl(url);
+
     network_access_mannager->post(request, byte_array);
 }
 
 void Center::requestReply(QNetworkReply *reply) {
     qDebug() << "recv: " << reply->readAll();
+}
 
-
+QString Center::getTime() {
+    return QDateTime::currentDateTime().toString("yy-MM-dd hh:mm:ss");
 }
