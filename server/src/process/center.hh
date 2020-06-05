@@ -7,7 +7,6 @@
 #include "../json/json.hpp"
 #include <unistd.h>
 
-
 //#include <strstream>
 
 namespace Ltalk {

@@ -56,10 +56,10 @@ bool Ltalk::StartUp::Run() {
         abort();
     }
 
-    if(RunDatabaseModule() == false) {
-        std::cout << "Run database module error\n";
-        //abort();
-    }
+//    if(RunDatabaseModule() == false) {
+//        std::cout << "Run database module error\n";
+//        //abort();
+//    }
     //std::cout << "global_mysql_ptr" << global_mysql_ptr << '\n';
     if(RunLoggerModule() == false) {
         std::cout << "Run logger module failed" << std::endl;
@@ -71,6 +71,7 @@ bool Ltalk::StartUp::Run() {
         std::cout << "Run network module failed!\n";
         abort();
     }
+
     return true;
 }
 

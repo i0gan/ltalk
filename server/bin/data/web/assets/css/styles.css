@@ -2845,7 +2845,7 @@ ul.prc-list li {
 }
 
 .game-hero-area {
-    background: url(../images/slider/game-hero-bg.jpg) center/cover no-repeat;
+    background: url(../images/bg/bg.jpg) center/cover no-repeat;
 }
 
 .scrl_me_down img {
@@ -2888,7 +2888,7 @@ ul.prc-list li {
 
 .abt3-area {
     position: relative;
-    background: url(../images/bg/bg-img1.jpg) center/cover no-repeat;
+    background: url(../images/bg/bg.jpg) center/cover no-repeat;
 }
 
 .abt3-area:before {

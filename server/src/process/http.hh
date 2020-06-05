@@ -7,7 +7,7 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <fcntl.h>
-
+#include <sys/mman.h>
 
 #include "../ltalk.hh"
 #include "../net/eventloop.hh"
@@ -16,16 +16,16 @@
 
 namespace Ltalk {
 
-enum class HttpProcessState {
+enum class HttpRecvState {
     PARSE_HEADER = 0,
-    RECV_BODY,
+    RECV_CONTENT,
     PROCESS,
     FINISH
 };
 
 enum class HttpSendState {
-    SEND_HEADER = 0,
-    SEND_CONTENT
+    SEND = 0,
+    FINISH
 };
 
 enum class HttpConnectionState {
@@ -141,12 +141,12 @@ private:
     EventLoop *eventloop_;
     SPChannel sp_channel_;
     std::string in_buffer_;
-    std::string send_header_buffer_;
-    std::string send_content_buffer_;
+    std::string out_buffer_;
     std::string in_content_buffer_;
-    bool error_;
+    bool recv_error_;
+    bool send_error_;
     HttpConnectionState http_connection_state_;
-    HttpProcessState http_process_state_;
+    HttpRecvState http_process_state_;
     HttpSendState http_send_state_;
     int content_length_;
 
@@ -163,6 +163,7 @@ private:
     void HandleNotFound();
     HttpParseHeaderResult ParseHeader();
     void HandleProcess();
+    std::string GetSuffix(std::string file_name);
     void SendData(const std::string &type,const std::string &content);
     void SendFile(const std::string &file_name);
     //Http

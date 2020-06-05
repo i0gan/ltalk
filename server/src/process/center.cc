@@ -65,7 +65,7 @@ void Ltalk::Center::HandleGet() {
     }else {
         file_path = url;
     }
-    std::cout << "file_path:[" << file_path << "]\n";
+    //std::cout << "file_path:[" << file_path << "]\n";
     do {
         if(file_path == "/") {
             file_path = global_web_root + "/" + global_web_page;

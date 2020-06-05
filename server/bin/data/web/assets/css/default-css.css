@@ -5,7 +5,6 @@
 */
 
 /*google font*/
-@import url('https://fonts.googleapis.com/css?family=Exo+2:400,500,600,700,800,900|Ubuntu:400,500,700');
 
 /* Your default CSS. */
 *{margin: 0;padding:0;box-sizing: border-box;}
@@ -182,11 +181,11 @@ a.scrollup-btn:hover{
 .ptb--none { padding: 0!important; }
 
 .bg-img-1{
-    background: #252525 url(../images/bg/contact-bg.jpg) center center/cover no-repeat;
+    background: #252525 url(../images/bg/bg.jpg) center center/cover no-repeat;
 }
 
 .bg-img-2{
-    background: #252525 url(../images/slider/slider-bg2.jpg) center center/cover no-repeat;
+    background: #252525 url(../images/bg/bg.jpg) center center/cover no-repeat;
 }
 
 .pos-rel{

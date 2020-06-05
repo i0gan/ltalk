@@ -80,7 +80,6 @@ int Ltalk::Net::Listen() {
 }
 
 void Ltalk::Net::HandleNewConnection() {
-
     struct sockaddr_in client_sockaddr;
     bzero(&client_sockaddr, sizeof (client_sockaddr));
     socklen_t client_sockaddr_len = sizeof (client_sockaddr);
