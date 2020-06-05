@@ -10,7 +10,7 @@ ssize_t Ltalk::Util::ReadData(int fd, void *buffer, size_t length) {
             if(errno == EINTR)
                 continue;
             else if(errno == EAGAIN)
-                return read_sum;
+                continue;
             else
                 return -1;
         } else if (read_len == 0) {
@@ -60,7 +60,7 @@ ssize_t Ltalk::Util::ReadData(int fd, std::string &in_buffer, int length) {
             if(errno == EINTR)
                 continue;
             else if (errno == EAGAIN)
-                return read_sum;
+                continue;
             else
                 return -1;
         } else if (read_len == 0) {
@@ -94,20 +94,21 @@ ssize_t Ltalk::Util::WriteData(int fd, void *buffer, size_t length) {
         write_left -= write_len;
         write_ptr += write_len;
     }
-
     return write_sum;
 }
-ssize_t Ltalk::Util::WriteData(int fd, std::string &out_buffer) {
+
+ssize_t Ltalk::Util::WriteData(int fd, Ltalk::Vessel &out_buffer) {
     ssize_t write_left = out_buffer.size();
     ssize_t write_len = 0;
     ssize_t write_sum = 0;
-    char *write_ptr = const_cast<char *>(out_buffer.c_str());
+    char *write_ptr = out_buffer.data();
     while(write_left > 0) {
-        if((write_len = write(fd, write_ptr, write_left)) < 0) {
+        write_len = write(fd, write_ptr, write_left);
+        if(write_left < 0) {
             if(errno == EINTR)
                 continue;
             else if(errno == EAGAIN) {
-                return write_sum;
+                continue;
             }else {
                 return -1;
             }
@@ -119,7 +120,7 @@ ssize_t Ltalk::Util::WriteData(int fd, std::string &out_buffer) {
     if(write_sum == static_cast<int>(out_buffer.size()))
         out_buffer.clear();
     else
-        out_buffer = out_buffer.substr(write_sum);
+        out_buffer.sub(write_sum);
 
     return write_sum;
 }

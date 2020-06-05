@@ -12,7 +12,6 @@ Ltalk::NetTimer::NetTimer(SPHttp sp_http, int ms_timeout) :
 Ltalk::NetTimer::NetTimer(NetTimer &net_timer) :
     expired_ms_time_(0),
     sp_http_(net_timer.sp_http_) {
-
 }
 
 

@@ -1,5 +1,6 @@
 
 #include "http.hh"
+
 //declare static variable
 std::unordered_map<std::string, std::string> HttpContentType::umap_type_;
 pthread_once_t HttpContentType::once_control_;
@@ -53,12 +54,11 @@ Ltalk::Http::Http(int fd,EventLoop *eventloop) :
     sp_channel_->set_read_handler(std::bind(&Http::HandleRead, this));
     sp_channel_->set_write_handler(std::bind(&Http::HandleWrite, this));
     sp_channel_->set_connected_handler(std::bind(&Http::HandleConnect, this));
-
 }
 Ltalk::Http::~Http() {
+    std::cout << "free http\n";
     close(fd_);
 }
-
 void Ltalk::Http::Reset() {
     http_process_state_ = HttpRecvState::PARSE_HEADER;
     in_content_buffer_.clear();
@@ -301,7 +301,9 @@ void Ltalk::Http::HandleWrite() {
     if(send_error_ || http_connection_state_ == HttpConnectionState::DISCONNECTED) {
         return;
     }
-    if(http_send_state_ == HttpSendState::SEND) {
+
+    //std::cout << "write size: " << out_buffer_.size() << "] end\n";
+    if(out_buffer_.size() > 0) {
 
         if(Util::WriteData(fd_, out_buffer_) < 0) {
             perror("write header data");
@@ -310,11 +312,11 @@ void Ltalk::Http::HandleWrite() {
         }
     }
 
-    if (out_buffer_.size() > 0)
-        sp_channel_->set_event(EPOLLOUT);
-
-    else if (out_buffer_.size() == 0)
-        http_send_state_ = HttpSendState::FINISH;
+    if (out_buffer_.size() > 0) {
+        std::cout << "left size: " << out_buffer_.size() << "] end\n";
+        Util::WriteData(fd_, out_buffer_);
+//        //sp_channel_->set_event(EPOLLOUT);
+    }
 }
 
 std::string Ltalk::Http::GetSuffix(std::string file_name) {
@@ -328,25 +330,26 @@ std::string Ltalk::Http::GetSuffix(std::string file_name) {
     suffix = '.' + suffix;
     return suffix;
 }
+
 void Ltalk::Http::SendData(const std::string &type,const std::string &content) {
     send_error_ = false;
     out_buffer_.clear();
-    out_buffer_ += "HTTP/1.1 200 OK\r\n";
+    out_buffer_ << "HTTP/1.1 200 OK\r\n";
     if (map_header_info_.find("Connection") != map_header_info_.end() &&
             (map_header_info_["Connection"] == "Keep-Alive" ||
              map_header_info_["Connection"] == "keep-alive")) {
         keep_alive_ = true;
-        out_buffer_ += std::string("Connection: Keep-Alive\r\n") + "Keep-Alive: timeout=" +
+        out_buffer_ << std::string("Connection: Keep-Alive\r\n") + "Keep-Alive: timeout=" +
                 std::to_string(DEFAULT_KEEP_ALIVE_TIME) + "\r\n";
     }
 
-    out_buffer_ += "Server: Linux x64 LYXF Ltalk server\r\n";
-    out_buffer_ += "Content-type: " + HttpContentType::GetType(type) + "\r\n";
-    out_buffer_ += "Content-Length: " +  std::to_string(content.size()) + "\r\n";
-    out_buffer_ += "\r\n";
+    out_buffer_ << "Server: Linux x64 LYXF Ltalk server\r\n";
+    out_buffer_ << "Content-type: " + HttpContentType::GetType(type) + "\r\n";
+    out_buffer_ << "Content-Length: " +  std::to_string(content.size()) + "\r\n";
+    out_buffer_ << "\r\n";
     //std::cout << "send_data:[" << send_header_buffer_ << "]";
     http_send_state_ = HttpSendState::SEND;
-    out_buffer_ += content;
+    out_buffer_ << content;
     HandleWrite();
 }
 // Send file
@@ -371,37 +374,33 @@ void Ltalk::Http::SendFile(const std::string &file_name) {
 
         // get suffix name
         out_buffer_.clear();
-        out_buffer_ += "HTTP/1.1 200 OK\r\n";
+        out_buffer_ << "HTTP/1.1 200 OK\r\n";
         if (map_header_info_.find("Connection") != map_header_info_.end() &&
                 (map_header_info_["Connection"] == "Keep-Alive" ||
                  map_header_info_["Connection"] == "keep-alive")) {
             keep_alive_ = true;
-            out_buffer_ += std::string("Connection: Keep-Alive\r\n") + "Keep-Alive: timeout=" +
+            out_buffer_ << std::string("Connection: Keep-Alive\r\n") + "Keep-Alive: timeout=" +
                     std::to_string(DEFAULT_KEEP_ALIVE_TIME) + "\r\n";
         }
-        out_buffer_ += "Server: Linux x64 LYXF Ltalk server\r\n";
-        out_buffer_ += "Content-type: " + HttpContentType::GetType(GetSuffix(file_name)) + "\r\n";
-        out_buffer_ += "Content-Length: " +  std::to_string(stat_buf.st_size) + "\r\n";
-        out_buffer_ += "\r\n";
+        out_buffer_ << "Server: Linux x64 LYXF Ltalk server\r\n";
+        out_buffer_ << "Content-type: " + HttpContentType::GetType(GetSuffix(file_name)) + "\r\n";
+        out_buffer_ << "Content-Length: " +  std::to_string(stat_buf.st_size) + "\r\n";
+        out_buffer_ << "\r\n";
         // write header
-
         void* file_mmap_ptr = mmap(nullptr, stat_buf.st_size, PROT_READ, MAP_PRIVATE, fd, 0);
         // Sended it is less than 100 MB
         if(stat_buf.st_size < (1024 * 1024 * 100)) {
-            out_buffer_ += std::string(static_cast<char *>(file_mmap_ptr), stat_buf.st_size);
-            munmap(file_mmap_ptr, stat_buf.st_size);
-            close(fd);
+            out_buffer_.append(file_mmap_ptr, stat_buf.st_size);
             //wait
             http_send_state_ = HttpSendState::SEND;
             HandleWrite();
+            munmap(file_mmap_ptr, stat_buf.st_size);
+            close(fd);
             break;
         }
 
         HandleError(HttpResponseCode::SEE_OTHER, "This file too big");
-
     } while(false);
-    //std::cout << "suffix: [" << GetSuffix(file_name) << "] file_name: [" << file_name << "]\n";
-    // send header
 }
 
 void Ltalk::Http::HandleConnect() {
@@ -452,10 +451,10 @@ void Ltalk::Http::HandleError(HttpResponseCode error_number, std::string message
     header_buffer += "Content-Length: " + std::to_string(body_buffer.size()) + "\r\n";
     header_buffer += "Server: Linux x64 LYXF Ltalk Server\r\n";
     header_buffer += "\r\n";
-    Util::WriteData(fd_, header_buffer);
-    Util::WriteData(fd_, body_buffer);
+    out_buffer_ << header_buffer;
+    out_buffer_ << body_buffer;
+    Util::WriteData(fd_, out_buffer_);
 }
-
 
 void Ltalk::Http::HandleNotFound() {
 

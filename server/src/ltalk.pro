@@ -20,6 +20,7 @@ HEADERS += \
     net/eventloop_thread.hh \
     net/eventloop_threadpool.hh \
     net/timer.hh \
+    net/vessel.hpp \
     \
     thread/noncopyable.hh \
     thread/thread.hh \

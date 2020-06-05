@@ -9,7 +9,8 @@
 #include <netinet/in.h>
 #include <netinet/tcp.h>
 #include "../ltalk.hh"
-
+#include "vessel.hpp"
+//std::basic_string
 /*
  * This file is static function set
  *
@@ -23,8 +24,8 @@ ssize_t ReadData(int fd, std::string &in_buffer);
 ssize_t ReadData(int fd, std::string &in_buffer, int length);
 
 ssize_t WriteData(int fd, void *buffer, size_t length);
-ssize_t WriteData(int fd, std::string &out_buffer);
-ssize_t WriteData(int fd,const std::string &header,const std::string &content);
+ssize_t WriteData(int fd, Ltalk::Vessel &out_buffer);
+ssize_t WriteData(int fd, const std::string &header,const std::string &content);
 
 void IgnoreSigpipe(); //avoid server terminate with SIGPIPE signal
 bool SetFdNonBlocking(int listen_fd); //set fd as non bloking

@@ -13,6 +13,7 @@
 #include "../net/eventloop.hh"
 #include "../net/timer.hh"
 #include "center.hh"
+#include "../net/vessel.hpp"
 
 namespace Ltalk {
 
@@ -141,7 +142,7 @@ private:
     EventLoop *eventloop_;
     SPChannel sp_channel_;
     std::string in_buffer_;
-    std::string out_buffer_;
+    Ltalk::Vessel out_buffer_;
     std::string in_content_buffer_;
     bool recv_error_;
     bool send_error_;
