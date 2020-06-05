@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>519</width>
-    <height>376</height>
+    <width>600</width>
+    <height>400</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -16,8 +16,8 @@
   <widget class="QLabel" name="label">
    <property name="geometry">
     <rect>
-     <x>170</x>
-     <y>20</y>
+     <x>210</x>
+     <y>30</y>
      <width>191</width>
      <height>31</height>
     </rect>
@@ -29,8 +29,8 @@
   <widget class="QLineEdit" name="lineEdit_account">
    <property name="geometry">
     <rect>
-     <x>110</x>
-     <y>180</y>
+     <x>160</x>
+     <y>250</y>
      <width>301</width>
      <height>37</height>
     </rect>
@@ -42,8 +42,8 @@
   <widget class="QLineEdit" name="lineEdit_password">
    <property name="geometry">
     <rect>
-     <x>110</x>
-     <y>250</y>
+     <x>160</x>
+     <y>290</y>
      <width>301</width>
      <height>37</height>
     </rect>
@@ -55,8 +55,8 @@
   <widget class="QPushButton" name="pushButton_login">
    <property name="geometry">
     <rect>
-     <x>210</x>
-     <y>300</y>
+     <x>240</x>
+     <y>340</y>
      <width>105</width>
      <height>39</height>
     </rect>
@@ -65,6 +65,24 @@
     <string>login</string>
    </property>
   </widget>
+  <widget class="QLabel" name="label_frame">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>600</width>
+     <height>400</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string/>
+   </property>
+  </widget>
+  <zorder>label_frame</zorder>
+  <zorder>label</zorder>
+  <zorder>lineEdit_account</zorder>
+  <zorder>lineEdit_password</zorder>
+  <zorder>pushButton_login</zorder>
  </widget>
  <resources/>
  <connections/>
