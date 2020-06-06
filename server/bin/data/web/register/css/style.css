@@ -85,7 +85,7 @@ h4 {
     padding-top: 10px;
     font-size: .9em;
 }
-select#w3_country, .w3_modal_body_grid input[type="text"], .w3_modal_body_grid input[type="email"], #w3_country1, .w3_modal_body_grid input[type="password"] {
+select#occupation, .w3_modal_body_grid input[type="text"], .w3_modal_body_grid input[type="email"], #w3_country1, .w3_modal_body_grid input[type="password"] {
     width: 55%;
     font-size: .9em;
     outline: none;
@@ -96,20 +96,20 @@ select#w3_country, .w3_modal_body_grid input[type="text"], .w3_modal_body_grid i
     background: rgba(0, 0, 0, 0.77);
     float: right;
 }
-select#w3_country, #w3_country1 {
+select#occupation, #occupation1 {
     width: 59.4%;
 }
 .w3_modal_body_grid select {
     font-size: .9em;
     padding: .7em;
 }
-select#w3_country option ,select#w3_country1 option {
+select#occupation option ,select#occupation1 option {
 	color:#fff;
 }
 .w3_modal_body_grid1{
 	margin: 12px 0;
 }
-#w3_country1{
+#occupation1{
 	margin-bottom:12px;
 }
 .colr {
@@ -183,7 +183,7 @@ label.radio {
     margin: 0.6em 0 0;
 	position: relative;
 }
-.agileits-register input[type="submit"] {
+.agileits-register input[type="button"] {
     outline: none;
     padding: .9em 2em;
     letter-spacing: 1px;
@@ -217,7 +217,7 @@ label.agileits-agree a {
     text-decoration: underline;
     color: #fff;
 }
-.agileits-register input[type="submit"]:hover {
+.agileits-register input[type="button"]:hover {
 	background:#23f7e5;
 	transition:0.5s all;
 	-webkit-transition:0.5s all;

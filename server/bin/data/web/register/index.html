@@ -9,8 +9,8 @@ Ltalk register web page
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <meta name="keywords" content="Ltalk register web page" />
-<script type="application/x-javascript"> addEventListener("load", function() { setTimeout(hideURLbar, 0); }, false);
-function hideURLbar(){ window.scrollTo(0,1); } </script>
+
+
 <!-- Meta tag Keywords -->
 <!-- css files -->
 <link rel="stylesheet" href="/register/css/style.css" type="text/css" media="all" /> <!-- Style-CSS --> 
@@ -30,65 +30,68 @@ function hideURLbar(){ window.scrollTo(0,1); } </script>
 		<!--//header-->
 		<!--main-->
 	<div class="agileits-register">
-		<form action="#" method="post">
 				<div class="w3_modal_body_grid w3_modal_body_grid1">
 					<span>Name</span>
-					<input type="text" name="Name" placeholder="Your Name" required=""/>
+					<input type="text" id="name" placeholder="Your Name" required=""/>
 					<div class="clear"> </div>
 				</div>
 				<div class="w3_modal_body_grid">
 					<span>Email</span>
-					<input type="email" name="Email" placeholder="Your E-mail" required=""/>
+					<input type="email" id="email" placeholder="Your E-mail" required=""/>
 					<div class="clear"> </div>
 				</div>
 				<div class="w3_modal_body_grid w3_modal_body_grid1">
 					<span>Phone Number</span>
-					<input type="text" name="phone Number" placeholder="Your Phone Number" required=""/>
+					<input type="text" id = "phone_number" placeholder="Your Phone Number" required=""/>
 					<div class="clear"> </div>
 				</div>
 				<div class="w3_modal_body_grid w3_modal_body_grid1">
 					<span>Address</span>
-					<input type="text" name="address" placeholder="Address" required=""/>
+					<input type="text" id = "address" placeholder="Address" required=""/>
 					<div class="clear"> </div>
 				</div>
-
+				
 				<div class="w3_modal_body_grid">
 					<span>Occupation</span>
-					<select id="w3_country" onchange="change_country(this.value)" class="frm-field required">
-						<option value="null">Student</option>
-						<option value="null">Teacher</option>   
-						<option value="null">Progrmmer</option>   
-						<option value="null">Other</option>   						
+					<select  id = "occupation" onchange="change_country(this.value)" class="frm-field required">
+						<option value="Student">Student</option>
+						<option value="Teacher">Teacher</option>   
+						<option value="Progrmmer">Progrmmer</option>   
+						<option value="Other">Other</option>   						
 					</select>
 					<div class="clear"> </div>
 				</div>
 				
+				<div class="w3_modal_body_grid w3_modal_body_grid1">
+					<span>Password</span>
+					<input type="password" id = "password_1" placeholder="Password" required=""/>
+					<div class="clear"> </div>
+				</div>
+				<div class="w3_modal_body_grid w3_modal_body_grid1">
+					<span>Password Again</span>
+					<input type="password" id = "password_2" placeholder="Password agin" required=""/>
+					<div class="clear"> </div>
+				</div>
+				
 				<div class="w3_modal_body_grid">
 				
-				<input type="submit" value="Register" />
+				<input type="button" id = "button_rigister" value="Register" />
+				
 				<div class="clear"></div>
-			</form>
 		</div>
 		
 		<!--//main-->
 		
 	</div>
 	<!--footer-->
-		<div class="footer">
-			<h2>&copy; 2020 Ltalk software All rights reserved by <a href="http://lyxf.xyz">LYXF</a></h2>
-		</div>
+    <div class="footer">
+        <h2>&copy; 2020 Ltalk software All rights reserved by <a href="http://lyxf.xyz">LYXF</a></h2>
+    </div>
 		<!--//footer-->
 <!-- js -->
-<script type="text/javascript" src="/register/js/jquery-2.1.4.min.js"></script>
+<script type="text/javascript" src="/register/js/main.js"> </script>
+
 <!-- //js -->
-<!-- Calendar -->
-<script src="/register/js/jquery-ui.js"></script>
-	<script>
-	  $(function() {
-		$( "#datepicker" ).datepicker();
-	 });
-	</script>
-<!-- //Calendar -->		
 
 </body>
 </html>

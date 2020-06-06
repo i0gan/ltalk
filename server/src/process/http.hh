@@ -158,6 +158,7 @@ private:
     std::string GetSuffix(std::string file_name);
     void SendData(const std::string &type,const std::string &content);
     void SendFile(const std::string &file_name);
+    void StrLower(std::string &str);
     //Http
 };
 }

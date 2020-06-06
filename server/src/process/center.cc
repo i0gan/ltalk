@@ -41,12 +41,15 @@ void Ltalk::Center::Process() {
         HandleNotFound();
     }
 
-    if(http_method == "GET") {
+    std::cout << "method: "<< http_method << " url:[" << map_url_info_["url"] << "]\n";
+
+
+    if(http_method == "get") {
         HandleGet();
-    }else if(http_method == "PUT") {
+    }else if(http_method == "put") {
 
-    }else if(http_method == "POST") {
-
+    }else if(http_method == "post") {
+        HandlePost();
     }
 }
 
@@ -54,7 +57,7 @@ void Ltalk::Center::HandleGet() {
     std::string path = map_url_info_["path"];
     bool error = false;
     bool send_file = false;
-    //std::cout << "file_path:[" << file_path << "]\n";
+
     do {
         if(path == "/") {
             path = global_web_root + "/" + global_web_page;
@@ -74,6 +77,17 @@ void Ltalk::Center::HandleGet() {
     }
 }
 
+void Ltalk::Center::HandlePost() {
+    std::string content_type;
+    try {
+        content_type = map_header_info_.at("content-type");
+    }  catch (std::out_of_range e) {
+        std::cout << "HandlePost out_of_range: " << e.what() << '\n';
+    }
+    std::cout << "content:[" << content_ << "]\n" << "type: " << content_type << '\n';
+    SendData(".txt", "post OK");
+}
+
 bool Ltalk::Center::ParseUrl() {
     std::string url;
     std::string value_url;
@@ -84,6 +98,7 @@ bool Ltalk::Center::ParseUrl() {
         std::cout << "map_header_info_[url]" << e.what() << '\n';
         return false;
     }
+    map_url_info_["url"] = url;
     int value_pos = url.find("?");
     if(value_pos >= 0) {
         value_url = url.substr(value_pos + 1);

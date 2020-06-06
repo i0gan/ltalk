@@ -62,6 +62,7 @@ Ltalk::Http::~Http() {
 void Ltalk::Http::Reset() {
     http_process_state_ = HttpRecvState::PARSE_HEADER;
     in_content_buffer_.clear();
+    in_buffer_.clear();
     map_header_info_.clear();
     recv_error_ = false;
     if(wp_net_timer_.lock()) {
@@ -105,7 +106,7 @@ void Ltalk::Http::HandleRead() {
     __uint32_t &event = sp_channel_->get_event();
     do {
         int read_len = Util::ReadData(fd_, in_buffer_);
-        //std::cout << "http_content:__[" << in_buffer_ << "]__";
+        std::cout << "http_content:__[" << in_buffer_ << "]__";
         //if state as disconnecting will clean th in buffer
         if(http_connection_state_ == HttpConnectionState::DISCONNECTING) {
             std::cout << "DISCONNECTING\n";
@@ -135,17 +136,16 @@ void Ltalk::Http::HandleRead() {
             // Judget if have content data
             //std::cout << "method: " << map_header_info_["method"] << '\n';
             http_process_state_ = HttpRecvState::PROCESS;
-            if(map_header_info_["method"] == "POST") {
+            if(map_header_info_["method"] == "post") {
                 content_length_ = 0;
-                if(map_header_info_.find("Content-Length") != map_header_info_.end()) {
-                    content_length_ = std::stoi(map_header_info_["Content-Length"]);
+                if(map_header_info_.find("content-length") != map_header_info_.end()) {
+                    content_length_ = std::stoi(map_header_info_["content-length"]);
                 } else {
                     std::cout << "not found contnt-length\n";
                     recv_error_ = true;
                     HandleError(HttpResponseCode::BAD_REQUEST, "Bad Request");
                     break;
                 }
-
                 if(content_length_ < 0) {
                     std::cout << "not found contnt-length\n";
                     recv_error_ = true;
@@ -170,9 +170,9 @@ void Ltalk::Http::HandleRead() {
 
         if(http_process_state_ == HttpRecvState::PROCESS) {
             HandleProcess();
+            in_buffer_.clear();
             http_process_state_ = HttpRecvState::FINISH;
         }
-
     } while(false);
 
     if(recv_error_) {
@@ -211,19 +211,19 @@ Ltalk::HttpParseHeaderResult Ltalk::Http::ParseHeader() {
             int http_method_pos = -1;
             if((http_method_pos = header_line_1.find("GET")) >= 0) {
                 first_line_read_pos = http_method_pos;
-                map_header_info_["method"] = "GET";
+                map_header_info_["method"] = "get";
                 break;
             } else if((http_method_pos = header_line_1.find("POST")) >= 0) {
                 first_line_read_pos = http_method_pos;
-                map_header_info_["method"] = "POST";
+                map_header_info_["method"] = "post";
                 break;
             } else if((http_method_pos = header_line_1.find("HEAD")) >= 0) {
                 first_line_read_pos = http_method_pos;
-                map_header_info_["method"] = "HEAD";
+                map_header_info_["method"] = "head";
                 break;
             } else if((http_method_pos = header_line_1.find("DELETE")) >= 0){
                 first_line_read_pos = http_method_pos;
-                map_header_info_["method"] = "DELETE";
+                map_header_info_["method"] = "delete";
                 break;
             } else {
                 break;
@@ -283,6 +283,10 @@ Ltalk::HttpParseHeaderResult Ltalk::Http::ParseHeader() {
         }
         std::string key = one_line.substr(0, value_start_pos);
         std::string value = one_line.substr(value_start_pos + 2);
+        // set as lower
+        StrLower(key);
+        StrLower(value);
+
         map_header_info_[key] = value;
     }
 
@@ -335,15 +339,15 @@ void Ltalk::Http::SendData(const std::string &type,const std::string &content) {
     send_error_ = false;
     out_buffer_.clear();
     out_buffer_ << "HTTP/1.1 200 OK\r\n";
-    if (map_header_info_.find("Connection") != map_header_info_.end() &&
-            (map_header_info_["Connection"] == "Keep-Alive" ||
-             map_header_info_["Connection"] == "keep-alive")) {
+    if (map_header_info_.find("connection") != map_header_info_.end() &&
+            (map_header_info_["connection"] == "keep-alive")) {
         keep_alive_ = true;
         out_buffer_ << std::string("Connection: Keep-Alive\r\n") + "Keep-Alive: timeout=" +
                 std::to_string(DEFAULT_KEEP_ALIVE_TIME) + "\r\n";
     }
     out_buffer_ << "Server: Linux x64 LYXF Ltalk server\r\n";
-    out_buffer_ << "Content-type: " + HttpContentType::GetType(type) + "\r\n";
+    out_buffer_ << "Access-Control-Allow-Origin: *\r\n";
+    out_buffer_ << "Content-Type: " + HttpContentType::GetType(type) + "\r\n";
     out_buffer_ << "Content-Length: " +  std::to_string(content.size()) + "\r\n";
     out_buffer_ << "\r\n";
     //std::cout << "send_data:[" << send_header_buffer_ << "]";
@@ -373,15 +377,15 @@ void Ltalk::Http::SendFile(const std::string &file_name) {
         // get suffix name
         out_buffer_.clear();
         out_buffer_ << "HTTP/1.1 200 OK\r\n";
-        if (map_header_info_.find("Connection") != map_header_info_.end() &&
-                (map_header_info_["Connection"] == "Keep-Alive" ||
-                 map_header_info_["Connection"] == "keep-alive")) {
+        if (map_header_info_.find("connection") != map_header_info_.end() &&
+                (map_header_info_["connection"] == "keep-alive")) {
             keep_alive_ = true;
             out_buffer_ << std::string("Connection: Keep-Alive\r\n") + "Keep-Alive: timeout=" +
                     std::to_string(DEFAULT_KEEP_ALIVE_TIME) + "\r\n";
         }
         out_buffer_ << "Server: Linux x64 LYXF Ltalk server\r\n";
-        out_buffer_ << "Content-type: " + HttpContentType::GetType(GetSuffix(file_name)) + "\r\n";
+        out_buffer_ << "Access-Control-Allow-Origin: *\r\n";
+        out_buffer_ << "Content-Type: " + HttpContentType::GetType(GetSuffix(file_name)) + "\r\n";
         out_buffer_ << "Content-Length: " +  std::to_string(stat_buf.st_size) + "\r\n";
         out_buffer_ << "\r\n";
         // write header
@@ -442,12 +446,19 @@ void Ltalk::Http::HandleError(HttpResponseCode error_number, std::string message
     body_buffer += "<hr><em> Linux x64 LYXF Ltalk Server </em>\n</body></html>";
 
     header_buffer += "HTTP/1.1 " + std::to_string(static_cast<int>(error_number)) + message + "\r\n";
-    header_buffer += "Content-Type: text/html\r\n";
+    header_buffer += "Access-Control-Allow-Origin: *\r\n";
     header_buffer += "Connection: Close\r\n";
+    header_buffer += "Content-Type: text/html\r\n";
     header_buffer += "Content-Length: " + std::to_string(body_buffer.size()) + "\r\n";
     header_buffer += "Server: Linux x64 LYXF Ltalk Server\r\n";
     header_buffer += "\r\n";
     out_buffer_ << header_buffer;
     out_buffer_ << body_buffer;
     Util::WriteData(fd_, out_buffer_);
+}
+
+void Ltalk::Http::StrLower(std::string &str) {
+    for (size_t index = 0; index < str.size(); ++index) {
+        str[index] = tolower(str[index]);
+    }
 }
