@@ -97,13 +97,11 @@ ssize_t Ltalk::Util::WriteData(int fd, void *buffer, size_t length) {
 }
 
 ssize_t Ltalk::Util::WriteData(int fd, Ltalk::Vessel &out_buffer) {
-    ssize_t write_left = out_buffer.size();
     ssize_t write_len = 0;
     ssize_t write_sum = 0;
-    char *write_ptr = out_buffer.data();
-    while(write_left > 0) {
-        write_len = write(fd, write_ptr, write_left);
-        if(write_left < 0) {
+    while(out_buffer.size() > 0) {
+        write_len = write(fd, out_buffer.data(), out_buffer.size());
+        if(write_len < 0) {
             if(errno == EINTR)
                 continue;
             else if(errno == EAGAIN) {
@@ -114,14 +112,8 @@ ssize_t Ltalk::Util::WriteData(int fd, Ltalk::Vessel &out_buffer) {
             }
         }
         write_sum += write_len;
-        write_left -= write_len;
-        write_ptr += write_len;
+        out_buffer.sub(write_len);
     }
-    if(write_sum == static_cast<int>(out_buffer.size()))
-        out_buffer.clear();
-    else
-        out_buffer.sub(write_sum);
-
     return write_sum;
 }
 

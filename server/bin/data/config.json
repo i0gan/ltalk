@@ -5,7 +5,7 @@
         "number_of_thread": 8,
         "log_path" : "data",
         "web_root" : "data/web",
-        "web_page" : "index.html",
+        "web_page" : "download/index.html",
         "web_404_page" : "data/web/404.html"
     },
     "database" : {

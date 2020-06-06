@@ -11,9 +11,9 @@ HTTP is used as the transport protocol, C + + is used as the language for server
 
 
 
-## devloping  3.0 %
+## devloping  5.0 %
 
-* server 2.5 %
+* server 4.5 %
 * linux  0.5 %
 * windows 0.0 %
 * mac os 0.0 %

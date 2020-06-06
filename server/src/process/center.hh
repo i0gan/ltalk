@@ -26,9 +26,12 @@ private:
     std::string &content_;
     CallBack1 send_file_handler_;
     CallBack2 send_data_handler_;
+    std::map<std::string, std::string> map_url_info_;
     void SendData(const std::string &suffix, const std::string &content);
     void SendFile(std::string file_name);
     void Login(std::string);
     void Update(std::string);
+    bool ParseUrl();
+    void HandleNotFound();
 };
 }

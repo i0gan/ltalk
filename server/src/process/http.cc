@@ -105,7 +105,7 @@ void Ltalk::Http::HandleRead() {
     __uint32_t &event = sp_channel_->get_event();
     do {
         int read_len = Util::ReadData(fd_, in_buffer_);
-        std::cout << "http_content:__[" << in_buffer_ << "]__";
+        //std::cout << "http_content:__[" << in_buffer_ << "]__";
         //if state as disconnecting will clean th in buffer
         if(http_connection_state_ == HttpConnectionState::DISCONNECTING) {
             std::cout << "DISCONNECTING\n";
@@ -450,8 +450,4 @@ void Ltalk::Http::HandleError(HttpResponseCode error_number, std::string message
     out_buffer_ << header_buffer;
     out_buffer_ << body_buffer;
     Util::WriteData(fd_, out_buffer_);
-}
-
-void Ltalk::Http::HandleNotFound() {
-    out_buffer_.clear();
 }

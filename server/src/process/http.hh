@@ -149,13 +149,10 @@ private:
     std::map<std::string, std::string> map_header_info_;
     std::weak_ptr<NetTimer> wp_net_timer_;
 
-
     void HandleRead();
-
     void HandleWrite();
     void HandleConnect();
     void HandleError(HttpResponseCode error_number, std::string message);
-    void HandleNotFound();
     HttpParseHeaderResult ParseHeader();
     void HandleProcess();
     std::string GetSuffix(std::string file_name);

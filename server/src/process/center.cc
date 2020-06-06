@@ -37,6 +37,10 @@ void Ltalk::Center::Process() {
         std::cout << e.what() << '\n';
     }
 
+    if(ParseUrl() == false) {
+        HandleNotFound();
+    }
+
     if(http_method == "GET") {
         HandleGet();
     }else if(http_method == "PUT") {
@@ -47,43 +51,49 @@ void Ltalk::Center::Process() {
 }
 
 void Ltalk::Center::HandleGet() {
-    std::string url;
-    std::string file_path;
-    std::string value_url;
+    std::string path = map_url_info_["path"];
     bool error = false;
     bool send_file = false;
-    try {
-        url = map_header_info_.at("url");
-    } catch (std::out_of_range e) {
-        std::cout << "map_header_info_[url]" << e.what() << '\n';
-    }
-
-    int value_pos = url.find("?");
-    if(value_pos >= 0) {
-        value_url = url.substr(value_pos + 1);
-        file_path = url.substr(0, value_pos);
-    }else {
-        file_path = url;
-    }
     //std::cout << "file_path:[" << file_path << "]\n";
     do {
-        if(file_path == "/") {
-            file_path = global_web_root + "/" + global_web_page;
+        if(path == "/") {
+            path = global_web_root + "/" + global_web_page;
             send_file = true;
             break;
         }else {
-
-            file_path = global_web_root + file_path;
+            path = global_web_root + path;
             send_file = true;
         }
     } while(false);
 
     // Send get file
     if(!error && send_file) {
-        SendFile(file_path);
+        SendFile(path);
     }else {
         std::cout << "error\n";
     }
+}
+
+bool Ltalk::Center::ParseUrl() {
+    std::string url;
+    std::string value_url;
+
+    try {
+        url = map_header_info_.at("url");
+    } catch (std::out_of_range e) {
+        std::cout << "map_header_info_[url]" << e.what() << '\n';
+        return false;
+    }
+    int value_pos = url.find("?");
+    if(value_pos >= 0) {
+        value_url = url.substr(value_pos + 1);
+        map_url_info_["path"] = url.substr(0, value_pos);
+    }else {
+        map_url_info_["path"] = url;
+    }
+
+    //std::cout << "value url:" << value_url << '\n';
+    return true;
 }
 
 void Ltalk::Center::SendFile(std::string file_name) {
@@ -94,4 +104,8 @@ void Ltalk::Center::SendFile(std::string file_name) {
 void Ltalk::Center::SendData(const std::string &suffix, const std::string &content) {
     if(send_data_handler_)
         send_data_handler_(suffix, content);
+}
+
+void Ltalk::Center::HandleNotFound() {
+    SendFile(global_web_404_page);
 }
