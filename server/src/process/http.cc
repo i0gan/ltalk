@@ -106,7 +106,7 @@ void Ltalk::Http::HandleRead() {
     __uint32_t &event = sp_channel_->get_event();
     do {
         int read_len = Util::ReadData(fd_, in_buffer_);
-        std::cout << "http_content:__[" << in_buffer_ << "]__";
+        //std::cout << "http_content:__[" << in_buffer_ << "]__";
         //if state as disconnecting will clean th in buffer
         if(http_connection_state_ == HttpConnectionState::DISCONNECTING) {
             std::cout << "DISCONNECTING\n";
@@ -121,7 +121,7 @@ void Ltalk::Http::HandleRead() {
         }else if(read_len < 0) { // Read data error
             perror("ReadData ");
             recv_error_ = true;
-            HandleError(HttpResponseCode::BAD_REQUEST, "Bad Request");
+            HandleError((int)HttpResponseCode::BAD_REQUEST, "Bad Request");
         }
 
         // Parse http header
@@ -130,7 +130,7 @@ void Ltalk::Http::HandleRead() {
             if(http_parse_header_result == HttpParseHeaderResult::ERROR) {
                 perror("ParseHeader ");
                 recv_error_ = true;
-                HandleError(HttpResponseCode::BAD_REQUEST, "Bad Request");
+                HandleError((int)HttpResponseCode::BAD_REQUEST, "Bad Request");
                 break;
             }
             // Judget if have content data
@@ -143,13 +143,13 @@ void Ltalk::Http::HandleRead() {
                 } else {
                     std::cout << "not found contnt-length\n";
                     recv_error_ = true;
-                    HandleError(HttpResponseCode::BAD_REQUEST, "Bad Request");
+                    HandleError((int)HttpResponseCode::BAD_REQUEST, "Bad Request");
                     break;
                 }
                 if(content_length_ < 0) {
                     std::cout << "not found contnt-length\n";
                     recv_error_ = true;
-                    HandleError(HttpResponseCode::BAD_REQUEST, "Bad Request");
+                    HandleError((int)HttpResponseCode::BAD_REQUEST, "Bad Request");
                     break;
                 }
                 //std::cout << "have body data: Cotent-length: " << content_length_ << '\n';
@@ -364,16 +364,22 @@ void Ltalk::Http::SendFile(const std::string &file_name) {
         int fd = open(file_name.c_str(), O_RDONLY);
         if(fd == -1) {
             std::cout << "Open file [" << file_name << "] failed!\n";
-            HandleError(HttpResponseCode::NOT_FOUND, "Not found!");
+            HandleError((int)HttpResponseCode::NOT_FOUND, "Not found!");
             break;
         }
         struct stat stat_buf;
         if(fstat(fd, &stat_buf) == -1) {
-            HandleError(HttpResponseCode::SEE_OTHER, "Internal server error");
+            HandleError((int)HttpResponseCode::SEE_OTHER, "Internal server error");
             close(fd);
             break;;
         }
 
+        // Check this file if as dir, if do not this, when mmap to read data, server will crashed!
+        if(S_ISDIR(stat_buf.st_mode)) {
+            HandleError((int)HttpResponseCode::SEE_OTHER, "Error: dir can't get");
+            close(fd);
+            break;
+        }
         // get suffix name
         out_buffer_.clear();
         out_buffer_ << "HTTP/1.1 200 OK\r\n";
@@ -383,7 +389,7 @@ void Ltalk::Http::SendFile(const std::string &file_name) {
             out_buffer_ << std::string("Connection: Keep-Alive\r\n") + "Keep-Alive: timeout=" +
                     std::to_string(DEFAULT_KEEP_ALIVE_TIME) + "\r\n";
         }
-        out_buffer_ << "Server: Linux x64 LYXF Ltalk server\r\n";
+        out_buffer_ << "Server: "  + std::string(SERVER_NAME) + "\r\n";
         out_buffer_ << "Access-Control-Allow-Origin: *\r\n";
         out_buffer_ << "Content-Type: " + HttpContentType::GetType(GetSuffix(file_name)) + "\r\n";
         out_buffer_ << "Content-Length: " +  std::to_string(stat_buf.st_size) + "\r\n";
@@ -399,8 +405,7 @@ void Ltalk::Http::SendFile(const std::string &file_name) {
             close(fd);
             break;
         }
-
-        HandleError(HttpResponseCode::SEE_OTHER, "This file too big");
+        HandleError((int)HttpResponseCode::SEE_OTHER, "This file too big");
     } while(false);
 }
 
@@ -436,16 +441,16 @@ void Ltalk::Http::HandleConnect() {
     }
 }
 
-void Ltalk::Http::HandleError(HttpResponseCode error_number, std::string message) {
+void Ltalk::Http::HandleError(int error_number, std::string message) {
     out_buffer_.clear();
     message = " " + message;
     std::string header_buffer, body_buffer;
     body_buffer += "<html><title>Bad request</title>";
     body_buffer += "<body bgcolor=\"dead00\">";
-    body_buffer += std::to_string(static_cast<int>(error_number)) + message;
+    body_buffer += std::to_string(error_number) + message;
     body_buffer += "<hr><em> Linux x64 LYXF Ltalk Server </em>\n</body></html>";
 
-    header_buffer += "HTTP/1.1 " + std::to_string(static_cast<int>(error_number)) + message + "\r\n";
+    header_buffer += "HTTP/1.1 " + std::to_string(error_number) + message + "\r\n";
     header_buffer += "Access-Control-Allow-Origin: *\r\n";
     header_buffer += "Connection: Close\r\n";
     header_buffer += "Content-Type: text/html\r\n";

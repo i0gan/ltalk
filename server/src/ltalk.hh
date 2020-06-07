@@ -15,6 +15,8 @@
 #define EPOLL_WAIT_TIME 10000
 #define MAX_BUF_SIZE 4096
 
+#define SERVER_NAME "Ltalk Server Linux(x64) 2020"
+
 namespace Ltalk {
 class StartUp;
 

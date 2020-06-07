@@ -152,7 +152,7 @@ private:
     void HandleRead();
     void HandleWrite();
     void HandleConnect();
-    void HandleError(HttpResponseCode error_number, std::string message);
+    void HandleError(int error_number, std::string message);
     HttpParseHeaderResult ParseHeader();
     void HandleProcess();
     std::string GetSuffix(std::string file_name);

@@ -23,6 +23,7 @@ Ltalk::StartUp::~StartUp() {
 }
 
 bool Ltalk::StartUp::Init(int argv, char **argc) {
+    setbuf(stdout, nullptr);
 
     if(argv < 2) {
         std::cout << "-h get more info" << std::endl;

@@ -36,14 +36,12 @@ void Ltalk::Center::Process() {
     } catch (std::out_of_range e) {
         std::cout << e.what() << '\n';
     }
-
     if(ParseUrl() == false) {
-        HandleNotFound();
+        Response(ResponseCode::ERROR_PARSING_URL);
+        return;
     }
 
-    std::cout << "method: "<< http_method << " url:[" << map_url_info_["url"] << "]\n";
-
-
+    //std::cout << "method: "<< http_method << " url:[" << map_url_info_["url"] << "]\n";
     if(http_method == "get") {
         HandleGet();
     }else if(http_method == "put") {
@@ -53,27 +51,40 @@ void Ltalk::Center::Process() {
     }
 }
 
+void Ltalk::Center::HandleUrlRequest(const std::string &request, const std::string &platform) {
+    std::string path = global_web_root;
+    if(request == "register" && platform == "web") {
+        path += "/register/index.html";
+        SendFile(path);
+    }
+}
+
 void Ltalk::Center::HandleGet() {
-    std::string path = map_url_info_["path"];
     bool error = false;
-    bool send_file = false;
+    std::string path = map_url_info_["path"];
+    std::string platform;
+    std::string request;
+    try {
+        platform = map_url_value_info_.at("platform");
+        request = map_url_value_info_.at("request");
+    }  catch (std::out_of_range e) { }
 
     do {
-        if(path == "/") {
+        if(path == "/" && request.empty()) {
             path = global_web_root + "/" + global_web_page;
-            send_file = true;
+            SendFile(path);
             break;
+        }else if(path == "/" && !request.empty()){
+            HandleUrlRequest(request, platform);
         }else {
             path = global_web_root + path;
-            send_file = true;
+            SendFile(path);
         }
     } while(false);
-
     // Send get file
-    if(!error && send_file) {
-        SendFile(path);
-    }else {
+    if(error) {
         std::cout << "error\n";
+        HandleNotFound();
     }
 }
 
@@ -85,13 +96,20 @@ void Ltalk::Center::HandlePost() {
         std::cout << "HandlePost out_of_range: " << e.what() << '\n';
     }
     std::cout << "content:[" << content_ << "]\n" << "type: " << content_type << '\n';
-    SendData(".txt", "post OK");
+    json json_obj = {
+        { "server", SERVER_NAME },
+        { "code", ResponseCode::SUCCESS },
+        { "datetime" , GetDateTime() },
+        { "access_url", "https://github.com/I0gan/ltalk" },
+        { "token", "flag{https__github_com_i0gan_ltalk}" }
+    };
+    SendJson(json_obj);
 }
 
 bool Ltalk::Center::ParseUrl() {
     std::string url;
     std::string value_url;
-
+    std::string path;
     try {
         url = map_header_info_.at("url");
     } catch (std::out_of_range e) {
@@ -99,15 +117,38 @@ bool Ltalk::Center::ParseUrl() {
         return false;
     }
     map_url_info_["url"] = url;
-    int value_pos = url.find("?");
-    if(value_pos >= 0) {
-        value_url = url.substr(value_pos + 1);
-        map_url_info_["path"] = url.substr(0, value_pos);
+    int first_value_pos = url.find("?");
+    if(first_value_pos > 0) {
+        value_url = url.substr(first_value_pos + 1);
+        path = url.substr(0, first_value_pos);
+        if(path != "/" && path.size() > 0) {
+            path.pop_back();
+        }
     }else {
-        map_url_info_["path"] = url;
+        path = url;
     }
+    map_url_info_["path"] = path;
+    // check is have value
+    if(value_url.empty()) return true;
+    value_url += '&';
+    // Get value
+    while(true) {
+        int key_pos = value_url.find("&");
+        if(key_pos < 0) {
+            break;
+        }
+        std::string get_one = value_url.substr(0, key_pos);
+        value_url = value_url.substr(key_pos + 1);
+        if(get_one.empty()) continue;
 
-    //std::cout << "value url:" << value_url << '\n';
+        int value_pos = get_one.find('=');
+        if(value_pos < 0) continue;
+        std::string key = get_one.substr(0, value_pos);
+        std::string value = get_one.substr(value_pos + 1);
+        if(key.empty() || value.empty()) continue;
+        map_url_value_info_[key] = value;
+        //std::cout << "get_one: [" << get_one << "] key: [" << key << "] value: [" << map_url_value_info_[key] << "]\n";
+    }
     return true;
 }
 
@@ -123,4 +164,30 @@ void Ltalk::Center::SendData(const std::string &suffix, const std::string &conte
 
 void Ltalk::Center::HandleNotFound() {
     SendFile(global_web_404_page);
+}
+void Ltalk::Center::Response(ResponseCode code) {
+    json json_obj = {
+        { "server", SERVER_NAME },
+        { "code", code },
+        { "datetime" , GetDateTime() }
+    };
+    SendJson(json_obj);
+}
+
+void Ltalk::Center::SendJson(nlohmann::json json_obj) {
+    std::ostringstream json_sstream;
+    json_sstream << json_obj;
+    std::string data = json_sstream.str();
+    SendData(".json", data);
+}
+
+std::string Ltalk::Center::GetDateTime() {
+    char time_str[128] = {0};
+    struct timeval tv;
+    time_t time;
+    gettimeofday(&tv, nullptr);
+    time = tv.tv_sec;
+    struct tm *p_time = localtime(&time);
+    strftime(time_str, 128, "%Y-%m-%d %H:%M:%S", p_time);
+    return std::string(time_str);
 }

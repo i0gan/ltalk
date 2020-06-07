@@ -1,7 +1,7 @@
 // Author: I0gan
 
 var btn = document.getElementById("button_rigister");
-var server_url = 'http://192.168.100.4';
+var server_url = 'http://192.168.100.4/?request=register&platform=web';
 btn.onclick = function() {
     
     var name = document.getElementById("name").value;
@@ -14,12 +14,12 @@ btn.onclick = function() {
     var password_1 = document.getElementById("password_1").value;
     var password_2 = document.getElementById("password_2").value;
 
-    if(name.length == 0) {
+    if(name.length === 0) {
         alert("姓名为空")
         return;
     }
     
-    if(email.length == 0) {
+    if(email.length === 0) {
         alert("邮件为空")
         return;
     }
@@ -29,7 +29,7 @@ btn.onclick = function() {
         return;
     }
     
-    if(password_1 != password_2) {
+    if(password_1 !== password_2) {
         alert("密码不一致");
         return;
     }
@@ -38,34 +38,61 @@ btn.onclick = function() {
     xhr.open('post', server_url);
     xhr.setRequestHeader("Content-Type", "application/json");
     xhr.onreadystatechange = function() {
-        if(xhr.readyState == 4) {
+        if(xhr.readyState === 4) {
             reply(xhr);
-           
-           
         }
     }
-    var data = new Date();
     var json = {
-        request:"register", platform: "web", token:"none"
+        request: 0, token:"none"
     };
+
+    json.datetime = nowDateTime();
     json.content = {};
     json.content.name = name;
     json.content.email = email;
     json.content.phone_number = phone_number;
     json.content.address = address;
     json.content.occupation = address;
-    json.content.password_2 = password_2;
-    
-    //json.cmd = "aa";
+    json.content.password_2 = window.btoa(password_2);
     json_str = JSON.stringify(json);
-    //var json = {"request":"register", "data", date.toLocaleString(); };
+    //alert(json_str)
     xhr.send(json_str);
-    alert("OK");
 }
 
-
 function reply(xhr) {
-    alert(xhr.responseText);
-    
-    
+    //alert('收到');
+    var json = JSON.parse(xhr.responseText);
+    var code = json.code;
+    var server = json.server;
+    var access_url = json.access_url;
+    var datetime = json.datetime;
+    var token = json.token;
+    if(code == "0") {
+        alert("注册成功!");
+        window.location.href = access_url;
+    }else {
+        alert("注册失败");
+    }
+}
+
+// 将ajax 返回的时间戳 转为 “yyyy-MM-dd” 型
+function nowDateTime(){
+    var now = new Date();
+    var year = now.getFullYear();
+    var month =(now.getMonth() + 1).toString();
+    var day = (now.getDate()).toString();
+    var hour = now.getHours().toString();
+    var minute = now.getMinutes().toString();
+    var second = now.getSeconds().toString();
+    if (month.length === 1) {
+        month = "0" + month;
+    }
+    if (day.length === 1) {
+        day = "0" + day;
+    }
+    if (hour.length === 1) {
+        hour = "0" + hour;
+    }
+    var dateTime = year +"-"+ month +"-"+  day + " " + hour + ":" + minute + ":" + second;
+    return dateTime;
 }
