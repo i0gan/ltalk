@@ -7,46 +7,72 @@
     <x>0</x>
     <y>0</y>
     <width>600</width>
-    <height>400</height>
+    <height>425</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>Form</string>
   </property>
-  <widget class="QLabel" name="label">
+  <widget class="QLabel" name="label_title">
    <property name="geometry">
     <rect>
-     <x>210</x>
-     <y>30</y>
-     <width>191</width>
+     <x>60</x>
+     <y>60</y>
+     <width>121</width>
      <height>31</height>
     </rect>
    </property>
    <property name="text">
-    <string>Ltalk Linux Test Demo</string>
+    <string>Login</string>
    </property>
   </widget>
   <widget class="QLineEdit" name="lineEdit_account">
    <property name="geometry">
     <rect>
-     <x>160</x>
-     <y>250</y>
-     <width>301</width>
-     <height>37</height>
+     <x>200</x>
+     <y>230</y>
+     <width>200</width>
+     <height>30</height>
     </rect>
    </property>
+   <property name="styleSheet">
+    <string notr="true">QLineEdit{
+ 	border:1px solid rgb(0, 204, 204);
+	background: transparent;
+  	border-radius:2px;
+	color: rgb(255, 255, 255);
+	font: 12pt &quot;Noto Sans&quot;;
+}
+QLineEdit:focus{
+	border:1px solid rgb(78, 125, 255);
+	border-radius:2px;
+}</string>
+   </property>
    <property name="placeholderText">
-    <string>account</string>
+    <string>account/email</string>
    </property>
   </widget>
   <widget class="QLineEdit" name="lineEdit_password">
    <property name="geometry">
     <rect>
-     <x>160</x>
-     <y>290</y>
-     <width>301</width>
-     <height>37</height>
+     <x>200</x>
+     <y>280</y>
+     <width>200</width>
+     <height>30</height>
     </rect>
+   </property>
+   <property name="styleSheet">
+    <string notr="true">QLineEdit{
+ 	border:1px solid rgb(0, 204, 204);
+	background: transparent;
+  	border-radius:2px;
+	color: rgb(255, 255, 255);
+	font: 12pt &quot;Noto Sans&quot;;
+}
+QLineEdit:focus{
+	border:1px solid rgb(78, 125, 255);
+	border-radius:2px;
+}</string>
    </property>
    <property name="placeholderText">
     <string>password</string>
@@ -55,11 +81,21 @@
   <widget class="QPushButton" name="pushButton_login">
    <property name="geometry">
     <rect>
-     <x>240</x>
+     <x>210</x>
      <y>340</y>
-     <width>105</width>
-     <height>39</height>
+     <width>180</width>
+     <height>30</height>
     </rect>
+   </property>
+   <property name="styleSheet">
+    <string notr="true">QPushButton{
+background-color:rgb(0, 209, 209);
+color:white;
+border-radius:4px;
+}
+QPushButton:hover{
+  background-color: rgb(0, 255, 204);
+}</string>
    </property>
    <property name="text">
     <string>login</string>
@@ -71,18 +107,94 @@
      <x>0</x>
      <y>0</y>
      <width>600</width>
-     <height>400</height>
+     <height>425</height>
     </rect>
+   </property>
+   <property name="styleSheet">
+    <string notr="true">
+	border-image  : url(':/ui/theme/dialog_page.png');</string>
    </property>
    <property name="text">
     <string/>
    </property>
   </widget>
+  <widget class="QToolButton" name="toolButton_close">
+   <property name="geometry">
+    <rect>
+     <x>510</x>
+     <y>50</y>
+     <width>30</width>
+     <height>30</height>
+    </rect>
+   </property>
+   <property name="styleSheet">
+    <string notr="true">QToolButton{
+	border-image: url(':/ui/btn_close.png')
+}
+QToolButton:hover{
+   border:2px solid;
+}</string>
+   </property>
+   <property name="text">
+    <string/>
+   </property>
+  </widget>
+  <widget class="QToolButton" name="toolButton_min">
+   <property name="geometry">
+    <rect>
+     <x>480</x>
+     <y>50</y>
+     <width>30</width>
+     <height>30</height>
+    </rect>
+   </property>
+   <property name="styleSheet">
+    <string notr="true">QToolButton{
+	border-image: url(':/ui/btn_min.png')
+}
+QToolButton:hover{
+   border:2px solid;
+}</string>
+   </property>
+   <property name="text">
+    <string/>
+   </property>
+  </widget>
+  <widget class="QLabel" name="label_register">
+   <property name="geometry">
+    <rect>
+     <x>430</x>
+     <y>350</y>
+     <width>91</width>
+     <height>23</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>register</string>
+   </property>
+  </widget>
+  <widget class="QLabel" name="label_forgot">
+   <property name="geometry">
+    <rect>
+     <x>430</x>
+     <y>320</y>
+     <width>91</width>
+     <height>23</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>forgot</string>
+   </property>
+  </widget>
   <zorder>label_frame</zorder>
-  <zorder>label</zorder>
+  <zorder>label_title</zorder>
   <zorder>lineEdit_account</zorder>
   <zorder>lineEdit_password</zorder>
   <zorder>pushButton_login</zorder>
+  <zorder>toolButton_close</zorder>
+  <zorder>toolButton_min</zorder>
+  <zorder>label_register</zorder>
+  <zorder>label_forgot</zorder>
  </widget>
  <resources/>
  <connections/>

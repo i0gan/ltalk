@@ -12,9 +12,6 @@ Center::~Center() {
 
 void Center::init() {
     opened_login_page_ = false;
-
-
-
     login_page_ = new LoginPage();
     opened_login_page_ = true;
     login_page_->init();
@@ -43,7 +40,7 @@ void Center::requestLogin(QString account, QString password) {
     //mannager->post()
     QJsonDocument json_document;
     QJsonObject json_object;
-    json_object.insert("Account", 11343);
+    json_object.insert("Account", account.toUtf8().data());
     json_object.insert("Password", password.toUtf8().toBase64().data());
     json_object.insert("Request", "login");
     json_object.insert("Platform", QString("Ltalk for linux x64"));
@@ -55,7 +52,7 @@ void Center::requestLogin(QString account, QString password) {
     QByteArray byte_array = json_document.toJson(QJsonDocument::Compact);
     qDebug() << byte_array.data();
     QUrl url;
-    url = SERVER_REQUEST_URL + QString(SERVER_BASE_URL_VALUE);
+    url = SERVER_REQUEST_URL + QString(SERVER_BASE_URL_VALUE) + "&&++....&&&#####&c&c=0&?ccbb??&&b=3&a=AAA?dd??&&&+++key&&???&&&";
     request.setUrl(url);
 
     network_access_mannager->post(request, byte_array);

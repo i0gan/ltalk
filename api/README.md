@@ -42,7 +42,7 @@ Accept-Language: en-US,*
 
 ```json
 {
-	"cmd" : 4,
+	"request" : 4,
 	"uid" : "none"
 	"date" : "2020-06-5 18:00:33",
 	"token" : "none",
@@ -62,53 +62,53 @@ Accept-Language: en-US,*
 
 
 
-服务端回复
 
-例如获取好友列表
+
+## 注册模块API
+
+### 请求
+
+post 以下json数据
 
 ```json
 {
-	"cmd" : 3,
-	"code" : 0,
+	"request" : 0,
 	"date" : "2020-06-5 18:00:33",
 	"token" : "none",
 	"content_type", "user info"
 	"content" : 
-    [
-		{
-    	"account": "418894113", 
-    	"nickname" : "I0gan",
-  		"remark": "i0gan",
-        "head_image" : "http://lyxf.xyz/",
-    	"network_state" : "online"
-        }
-	]
+	{
+    	"name": "I0gan", 
+    	"email" : "418894113@qq.com",
+  		"phone_number": "1571807****",
+        "address" : "GuiZhou",
+    	"password" : "******"
+  	}
 }
 ```
 
-
-
-## 登录模块API
-
-### POST请求
+### 响应
 
 ```json
 {
-	"cmd" : 4,
-	"uid" : "none"
+	"response" : 0,
+    "error_code" : 0,
 	"date" : "2020-06-5 18:00:33",
-	"token" : "none",
-	"content_type", "user info"
+	"token" : "***********",
+	"content_type", "none"
 	"content" : 
-    [
-		{
-    	"account": "418894113", 
-    	"password" : "******",
-  		"nickname": "i0gan",
-        "head_image" : "none",
-    	"network_state" : "online"
-        }
-	]
+	{
+    	"uid": "*****", 
+    	"account" : "xxxxx",
+    	"head_image_url" : "http://lyxf.xyz/image/**",
+  		"phone_number": "1571807****",
+        "name" : "GuoZhou",
+    	"email" : "xxxxxx",
+    	"address" : "GuiZhou",
+    	"grade" : "0",
+    	"experience_current" : "0",
+    	"experience_need", "1000"
+  	}
 }
 ```
 
