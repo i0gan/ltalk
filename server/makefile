@@ -53,6 +53,11 @@ PROCESS_SRC := $(wildcard $(PROCESS_PATH)/*.cc)
 PROCESS_OBJ := $(patsubst %.cc, %.o, $(PROCESS_SRC)) 
 OBJS += $(PROCESS_OBJ)
 
+# crypto src
+CRYPTO_SRC := $(wildcard $(CRYPTO_PATH)/*.cc)  
+CRYPTO_OBJ := $(patsubst %.cc, %.o, $(CRYPTO_SRC)) 
+OBJS += $(CRYPTO_OBJ)
+
 # complie
 $(TARGET):$(OBJS)
 	@echo -e "\033[33m\t linking all \033[0m"
@@ -64,7 +69,6 @@ $(OBJS):%.o:%.cc
 
 print:
 	@echo $(OBJS)	
-
 
 clean:
 	$(RM) $(BUILD_PATH)/$(TARGET) $(OBJS)

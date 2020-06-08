@@ -8,6 +8,7 @@
 #include <sys/stat.h>
 #include <fcntl.h>
 #include <sys/mman.h>
+#include <time.h>
 
 #include "../ltalk.hh"
 #include "../net/eventloop.hh"

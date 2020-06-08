@@ -27,8 +27,9 @@ HEADERS += \
     thread/mutex_lock.hh \
     thread/condition.hh \
     thread/count_down_latch.hh \
-
-
+    \
+    crypto/sha256.hh \
+    crypto/md5.hh \
 
 SOURCES += \
     main.cc \
@@ -53,6 +54,8 @@ SOURCES += \
     thread/mutex_lock.cc \
     thread/condition.cc \
     thread/count_down_latch.cc \
+    \
+    crypto/md5.cc \
 
 
 

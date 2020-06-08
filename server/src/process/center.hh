@@ -10,6 +10,8 @@
 #include <time.h>
 #include <sys/time.h>
 
+#include "../crypto/md5.hh"
+
 using Json = nlohmann::json;
 
 namespace Ltalk {
@@ -57,8 +59,6 @@ private:
     void Response(ResponseCode error_code);
     /* */
     void DealWithRegisterUser();
-    void DealWithRegisterSuccess();
-    void DealWithRegisterFailed();
     bool CheckJsonContentType(Json &recv_json_obj, const std::string &type);
 
     void DealWithRegisterGroup();
@@ -67,5 +67,7 @@ private:
     bool CheckJsonBaseContent(Json &json_obj);
 
     std::string GetDateTime();
+    std::string MakeToken(std::string uid);
+    std::string MakeUid(std::string str);
 };
 }

@@ -30,7 +30,6 @@ void Ltalk::Center::set_send_data_handler(CallBack2 send_data_handler) {
     send_data_handler_ = send_data_handler;
 }
 
-
 void Ltalk::Center::Process() {
     std::string http_method;
     try {
@@ -58,6 +57,16 @@ void Ltalk::Center::HandleUrlRequest(const std::string &request, const std::stri
     if(request == "register" && platform == "web") {
         path += "/register/index.html";
         SendFile(path);
+    }else if(request == "register_success" && platform == "web") {
+        path += "/register/success/index.html";
+        SendFile(path);
+    }else if(request == "download" && platform == "web") {
+        path += "/download/index.html";
+        SendFile(path);
+    }else {
+        if(platform == "web") {
+            HandleNotFound();
+        }
     }
 }
 
@@ -341,31 +350,40 @@ void Ltalk::Center::DealWithRegisterUser() {
         }
     }
 
+    std::string uid = MakeUid(json_email);
     // Insert into database
-    std::string key_sql = "email, name, phone_number, address, occupation, password";
-    std::string value_sql = '\'' + json_email + "',";
+    std::string key_sql = "uid, email, name, phone_number, address, occupation, password";
+    std::string value_sql = '\'' + uid + "',"; // set uid
+    value_sql += '\'' + json_email + "',";
     value_sql += '\'' + json_name + "',";
     value_sql += '\'' + json_phone_number + "',";
     value_sql += '\'' + json_address + "',";
     value_sql += '\'' + json_occupation + "',";
     value_sql += '\'' + json_password + "'";
-
     if (!sql_query.Insert("user_", key_sql, value_sql)) {
         Response(ResponseCode::FAILURE);
         return;
     }
 
-    //std::cout << "content:[" << content_ << "]\n" << "type: " << content_type << '\n';
     Json json_obj = {
         { "server", SERVER_NAME },
         { "code", ResponseCode::SUCCESS },
         { "datetime" , GetDateTime() },
-        { "access_url", "https://github.com/i0gan" },
-        { "token", "flag{https__github_com_i0gan_ltalk}" }
+        { "access_url", "/?request=register_success&platform=web"},
+        { "uid" , uid},
+        { "token", MakeToken(uid) }
     };
     SendJson(json_obj);
 }
 
+std::string Ltalk::Center::MakeToken(std::string uid) {
+    time_t t = time(nullptr);
+    return Ltalk::Crypto::MD5(std::to_string(t) + uid).toString();
+}
+
+std::string Ltalk::Center::MakeUid(std::string str) {
+    return Ltalk::Crypto::MD5(str).toString();
+}
 
 void Ltalk::Center::DealWithRegisterGroup() {
 

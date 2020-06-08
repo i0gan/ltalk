@@ -18,7 +18,6 @@ public:
         data_start_ptr = data_ptr;
     }
     ~Vessel() {
-        std::cout << "free Vessel\n";
         free(data_ptr);
     };
     void operator<<(std::string data) {

@@ -53,8 +53,8 @@ Accept-Language: en-US,*
     	"account": "418894113", 
     	"password" : "******",
   		"nickname": "i0gan",
-        "head_image" : "none",
-    	"network_state" : "online"
+        "head_image_url" : "none",
+    	"network_state" : "windows_online"
         }
 	]
 }
@@ -73,15 +73,17 @@ post 以下json数据
 ```json
 {
 	"request" : 0,
-	"date" : "2020-06-5 18:00:33",
+	"datetime" : "2020-06-5 18:00:33",
 	"token" : "none",
-	"content_type", "user info"
+    "uid" : "none",
+	"content_type" : "register_info"
 	"content" : 
 	{
     	"name": "I0gan", 
     	"email" : "418894113@qq.com",
   		"phone_number": "1571807****",
         "address" : "GuiZhou",
+    	"occupation" : "programer",
     	"password" : "******"
   	}
 }
@@ -89,26 +91,28 @@ post 以下json数据
 
 ### 响应
 
+注意, 响应分为两种情况, 一种是错误响应,响应码1代表失败, 11代表帐号已经存,  json格式为
+
 ```json
 {
-	"response" : 0,
-    "error_code" : 0,
-	"date" : "2020-06-5 18:00:33",
-	"token" : "***********",
-	"content_type", "none"
-	"content" : 
-	{
-    	"uid": "*****", 
-    	"account" : "xxxxx",
-    	"head_image_url" : "http://lyxf.xyz/image/**",
-  		"phone_number": "1571807****",
-        "name" : "GuoZhou",
-    	"email" : "xxxxxx",
-    	"address" : "GuiZhou",
-    	"grade" : "0",
-    	"experience_current" : "0",
-    	"experience_need" : "1000"
-  	}
+ 	"server", "SERVER_NAME",
+	"code", "1",
+	"datetime" , "2020-06-5 18:00:33"
+}
+```
+
+
+
+成功响应, 响应代码code 为0 代表成功, 这时会返回以下内容, uid, token, access_url (用于页面跳转)
+
+```json
+{
+	"server" : 0,
+    "code" : 0,
+	"datetime" : "2020-06-5 18:00:33",
+	"uid" : "***********",
+	"token", "*****"
+	"access_url" : "/?request=register_success&platform=web"
 }
 ```
 
