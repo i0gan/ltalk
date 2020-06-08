@@ -350,6 +350,7 @@ void Ltalk::Http::SendData(const std::string &type,const std::string &content) {
     out_buffer_ << content;
     HandleWrite();
 }
+
 // Send file
 void Ltalk::Http::SendFile(const std::string &file_name) {
     do {

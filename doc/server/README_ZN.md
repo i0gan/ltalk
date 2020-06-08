@@ -59,15 +59,16 @@ use ltalk;
 create table user_(
 id int primary key auto_increment,
 uid varchar(256),
-account varchar(128),
+account varchar(256),
+email varchar(256),
 nickname varchar(256),
-head_image_url varchar(256),
-phone varchar(128),
-email varchar(128),
+head_image_url varchar(512),
 name varchar(256),
+phone_number varchar(256),
+address varchar(256),
+occupation varchar(256),
 creation_time  varchar(256),
 network_state varchar(256), 
-platform varchar(256), 
 password varchar(256),
 last_login varchar(256)
 );
@@ -76,9 +77,9 @@ last_login varchar(256)
 create table group_(
 id int primary key auto_increment,
 gid varchar(256),
-account varchar(128),
+account varchar(256),
 name varchar(256),
-head_image_url varchar(256),
+head_image_url varchar(512),
 announcement varchar(1024),
 host_uid int,
 total int,
@@ -108,7 +109,7 @@ uid varchar(256),
 tid varchar(256),
 gid varchar(256),
 message varchar(1024),
-creation_time  varchar(255)
+creation_time  varchar(256)
 );
 
 ```

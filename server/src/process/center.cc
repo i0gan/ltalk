@@ -8,7 +8,7 @@ std::string Ltalk::global_web_root;
 std::string Ltalk::global_web_page;
 std::string Ltalk::global_web_404_page;
 
-using json = nlohmann::json;
+
 
 Ltalk::Center::Center(const std::map<std::string, std::string> &map_header_info, std::string &content) :
     map_header_info_(map_header_info),
@@ -173,7 +173,7 @@ void Ltalk::Center::HandleNotFound() {
 }
 
 void Ltalk::Center::Response(ResponseCode code) {
-    json json_obj = {
+    Json json_obj = {
         { "server", SERVER_NAME },
         { "code", code },
         { "datetime" , GetDateTime() }
@@ -181,7 +181,7 @@ void Ltalk::Center::Response(ResponseCode code) {
     SendJson(json_obj);
 }
 
-void Ltalk::Center::SendJson(nlohmann::json json_obj) {
+void Ltalk::Center::SendJson(Json json_obj) {
     std::ostringstream json_sstream;
     json_sstream << json_obj;
     std::string data = json_sstream.str();
@@ -199,83 +199,173 @@ std::string Ltalk::Center::GetDateTime() {
     return std::string(time_str);
 }
 
-bool Ltalk::Center::CheckJsonContent(nlohmann::json &json_obj) {
+bool Ltalk::Center::CheckJsonBaseContent(Json &json_obj) {
     bool ret = true;
     do {
-    if(json_obj.find("token") == json_obj.end()) {
-        ret = false;
-        break;
-    }
-    if(json_obj.find("request") == json_obj.end()) {
-        ret = false;
-        break;
-    }
-    if(json_obj.find("datetime") == json_obj.end()) {
-        ret = false;
-        break;
-    }
-    if(json_obj.find("uid") == json_obj.end()) {
-        ret = false;
-        break;
-    }
-    if(json_obj.find("content") == json_obj.end()) {
-        ret = false;
-        break;
-    }
-    if(json_obj.find("content_type") == json_obj.end()) {
-        ret = false;
-        break;
-    }
+        if(json_obj.find("token") == json_obj.end()) {
+            ret = false;
+            break;
+        }
+        if(json_obj.find("request") == json_obj.end()) {
+            ret = false;
+            break;
+        }
+        if(json_obj.find("datetime") == json_obj.end()) {
+            ret = false;
+            break;
+        }
+        if(json_obj.find("uid") == json_obj.end()) {
+            ret = false;
+            break;
+        }
+        if(json_obj.find("content") == json_obj.end()) {
+            ret = false;
+            break;
+        }
+        if(json_obj.find("content_type") == json_obj.end()) {
+            ret = false;
+            break;
+        }
     } while(false);
     return ret;
 }
+bool Ltalk::Center::CheckJsonContentType(Json &recv_json_obj, const std::string &type) {
+    bool ret = true;
+    std::string recv_type;
+    try {
+        recv_type = recv_json_obj.at("content_type");
+    } catch (std::out_of_range e) { }
 
+    if(recv_type != type) {
+        ret = false;
+    }
+    return ret;
+
+}
 void Ltalk::Center::DealWithRegisterUser() {
     std::string content_type;
     try {
         content_type = map_header_info_.at("content-type");
     } catch(std::out_of_range e) {
         std::cout << "no a content-type\n";
-        Response(ResponseCode::ERROR_CONTENT_TYPE);
+        Response(ResponseCode::ERROR_HTTP_CONTENT);
         return;
     }
 
     if(content_type != "application/json") {
-        Response(ResponseCode::ERROR_CONTENT_TYPE);
+        Response(ResponseCode::ERROR_HTTP_CONTENT);
         return;
     }
 
-    json recv_json_obj;
+    Json recv_json_obj;
     try {
-        recv_json_obj = json::parse(content_);
-    }  catch (json::parse_error e) {
+        recv_json_obj = Json::parse(content_);
+    }  catch (Json::parse_error e) {
         Response(ResponseCode::ERROR_PARSING_CONTENT);
         return;
     }
 
-    if(!CheckJsonContent(recv_json_obj)) {
+    if(!CheckJsonBaseContent(recv_json_obj)) {
         Response(ResponseCode::NO_ACCESS);
         return;
     }
 
-    MysqlQuery mysql_query;
-    ;
-    if(mysql_query.Delete("user_", "id=1")) {
-        std::cout << "OK\n";
-    }else {
-        std::cout << "Failed\n";
+    if(!CheckJsonContentType(recv_json_obj, "register_info")) {
+        Response(ResponseCode::ERROR_JSON_CONTENT_TYPE);
+        return;
     }
 
-    std::cout << "content:[" << content_ << "]\n" << "type: " << content_type << '\n';
-    json json_obj = {
+    std::string json_name;
+    std::string json_email;
+    std::string json_phone_number;
+    std::string json_address;
+    std::string json_occupation;
+    std::string json_password;
+
+    //std::cout << "json [" << recv_json_obj << "]\n";
+    try {
+        json_name = recv_json_obj["content"]["name"];
+        json_email = recv_json_obj["content"]["email"];
+        json_phone_number = recv_json_obj["content"]["phone_number"];
+        json_address = recv_json_obj["content"]["address"];
+        json_occupation = recv_json_obj["content"]["occupation"];
+        json_password = recv_json_obj["content"]["password"];
+    } catch (Json::type_error e) {
+        //std::cout << "Register type_error: " << e.what() << '\n';
+        Response(ResponseCode::ERROR_JSON_CONTENT);
+        return;
+    }
+    // Filter char
+    MysqlQuery::Escape(json_name);
+    MysqlQuery::Escape(json_email);
+    MysqlQuery::Escape(json_phone_number);
+    MysqlQuery::Escape(json_address);
+    MysqlQuery::Escape(json_occupation);
+    MysqlQuery::Escape(json_password);
+
+    // check size
+    std::cout << "name: [" << json_name << "]\n";
+    std::cout << "email: [" << json_email << "]\n";
+    std::cout << "phone_number: [" << json_phone_number << "]\n";
+    std::cout << "address: [" << json_address << "]\n";
+    std::cout << "occupation: [" << json_occupation << "]\n";
+    std::cout << "password: [" << json_password << "]\n";
+
+    bool is_valid = false;
+    do {
+        if(json_name.size() < 1 || json_name.size() >= 255)
+            break;
+        else if(json_email.size() < 4 || json_email.size() >= 255)
+            break;
+        else if(json_phone_number.size() < 4 || json_phone_number.size() >= 255)
+            break;
+        else if(json_occupation.size() >= 255)
+            break;
+        else if(json_password.size() < 6 || json_password.size() >= 255)
+            break;
+        else
+            is_valid = true;
+    } while(false);
+    if(!is_valid) {
+        Response(ResponseCode::ERROR_JSON_CONTENT);
+        return;
+    }
+
+    // check is have this eamil
+    MysqlQuery sql_query;
+    sql_query.Select("user_", "email", "email = '" + json_email + '\'');
+    if(sql_query.Next()) {
+        if(sql_query.Value(0) != nullptr) {
+            Response(ResponseCode::EXIST);
+            return;
+        }
+    }
+
+    // Insert into database
+    std::string key_sql = "email, name, phone_number, address, occupation, password";
+    std::string value_sql = '\'' + json_email + "',";
+    value_sql += '\'' + json_name + "',";
+    value_sql += '\'' + json_phone_number + "',";
+    value_sql += '\'' + json_address + "',";
+    value_sql += '\'' + json_occupation + "',";
+    value_sql += '\'' + json_password + "'";
+
+    if (!sql_query.Insert("user_", key_sql, value_sql)) {
+        Response(ResponseCode::FAILURE);
+        return;
+    }
+
+    //std::cout << "content:[" << content_ << "]\n" << "type: " << content_type << '\n';
+    Json json_obj = {
         { "server", SERVER_NAME },
         { "code", ResponseCode::SUCCESS },
         { "datetime" , GetDateTime() },
-        { "access_url", "https://github.com/I0gan/ltalk" },
+        { "access_url", "https://github.com/i0gan" },
         { "token", "flag{https__github_com_i0gan_ltalk}" }
     };
     SendJson(json_obj);
 }
+
 
 void Ltalk::Center::DealWithRegisterGroup() {
 

@@ -52,8 +52,8 @@ btn.onclick = function() {
     json.content.email = email;
     json.content.phone_number = phone_number;
     json.content.address = address;
-    json.content.occupation = address;
-    json.content.password_2 = window.btoa(password_2);
+    json.content.occupation = occupation;
+    json.content.password = window.btoa(password_2);
     json_str = JSON.stringify(json);
     //alert(json_str)
     xhr.send(json_str);
@@ -68,11 +68,12 @@ function reply(xhr) {
     var datetime = json.datetime;
     var token = json.token;
     
-    alert(xhr.responseText);
-    
+    //alert(xhr.responseText);
     if(code == "0") {
         alert("注册成功!");
         window.location.href = access_url;
+    }else if(code == "11"){
+        alert("帐号已经存在");
     }else {
         alert("注册失败");
     }

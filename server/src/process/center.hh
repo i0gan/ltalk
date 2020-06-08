@@ -10,6 +10,7 @@
 #include <time.h>
 #include <sys/time.h>
 
+using Json = nlohmann::json;
 
 namespace Ltalk {
 enum class ResponseCode {
@@ -18,11 +19,15 @@ enum class ResponseCode {
     NOT_FOUND,
     INTERNAL_ERROR,
     NO_ACCESS,
-    NO_PERMISSSION,
+    NO_PERMISSSION = 5,
     ERROR_PARSING_URL,
     ERROR_PARSING_CONTENT,
-    ERROR_CONTENT_TYPE
+    ERROR_HTTP_CONTENT,
+    ERROR_JSON_CONTENT_TYPE,
+    ERROR_JSON_CONTENT = 10,
+    EXIST,
 };
+
 class Center {
 public:
     Center(const std::map<std::string, std::string> &map_header_info, std::string &content);
@@ -45,17 +50,21 @@ private:
     std::map<std::string, std::string> map_url_info_;
     std::map<std::string, std::string> map_url_value_info_;
     void SendData(const std::string &suffix, const std::string &content);
-    void SendJson(nlohmann::json json_obj);
+    void SendJson(Json json_obj);
     void SendFile(std::string file_name);
     bool ParseUrl();
     void HandleNotFound();
     void Response(ResponseCode error_code);
     /* */
     void DealWithRegisterUser();
+    void DealWithRegisterSuccess();
+    void DealWithRegisterFailed();
+    bool CheckJsonContentType(Json &recv_json_obj, const std::string &type);
+
     void DealWithRegisterGroup();
     void DealWithLogin();
     void DealWithSendUserInfo();
-    bool CheckJsonContent(nlohmann::json &json_obj);
+    bool CheckJsonBaseContent(Json &json_obj);
 
     std::string GetDateTime();
 };

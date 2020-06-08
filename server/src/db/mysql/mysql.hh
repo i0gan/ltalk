@@ -31,16 +31,16 @@ public:
     MysqlQuery(MYSQL *mysql);
     ~MysqlQuery();
     bool Next();
-    char* GetOne(int index);
+    char* Value(int index);
     bool Exec(std::string sql);
-    bool Select(std::string sql);
+    bool Select(const std::string &table_name, const std::string &key_sql, const std::string &condition = "none");
     bool Insert(const std::string &table_name, const std::string &key_sql, const std::string &value_sql);
     bool Update(const std::string &table_name, const std::string &key_sql, const std::string &value_sql, const std::string &condition);
     bool Delete(const std::string &table_name, const std::string &condition);
-
     void operator=(MysqlQuery &mysql_res);
     void   set_mysql(MYSQL *mysql);
     MYSQL *get_mysql();
+    static void Escape(std::string &str);
 
 private:
     MYSQL_RES *res_;
@@ -49,5 +49,6 @@ private:
     MYSQL *mysql_;
     int get_fields();
     void Clean();
+
 };
 }

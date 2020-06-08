@@ -74,7 +74,13 @@ bool Ltalk::MysqlQuery::Exec(std::string sql) {
     return ret;
 }
 
-bool Ltalk::MysqlQuery::Select(std::string sql) {
+bool Ltalk::MysqlQuery::Select(const std::string &table_name, const std::string &key_sql, const std::string &condition) {
+    std::string sql;
+    sql = "SELECT " + key_sql;
+    sql += " FROM " + table_name;
+    if(condition != "none")
+        sql += " WHERE " + condition;
+    sql += " ;";
     if(mysql_real_query(mysql_, sql.data(), sql.size())) {
         std::cout << "mysql_real_query : " << mysql_error(mysql_) << std::endl;
         return false;
@@ -84,14 +90,15 @@ bool Ltalk::MysqlQuery::Select(std::string sql) {
         std::cout << "mysql_store_result : " << mysql_error(mysql_) << std::endl;
     }
     number_of_fields_ = static_cast<int>(mysql_num_fields(res_));
+    std::cout << "number_of_fields_: " << number_of_fields_ << '\n';
     return true;
 }
 
 bool Ltalk::MysqlQuery::Insert(const std::string &table_name, const std::string &key_sql, const std::string &value_sql) {
     std::string sql;
-    sql = "insert into " + table_name;
+    sql = "INSERT INTO " + table_name;
     sql += " (" + key_sql + ") ";
-    sql += "value(" + value_sql + ");";
+    sql += "VALUE(" + value_sql + ");";
     return Exec(sql);
 }
 
@@ -107,7 +114,9 @@ bool Ltalk::MysqlQuery::Update(const std::string &table_name, const std::string 
             sql.pop_back();
             break;
         }
-        sql += keys.substr(0, key_pos) + '=' + values.substr(0, value_pos) + ',';
+        std::string key = keys.substr(0, key_pos);
+        std::string value = values.substr(0, value_pos);
+        sql += key + "='" + value + "',";
         keys = keys.substr(key_pos + 1);
         values = values.substr(value_pos + 1);
     }
@@ -119,7 +128,6 @@ bool Ltalk::MysqlQuery::Delete(const std::string &table_name, const std::string 
     std::string sql;
     sql = "DELETE FROM " + table_name;
     sql += " WHERE " + condition + ';';
-    //std::cout << sql << '\n';
     return Exec(sql);
 }
 
@@ -138,9 +146,9 @@ bool Ltalk::MysqlQuery::Next() {
     return result;
 }
 
-char* Ltalk::MysqlQuery::GetOne(int index) {
+char* Ltalk::MysqlQuery::Value(int index) {
     if((number_of_fields_ < index + 1 ) && !row_) {
-        std::cout << "out_of_range: " << index << " / " << number_of_fields_ << std::endl;
+        //std::cout << "out_of_range: " << index << " / " << number_of_fields_ << std::endl;
         return nullptr;
     }
     return row_[index];
@@ -151,4 +159,23 @@ void Ltalk::MysqlQuery::set_mysql(MYSQL *mysql) {
 }
 MYSQL *Ltalk::MysqlQuery::get_mysql() {
     return mysql_;
+}
+
+void Ltalk::MysqlQuery::Escape(std::string &str) {
+   std::string str_ret;
+   for(auto c : str) {
+       if(c == '\'')
+           str_ret += "\\'";
+       else if(c == '"')
+           str_ret += "\\\"";
+       else if(c == '\b')
+           str_ret += "\\b";
+       else if(c == '\n')
+           str_ret += "\\n";
+       else if(c == '\t')
+           str_ret += "\\t";
+       else
+           str_ret += c;
+   }
+   str = str_ret;
 }
