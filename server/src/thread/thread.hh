@@ -14,30 +14,24 @@
 
 namespace Ltalk {
 namespace CurrentThread {
-extern __thread pid_t  tid;
-extern __thread char string[32];
-extern __thread int string_length;
-extern __thread const char *name;
 
+enum State{
+    STARTING,
+    RUNING,
+    STOPED
+};
+
+extern __thread pid_t  tid;
+extern __thread State  state;
+extern __thread char *name;
 inline pid_t get_tid() {
 /* #define likely(x) __builtin_expect(!!(x), 1)   //x likely as true
  * #define unlikely(x) __builtin_expect(!!(x), 0) //x likely as false
  */
     if(__builtin_expect(CurrentThread::tid == 0, 0)) {
-
         CurrentThread::tid = ::syscall(SYS_gettid);  //get real trhead id
-        CurrentThread::string_length = snprintf(CurrentThread::string, sizeof (CurrentThread::string),
-                                                "%5d ", CurrentThread::tid);
     }
     return CurrentThread::tid;
-}
-
-inline const char *get_string() {
-    return CurrentThread::string;
-}
-
-inline int get_string_length() {
-    return CurrentThread::string_length;
 }
 }
 
@@ -51,11 +45,11 @@ public:
     int Join();
     bool IsStarted();
     pid_t get_tid;
-    const std::string & get_name();
+    const std::string &get_name();
+    void set_name(const std::string &name);
 
 private:
     static void *Run(void *arg);
-    void SetDefaultName();
     bool started_;
     bool joined_;
     pthread_t pthread_id;

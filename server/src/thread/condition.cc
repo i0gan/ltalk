@@ -12,11 +12,11 @@ void Ltalk::Condition::Wait() {
 
 }
 
-void Ltalk::Condition::Notify() {
+void Ltalk::Condition::Signal() {
     pthread_cond_signal(&cond_);
 }
 
-void Ltalk::Condition::NotifyAll() {
+void Ltalk::Condition::Broadcast() {
     pthread_cond_broadcast(&cond_);
 }
 

@@ -1,11 +1,8 @@
 ﻿#include "thread.hh"
 
 __thread pid_t  Ltalk::CurrentThread::tid = 0;
-__thread char Ltalk::CurrentThread::string[32] = {0};
-__thread int Ltalk::CurrentThread::string_length = 0;
-__thread const char *Ltalk::CurrentThread::name = nullptr;
-
-
+__thread Ltalk::CurrentThread::State Ltalk::CurrentThread::state = Ltalk::CurrentThread::State::STOPED;
+__thread char *Ltalk::CurrentThread::name;
 
 Ltalk::Thread::Thread(const CallBack &call_back, const std::string &name) :
     started_(false),
@@ -15,8 +12,6 @@ Ltalk::Thread::Thread(const CallBack &call_back, const std::string &name) :
     func_(call_back),
     name_(name),
     count_down_latch_(1) {
-
-    SetDefaultName();
 }
 
 Ltalk::Thread::~Thread() {
@@ -24,12 +19,8 @@ Ltalk::Thread::~Thread() {
         pthread_detach(pthread_id);
 }
 
-void Ltalk::Thread::SetDefaultName() {
-    if(name_.empty()) {
-        char buf[32];
-        snprintf(buf, sizeof (buf), "thread");
-        name_ = buf;
-    }
+void Ltalk::Thread::set_name(const std::string &name) {
+    name_ = name;
 }
 
 void Ltalk::Thread::Start() {
@@ -40,7 +31,7 @@ void Ltalk::Thread::Start() {
         started_ = false;
         delete thread_data;
     }else {
-        count_down_latch_.Wait();
+        count_down_latch_.Wait(); // Waitting for started
         assert(tid_ > 0);
     }
 }
@@ -78,14 +69,13 @@ Ltalk::ThreadData::~ThreadData() {
 void Ltalk::ThreadData::Run() {
 
     *tid_ = CurrentThread::get_tid();
-    count_down_latch_->CountDown();
-
-    tid_ = nullptr; //set as null
-    count_down_latch_ = nullptr;
-    CurrentThread::name = name_.empty() ? "thread" : name_.c_str();
+    count_down_latch_->CountDown(); // count --
+    tid_ = nullptr;              //set as null avoid to run it again
+    count_down_latch_ = nullptr; //set as null avoid to run it again
+    CurrentThread::name = const_cast<char *>(name_.empty() ? "thread" : name_.c_str());
     prctl(PR_SET_NAME, CurrentThread::name); //set process name
-    func_(); //run callback funciton
-    CurrentThread::name = "finished";
+    func_();        //run callback funciton
+    CurrentThread::name = const_cast<char *>("finished");
 }
 
 

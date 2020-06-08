@@ -33,7 +33,7 @@ void Ltalk::EventLoopThread::ThreadFunc() {
     // create a new eventloop
     EventLoop eventloop;
     eventloop_ = &eventloop;
-    condition_.Notify(); // Notify Main thread then realize Sync
+    condition_.Signal(); // Notify Main thread then realize Sync
     eventloop_->Loop();  //run event
     eventloop_ = nullptr;
 }

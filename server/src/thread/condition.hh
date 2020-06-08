@@ -16,8 +16,8 @@ class Condition : Noncopyable {
     explicit Condition(MutexLock &mutex_lock);
     ~Condition();
     void Wait();
-    void Notify();
-    void NotifyAll();
+    void Signal();
+    void Broadcast();
     bool WaitForSeconds(int seconds);
 private:
     MutexLock &mutex_;

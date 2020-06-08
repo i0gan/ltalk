@@ -1,7 +1,7 @@
 // Author: I0gan
 
 var btn = document.getElementById("button_rigister");
-var server_url = 'http://192.168.100.4/?request=register&platform=web';
+//var server_url = 'http://192.168.100.4/?request=register&platform=web';
 btn.onclick = function() {
     
     var name = document.getElementById("name").value;
@@ -24,7 +24,7 @@ btn.onclick = function() {
         return;
     }
     
-    if(password_1.length < 6) {
+    if(password_1.length < 6 || password_1.length > 32) {
         alert("密码必须 6~32位");
         return;
     }
@@ -35,7 +35,7 @@ btn.onclick = function() {
     }
     xhr = new XMLHttpRequest();
     // 开始发送
-    xhr.open('post', server_url);
+    xhr.open('post', window.location.href);
     xhr.setRequestHeader("Content-Type", "application/json");
     xhr.onreadystatechange = function() {
         if(xhr.readyState === 4) {
@@ -43,7 +43,7 @@ btn.onclick = function() {
         }
     }
     var json = {
-        request: 0, token:"none"
+        request: 0, token:"none", uid:"none", content_type: "register_info"
     };
 
     json.datetime = nowDateTime();
@@ -67,6 +67,9 @@ function reply(xhr) {
     var access_url = json.access_url;
     var datetime = json.datetime;
     var token = json.token;
+    
+    alert(xhr.responseText);
+    
     if(code == "0") {
         alert("注册成功!");
         window.location.href = access_url;

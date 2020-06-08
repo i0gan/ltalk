@@ -46,7 +46,7 @@ Accept-Language: en-US,*
 	"uid" : "none"
 	"date" : "2020-06-5 18:00:33",
 	"token" : "none",
-	"content_type", "user info"
+	"content_type" : "user info"
 	"content" : 
     [
 		{
@@ -107,7 +107,7 @@ post 以下json数据
     	"address" : "GuiZhou",
     	"grade" : "0",
     	"experience_current" : "0",
-    	"experience_need", "1000"
+    	"experience_need" : "1000"
   	}
 }
 ```

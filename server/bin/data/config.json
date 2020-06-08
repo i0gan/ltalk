@@ -3,7 +3,8 @@
         "tcp_port" : 80,
         "udp_port" : 8000,
         "number_of_thread": 8,
-        "log_path" : "data",
+        "data_path" : "data",
+        "log_path" : "data/log",
         "web_root" : "data/web",
         "web_page" : "download/index.html",
         "web_404_page" : "data/web/404.html"

@@ -1,10 +1,12 @@
 #include "center.hh"
 
-extern MYSQL *Ltalk::global_mysql_ptr;
-extern std::unordered_map<std::string, Ltalk::UserInfo> Ltalk::global_map_user_info;
-extern std::unordered_map<std::string, Ltalk::GroupInfo> Ltalk::global_map_group_info;
-extern std::string Ltalk::global_web_root;
-extern std::string Ltalk::global_web_page;
+extern MYSQL Ltalk::global_mysql;
+
+std::unordered_map<std::string, Ltalk::UserInfo> Ltalk::global_map_user_info;
+std::unordered_map<std::string, Ltalk::GroupInfo> Ltalk::global_map_group_info;
+std::string Ltalk::global_web_root;
+std::string Ltalk::global_web_page;
+std::string Ltalk::global_web_404_page;
 
 using json = nlohmann::json;
 
@@ -89,21 +91,25 @@ void Ltalk::Center::HandleGet() {
 }
 
 void Ltalk::Center::HandlePost() {
-    std::string content_type;
+    std::string platform;
+    std::string request;
     try {
-        content_type = map_header_info_.at("content-type");
+        platform = map_url_value_info_.at("platform");
+        request = map_url_value_info_.at("request");
     }  catch (std::out_of_range e) {
-        std::cout << "HandlePost out_of_range: " << e.what() << '\n';
+        Response(ResponseCode::NO_ACCESS);
+        return;
     }
-    std::cout << "content:[" << content_ << "]\n" << "type: " << content_type << '\n';
-    json json_obj = {
-        { "server", SERVER_NAME },
-        { "code", ResponseCode::SUCCESS },
-        { "datetime" , GetDateTime() },
-        { "access_url", "https://github.com/I0gan/ltalk" },
-        { "token", "flag{https__github_com_i0gan_ltalk}" }
-    };
-    SendJson(json_obj);
+
+    do {
+        if(request == "register" && platform == "web") {
+            DealWithRegisterUser();
+        }else {
+            Response(ResponseCode::NO_ACCESS);
+            return;
+        }
+    } while(false);
+
 }
 
 bool Ltalk::Center::ParseUrl() {
@@ -165,6 +171,7 @@ void Ltalk::Center::SendData(const std::string &suffix, const std::string &conte
 void Ltalk::Center::HandleNotFound() {
     SendFile(global_web_404_page);
 }
+
 void Ltalk::Center::Response(ResponseCode code) {
     json json_obj = {
         { "server", SERVER_NAME },
@@ -190,4 +197,86 @@ std::string Ltalk::Center::GetDateTime() {
     struct tm *p_time = localtime(&time);
     strftime(time_str, 128, "%Y-%m-%d %H:%M:%S", p_time);
     return std::string(time_str);
+}
+
+bool Ltalk::Center::CheckJsonContent(nlohmann::json &json_obj) {
+    bool ret = true;
+    do {
+    if(json_obj.find("token") == json_obj.end()) {
+        ret = false;
+        break;
+    }
+    if(json_obj.find("request") == json_obj.end()) {
+        ret = false;
+        break;
+    }
+    if(json_obj.find("datetime") == json_obj.end()) {
+        ret = false;
+        break;
+    }
+    if(json_obj.find("uid") == json_obj.end()) {
+        ret = false;
+        break;
+    }
+    if(json_obj.find("content") == json_obj.end()) {
+        ret = false;
+        break;
+    }
+    if(json_obj.find("content_type") == json_obj.end()) {
+        ret = false;
+        break;
+    }
+    } while(false);
+    return ret;
+}
+
+void Ltalk::Center::DealWithRegisterUser() {
+    std::string content_type;
+    try {
+        content_type = map_header_info_.at("content-type");
+    } catch(std::out_of_range e) {
+        std::cout << "no a content-type\n";
+        Response(ResponseCode::ERROR_CONTENT_TYPE);
+        return;
+    }
+
+    if(content_type != "application/json") {
+        Response(ResponseCode::ERROR_CONTENT_TYPE);
+        return;
+    }
+
+    json recv_json_obj;
+    try {
+        recv_json_obj = json::parse(content_);
+    }  catch (json::parse_error e) {
+        Response(ResponseCode::ERROR_PARSING_CONTENT);
+        return;
+    }
+
+    if(!CheckJsonContent(recv_json_obj)) {
+        Response(ResponseCode::NO_ACCESS);
+        return;
+    }
+
+    MysqlQuery mysql_query;
+    ;
+    if(mysql_query.Delete("user_", "id=1")) {
+        std::cout << "OK\n";
+    }else {
+        std::cout << "Failed\n";
+    }
+
+    std::cout << "content:[" << content_ << "]\n" << "type: " << content_type << '\n';
+    json json_obj = {
+        { "server", SERVER_NAME },
+        { "code", ResponseCode::SUCCESS },
+        { "datetime" , GetDateTime() },
+        { "access_url", "https://github.com/I0gan/ltalk" },
+        { "token", "flag{https__github_com_i0gan_ltalk}" }
+    };
+    SendJson(json_obj);
+}
+
+void Ltalk::Center::DealWithRegisterGroup() {
+
 }

@@ -140,7 +140,6 @@ private:
     Ltalk::Vessel out_buffer_;
     std::string in_content_buffer_;
     bool recv_error_;
-    bool send_error_;
     HttpConnectionState http_connection_state_;
     HttpRecvState http_process_state_;
     int content_length_;

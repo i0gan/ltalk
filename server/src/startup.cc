@@ -1,18 +1,11 @@
 #include "startup.hh"
 
-extern MYSQL *Ltalk::global_mysql_ptr;
+extern MYSQL Ltalk::global_mysql;
 extern std::unordered_map<std::string, Ltalk::UserInfo> Ltalk::global_map_user_info;
 extern std::unordered_map<std::string, Ltalk::GroupInfo> Ltalk::global_map_group_info;
 extern std::string Ltalk::global_web_root;
 extern std::string Ltalk::global_web_page;
 extern std::string Ltalk::global_web_404_page;
-
-MYSQL *Ltalk::global_mysql_ptr = nullptr;
-std::unordered_map<std::string, UserInfo> Ltalk::global_map_user_info;
-std::unordered_map<std::string, GroupInfo> Ltalk::global_map_group_info;
-std::string Ltalk::global_web_root;
-std::string Ltalk::global_web_page;
-std::string Ltalk::global_web_404_page;
 
 Ltalk::StartUp::StartUp() {
 
@@ -51,16 +44,15 @@ bool Ltalk::StartUp::Init(int argv, char **argc) {
 
 bool Ltalk::StartUp::Run() {
 
-
     if(LoadConfig() == false) {
         std::cout << "Load config file failed!\n" << std::endl;
         abort();
     }
 
-//    if(RunDatabaseModule() == false) {
-//        std::cout << "Run database module error\n";
-//        //abort();
-//    }
+    if(RunDatabaseModule() == false) {
+        std::cout << "Run database module error\n";
+        abort();
+    }
     //std::cout << "global_mysql_ptr" << global_mysql_ptr << '\n';
     if(RunLoggerModule() == false) {
         std::cout << "Run logger module failed" << std::endl;
@@ -122,10 +114,7 @@ bool Ltalk::StartUp::RunNetworkModule() {
     return true;
 }
 bool Ltalk::StartUp::RunDatabaseModule() {
-    Ltalk::Mysql mysql;
-    bool ret = mysql.Connect(db_host_, db_user_, db_password_, db_name_, db_port_);
-    mysql.set_mysql_as_global();
-    return ret;
+    return Mysql::Connect(db_host_, db_user_, db_password_, db_name_, db_port_);;
 }
 bool Ltalk::StartUp::RunLoggerModule() {
     return true;

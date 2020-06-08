@@ -45,7 +45,6 @@ Ltalk::Http::Http(int fd,EventLoop *eventloop) :
     eventloop_(eventloop),
     sp_channel_(new Channel(eventloop, fd)),
     recv_error_(false),
-    send_error_(false),
     http_connection_state_(HttpConnectionState::CONNECTED),
     http_process_state_(HttpRecvState::PARSE_HEADER),
     keep_alive_(false) {
@@ -56,7 +55,7 @@ Ltalk::Http::Http(int fd,EventLoop *eventloop) :
     sp_channel_->set_connected_handler(std::bind(&Http::HandleConnect, this));
 }
 Ltalk::Http::~Http() {
-    std::cout << "free http\n";
+    //std::cout << "free http\n";
     close(fd_);
 }
 void Ltalk::Http::Reset() {
@@ -182,6 +181,7 @@ void Ltalk::Http::HandleRead() {
     // end
     if(http_process_state_ == HttpRecvState::FINISH) {
         this->Reset();
+    //if network is disconnected, do not to clean write data buffer, may be it reconnected
     } else if (!recv_error_ && http_connection_state_ == HttpConnectionState::DISCONNECTED) {
         event |= EPOLLIN;
     }
@@ -303,13 +303,11 @@ void Ltalk::Http::HandleProcess() {
 void Ltalk::Http::HandleWrite() {
     //std::cout << "write: \n";
     __uint32_t &event = sp_channel_->get_event();
-    if(send_error_ || http_connection_state_ == HttpConnectionState::DISCONNECTED) {
+    if(http_connection_state_ == HttpConnectionState::DISCONNECTED) {
         return;
     }
-
     //std::cout << "write size: " << out_buffer_.size() << "] end\n";
     if(out_buffer_.size() > 0) {
-
         if(Util::WriteData(fd_, out_buffer_) < 0) {
             perror("write header data");
             sp_channel_->set_event(0);
@@ -336,7 +334,6 @@ std::string Ltalk::Http::GetSuffix(std::string file_name) {
 }
 
 void Ltalk::Http::SendData(const std::string &type,const std::string &content) {
-    send_error_ = false;
     out_buffer_.clear();
     out_buffer_ << "HTTP/1.1 200 OK\r\n";
     if (map_header_info_.find("connection") != map_header_info_.end() &&
@@ -345,18 +342,16 @@ void Ltalk::Http::SendData(const std::string &type,const std::string &content) {
         out_buffer_ << std::string("Connection: Keep-Alive\r\n") + "Keep-Alive: timeout=" +
                 std::to_string(DEFAULT_KEEP_ALIVE_TIME) + "\r\n";
     }
-    out_buffer_ << "Server: Linux x64 LYXF Ltalk server\r\n";
+    out_buffer_ << "Server: " + std::string(SERVER_NAME) + "\r\n";
     out_buffer_ << "Access-Control-Allow-Origin: *\r\n";
     out_buffer_ << "Content-Type: " + HttpContentType::GetType(type) + "\r\n";
     out_buffer_ << "Content-Length: " +  std::to_string(content.size()) + "\r\n";
     out_buffer_ << "\r\n";
-    //std::cout << "send_data:[" << send_header_buffer_ << "]";
     out_buffer_ << content;
     HandleWrite();
 }
 // Send file
 void Ltalk::Http::SendFile(const std::string &file_name) {
-    send_error_ = false;
     do {
         if(recv_error_ || http_connection_state_ == HttpConnectionState::DISCONNECTED) {
             break;;
@@ -449,7 +444,6 @@ void Ltalk::Http::HandleError(int error_number, std::string message) {
     body_buffer += "<body bgcolor=\"dead00\">";
     body_buffer += std::to_string(error_number) + message;
     body_buffer += "<hr><em> Linux x64 LYXF Ltalk Server </em>\n</body></html>";
-
     header_buffer += "HTTP/1.1 " + std::to_string(error_number) + message + "\r\n";
     header_buffer += "Access-Control-Allow-Origin: *\r\n";
     header_buffer += "Connection: Close\r\n";
@@ -459,7 +453,7 @@ void Ltalk::Http::HandleError(int error_number, std::string message) {
     header_buffer += "\r\n";
     out_buffer_ << header_buffer;
     out_buffer_ << body_buffer;
-    Util::WriteData(fd_, out_buffer_);
+    HandleWrite();
 }
 
 void Ltalk::Http::StrLower(std::string &str) {

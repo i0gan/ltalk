@@ -18,9 +18,10 @@ enum class ResponseCode {
     NOT_FOUND,
     INTERNAL_ERROR,
     NO_ACCESS,
+    NO_PERMISSSION,
     ERROR_PARSING_URL,
     ERROR_PARSING_CONTENT,
-    NO_PERMISSSION
+    ERROR_CONTENT_TYPE
 };
 class Center {
 public:
@@ -46,11 +47,16 @@ private:
     void SendData(const std::string &suffix, const std::string &content);
     void SendJson(nlohmann::json json_obj);
     void SendFile(std::string file_name);
-    void Login(std::string);
-    void Update(std::string);
     bool ParseUrl();
     void HandleNotFound();
     void Response(ResponseCode error_code);
+    /* */
+    void DealWithRegisterUser();
+    void DealWithRegisterGroup();
+    void DealWithLogin();
+    void DealWithSendUserInfo();
+    bool CheckJsonContent(nlohmann::json &json_obj);
+
     std::string GetDateTime();
 };
 }

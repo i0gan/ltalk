@@ -5,8 +5,7 @@ Ltalk::NetTimer::NetTimer(SPHttp sp_http, int ms_timeout) :
 
     struct timeval time_now;
     gettimeofday(&time_now, nullptr);
-    expired_ms_time_ =
-    (((time_now.tv_sec % 10000) * 1000) + (time_now.tv_usec / 1000)) + ms_timeout;
+    expired_ms_time_ = (((time_now.tv_sec % 10000) * 1000) + (time_now.tv_usec / 1000)) + ms_timeout;
 }
 
 Ltalk::NetTimer::NetTimer(NetTimer &net_timer) :
@@ -27,19 +26,17 @@ time_t Ltalk::NetTimer::GetExpiredTime() {
 
 void Ltalk::NetTimer::Update(int ms_timeout) {
     struct timeval time_now;
-    gettimeofday(&time_now, NULL);
-    expired_ms_time_ =
-            (((time_now.tv_sec % 10000) * 1000) + (time_now.tv_usec / 1000)) + ms_timeout;
+    gettimeofday(&time_now, nullptr);
+    expired_ms_time_ = (((time_now.tv_sec % 10000) * 1000) + (time_now.tv_usec / 1000)) + ms_timeout;
 }
 
 bool Ltalk::NetTimer::IsValid() {
     struct timeval time_now;
-    gettimeofday(&time_now, NULL);
+    gettimeofday(&time_now, nullptr);
     time_t now_ms_time = (((time_now.tv_sec % 10000) * 1000) + (time_now.tv_usec / 1000));
     if(now_ms_time < expired_ms_time_) {
         return true;
     }else {
-        this->set_deleted();
         return false;
     }
 }
@@ -58,17 +55,15 @@ bool Ltalk::NetTimer::IsDeleted() {
 }
 
 Ltalk::NetTimerManager::NetTimerManager() {
-
 }
 
 Ltalk::NetTimerManager::~NetTimerManager() {
-
 }
 
 void Ltalk::NetTimerManager::AddTimer(std::shared_ptr<Http> sp_http, int ms_timeout) {
     SPNetTimer sp_net_timer(new NetTimer(sp_http, ms_timeout));
     sort_sp_timer_queue.push(sp_net_timer);
-    sp_http->LinkTimer(sp_net_timer); //link to net timer
+    sp_http->LinkTimer(sp_net_timer); //set http to link timer
 }
 
 void Ltalk::NetTimerManager::HandleExpiredEvent() {
@@ -76,7 +71,7 @@ void Ltalk::NetTimerManager::HandleExpiredEvent() {
         SPNetTimer sp_net_timer = sort_sp_timer_queue.top();
         if(sp_net_timer->IsDeleted()) {
             sort_sp_timer_queue.pop();
-        }else if (sp_net_timer->IsValid() == false) {
+        }else if (!sp_net_timer->IsValid()) {
             sort_sp_timer_queue.pop();
         }else
             break;

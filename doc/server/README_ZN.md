@@ -64,6 +64,7 @@ nickname varchar(256),
 head_image_url varchar(256),
 phone varchar(128),
 email varchar(128),
+name varchar(256),
 creation_time  varchar(256),
 network_state varchar(256), 
 platform varchar(256), 
@@ -88,16 +89,15 @@ creation_time varchar(256)
 create table user_friend_(
 id int primary key auto_increment,
 uid varchar(256),
-tid varchar(256),
+tid varchar(256)
 );
 
 # 群组关系表, 储存群组与用户的关系
 create table group_user_(
 id int primary key auto_increment,
 gid varchar(256),
-tid varchar(256),
+tid varchar(256)
 );
-
 
 /# 事件表, 储存某些事件没有处理完成, 就将其储存起来
 create table event_(
