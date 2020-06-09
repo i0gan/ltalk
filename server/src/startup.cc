@@ -1,6 +1,6 @@
 #include "startup.hh"
 
-extern MYSQL Ltalk::global_mysql;
+extern MYSQL Ltalk::Db::global_mysql;
 extern std::unordered_map<std::string, Ltalk::UserInfo> Ltalk::global_map_user_info;
 extern std::unordered_map<std::string, Ltalk::GroupInfo> Ltalk::global_map_group_info;
 extern std::string Ltalk::global_web_root;
@@ -114,7 +114,7 @@ bool Ltalk::StartUp::RunNetworkModule() {
     return true;
 }
 bool Ltalk::StartUp::RunDatabaseModule() {
-    return Mysql::Connect(db_host_, db_user_, db_password_, db_name_, db_port_);;
+    return Db::Mysql::Connect(db_host_, db_user_, db_password_, db_name_, db_port_);;
 }
 bool Ltalk::StartUp::RunLoggerModule() {
     return true;

@@ -129,7 +129,6 @@ public:
     void LinkTimer(SPNetTimer sp_net_timer);
     SPChannel get_sp_channel();
     EventLoop *get_eventloop();
-
     void HandleClose();
     void NewEvnet();
 
@@ -148,17 +147,21 @@ private:
     bool keep_alive_;
     std::map<std::string, std::string> map_header_info_;
     std::weak_ptr<NetTimer> wp_net_timer_;
+    std::string uid_;      // logined uid for deal with offline
+    std::string platform_; // logined uid for deal with offline
 
     void HandleRead();
     void HandleWrite();
     void HandleConnect();
     void HandleError(int error_number, std::string message);
     HttpParseHeaderResult ParseHeader();
+
     void HandleProcess();
     std::string GetSuffix(std::string file_name);
     void SendData(const std::string &type,const std::string &content);
     void SendFile(const std::string &file_name);
     void StrLower(std::string &str);
     //Http
+    void DealWithOffline();
 };
 }

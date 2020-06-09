@@ -189,6 +189,19 @@ QToolButton:hover{
     <string>forgot</string>
    </property>
   </widget>
+  <widget class="QLabel" name="label_process_text">
+   <property name="geometry">
+    <rect>
+     <x>210</x>
+     <y>180</y>
+     <width>181</width>
+     <height>23</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string/>
+   </property>
+  </widget>
   <zorder>label_frame</zorder>
   <zorder>label_title</zorder>
   <zorder>lineEdit_account</zorder>
@@ -198,6 +211,7 @@ QToolButton:hover{
   <zorder>toolButton_min</zorder>
   <zorder>label_register</zorder>
   <zorder>label_forgot</zorder>
+  <zorder>label_process_text</zorder>
  </widget>
  <resources/>
  <connections/>

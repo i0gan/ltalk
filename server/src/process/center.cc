@@ -1,27 +1,30 @@
 #include "center.hh"
 
-extern MYSQL Ltalk::global_mysql;
+extern MYSQL Ltalk::Db::global_mysql;
 
 std::unordered_map<std::string, Ltalk::UserInfo> Ltalk::global_map_user_info;
 std::unordered_map<std::string, Ltalk::GroupInfo> Ltalk::global_map_group_info;
+
 std::string Ltalk::global_web_root;
 std::string Ltalk::global_web_page;
 std::string Ltalk::global_web_404_page;
 
-
-
-Ltalk::Center::Center(const std::map<std::string, std::string> &map_header_info, std::string &content) :
+Ltalk::Center::Center(const std::map<std::string, std::string> &map_header_info, std::string &content, std::string &http_uid, std::string &http_platform) :
     map_header_info_(map_header_info),
     content_(content),
     send_file_handler_(nullptr),
-    send_data_handler_(nullptr) {
+    send_data_handler_(nullptr),
+    http_uid_(http_uid),
+    http_platform_(http_platform) {
 
 }
 
 Ltalk::Center::~Center() {
 
 }
-
+void Ltalk::Center::set_fd(int fd) {
+    fd_ = fd;
+}
 void Ltalk::Center::set_send_file_handler(CallBack1 send_file_handler) {
     send_file_handler_ = send_file_handler;
 }
@@ -34,13 +37,17 @@ void Ltalk::Center::Process() {
     std::string http_method;
     try {
         http_method = map_header_info_.at("method");
-    } catch (std::out_of_range e) {
-        std::cout << e.what() << '\n';
-    }
+    } catch (std::out_of_range e) { std::cout << "out..\n"; }
+
     if(ParseUrl() == false) {
         Response(ResponseCode::ERROR_PARSING_URL);
         return;
     }
+
+    try {
+        platform_ = map_url_value_info_.at("platform");
+        request_ = map_url_value_info_.at("request");
+    } catch (std::out_of_range e) {}
 
     //std::cout << "method: "<< http_method << " url:[" << map_url_info_["url"] << "]\n";
     if(http_method == "get") {
@@ -52,41 +59,32 @@ void Ltalk::Center::Process() {
     }
 }
 
-void Ltalk::Center::HandleUrlRequest(const std::string &request, const std::string &platform) {
+void Ltalk::Center::HandleWebRequest() {
     std::string path = global_web_root;
-    if(request == "register" && platform == "web") {
+    if(request_ == "register") {
         path += "/register/index.html";
         SendFile(path);
-    }else if(request == "register_success" && platform == "web") {
+    }else if(request_ == "register_success") {
         path += "/register/success/index.html";
         SendFile(path);
-    }else if(request == "download" && platform == "web") {
+    }else if(request_ == "download") {
         path += "/download/index.html";
         SendFile(path);
     }else {
-        if(platform == "web") {
-            HandleNotFound();
-        }
+        HandleNotFound();
     }
 }
 
 void Ltalk::Center::HandleGet() {
     bool error = false;
     std::string path = map_url_info_["path"];
-    std::string platform;
-    std::string request;
-    try {
-        platform = map_url_value_info_.at("platform");
-        request = map_url_value_info_.at("request");
-    }  catch (std::out_of_range e) { }
-
     do {
-        if(path == "/" && request.empty()) {
+        if(path == "/" && platform_.empty()) {
             path = global_web_root + "/" + global_web_page;
             SendFile(path);
             break;
-        }else if(path == "/" && !request.empty()){
-            HandleUrlRequest(request, platform);
+        }else if(platform_ == "web"){
+            HandleWebRequest();
         }else {
             path = global_web_root + path;
             SendFile(path);
@@ -100,20 +98,14 @@ void Ltalk::Center::HandleGet() {
 }
 
 void Ltalk::Center::HandlePost() {
-    std::string platform;
-    std::string request;
-    try {
-        platform = map_url_value_info_.at("platform");
-        request = map_url_value_info_.at("request");
-    }  catch (std::out_of_range e) {
-        Response(ResponseCode::NO_ACCESS);
-        return;
-    }
-
     do {
-        if(request == "register" && platform == "web") {
+        if(request_ == "register" && platform_ == "web") {
             DealWithRegisterUser();
-        }else {
+        }else if(request_ == "login") {
+            DealWithLogin();
+        }
+
+        else {
             Response(ResponseCode::NO_ACCESS);
             return;
         }
@@ -184,6 +176,7 @@ void Ltalk::Center::HandleNotFound() {
 void Ltalk::Center::Response(ResponseCode code) {
     Json json_obj = {
         { "server", SERVER_NAME },
+        { "request", request_ },
         { "code", code },
         { "datetime" , GetDateTime() }
     };
@@ -251,6 +244,8 @@ bool Ltalk::Center::CheckJsonContentType(Json &recv_json_obj, const std::string 
     return ret;
 
 }
+
+
 void Ltalk::Center::DealWithRegisterUser() {
     std::string content_type;
     try {
@@ -304,22 +299,15 @@ void Ltalk::Center::DealWithRegisterUser() {
         Response(ResponseCode::ERROR_JSON_CONTENT);
         return;
     }
+
     // Filter char
-    MysqlQuery::Escape(json_name);
-    MysqlQuery::Escape(json_email);
-    MysqlQuery::Escape(json_phone_number);
-    MysqlQuery::Escape(json_address);
-    MysqlQuery::Escape(json_occupation);
-    MysqlQuery::Escape(json_password);
+    Db::MysqlQuery::Escape(json_name);
+    Db::MysqlQuery::Escape(json_email);
+    Db::MysqlQuery::Escape(json_phone_number);
+    Db::MysqlQuery::Escape(json_address);
+    Db::MysqlQuery::Escape(json_occupation);
 
     // check size
-    std::cout << "name: [" << json_name << "]\n";
-    std::cout << "email: [" << json_email << "]\n";
-    std::cout << "phone_number: [" << json_phone_number << "]\n";
-    std::cout << "address: [" << json_address << "]\n";
-    std::cout << "occupation: [" << json_occupation << "]\n";
-    std::cout << "password: [" << json_password << "]\n";
-
     bool is_valid = false;
     do {
         if(json_name.size() < 1 || json_name.size() >= 255)
@@ -341,31 +329,31 @@ void Ltalk::Center::DealWithRegisterUser() {
     }
 
     // check is have this eamil
-    MysqlQuery sql_query;
+    Db::MysqlQuery sql_query;
     sql_query.Select("user_", "email", "email = '" + json_email + '\'');
     if(sql_query.Next()) {
-        if(sql_query.Value(0) != nullptr) {
-            Response(ResponseCode::EXIST);
-            return;
-        }
+        Response(ResponseCode::EXIST);
     }
 
     std::string uid = MakeUid(json_email);
+    std::string encode_password = Crypto::MD5(json_password).toString();
+
     // Insert into database
-    std::string key_sql = "uid, email, name, phone_number, address, occupation, password";
+    std::string key_sql = "uid, account, email, name, phone_number, address, occupation, password";
     std::string value_sql = '\'' + uid + "',"; // set uid
+    value_sql += '\'' + json_email + "',";     // init account as email
     value_sql += '\'' + json_email + "',";
     value_sql += '\'' + json_name + "',";
     value_sql += '\'' + json_phone_number + "',";
     value_sql += '\'' + json_address + "',";
     value_sql += '\'' + json_occupation + "',";
-    value_sql += '\'' + json_password + "'";
+    value_sql += '\'' + encode_password + "'";
     if (!sql_query.Insert("user_", key_sql, value_sql)) {
         Response(ResponseCode::FAILURE);
         return;
     }
 
-    Json json_obj = {
+    Json send_json = {
         { "server", SERVER_NAME },
         { "code", ResponseCode::SUCCESS },
         { "datetime" , GetDateTime() },
@@ -373,7 +361,8 @@ void Ltalk::Center::DealWithRegisterUser() {
         { "uid" , uid},
         { "token", MakeToken(uid) }
     };
-    SendJson(json_obj);
+
+    SendJson(send_json);
 }
 
 std::string Ltalk::Center::MakeToken(std::string uid) {
@@ -387,4 +376,131 @@ std::string Ltalk::Center::MakeUid(std::string str) {
 
 void Ltalk::Center::DealWithRegisterGroup() {
 
+}
+
+void Ltalk::Center::DealWithLogin() {
+    std::string content_type;
+    try {
+        content_type = map_header_info_.at("content-type");
+    } catch(std::out_of_range e) {
+        std::cout << "no a content-type\n";
+        Response(ResponseCode::ERROR_HTTP_CONTENT);
+        return;
+    }
+
+    if(content_type != "application/json") {
+        Response(ResponseCode::ERROR_HTTP_CONTENT);
+        return;
+    }
+
+    Json recv_json_obj;
+    try {
+        recv_json_obj = Json::parse(content_);
+    }  catch (Json::parse_error e) {
+        Response(ResponseCode::ERROR_PARSING_CONTENT);
+        return;
+    }
+
+    if(!CheckJsonBaseContent(recv_json_obj)) {
+        Response(ResponseCode::NO_ACCESS);
+        return;
+    }
+
+    if(!CheckJsonContentType(recv_json_obj, "login_info")) {
+        Response(ResponseCode::ERROR_JSON_CONTENT_TYPE);
+        return;
+    }
+
+    std::string json_account;
+    std::string json_password;
+    try {
+        json_account = recv_json_obj["content"]["account"];
+        json_password = recv_json_obj["content"]["password"];
+    }  catch (Json::type_error) {
+        Response(ResponseCode::ERROR_JSON_CONTENT_TYPE);
+        return;
+    }
+
+    // filter
+    Db::MysqlQuery::Escape(json_account);
+    Db::MysqlQuery sql_query;
+
+    sql_query.Select("user_", "account", "account = '" + json_account + '\'');
+
+    if(!sql_query.Next()) {
+        Response(ResponseCode::NOT_EXIST);
+        return;
+    }
+
+    sql_query.Select("user_", "password", "account = '" + json_account + '\'');
+    if(!sql_query.Next()) {
+        Response(ResponseCode::FAILURE);
+        return;
+    }
+
+    std::string encode_password = Crypto::MD5(json_password).toString();
+    std::string db_password = sql_query.Value(0);
+
+    if(encode_password != db_password) {
+        Response(ResponseCode::FAILURE);
+        return;
+    }
+
+    sql_query.Select("user_", "uid", "account = '" + json_account + '\'');
+    if(!sql_query.Next()) {
+        Response(ResponseCode::FAILURE);
+        return;
+    }
+
+    std::string db_uid = sql_query.Value(0);
+    std::string token = MakeToken(db_uid);
+
+    if(!UpdateUserInfo(db_uid, token)) {
+        Response(ResponseCode::FAILURE);
+        return;
+    }
+
+    Json send_json = {
+        { "server", SERVER_NAME },
+        { "code", ResponseCode::SUCCESS },
+        { "request", request_},
+        { "datetime" , GetDateTime() },
+        { "access_url", "none"},
+        { "uid" , db_uid},
+        { "token",  token }
+    };
+    SendJson(send_json);
+}
+
+
+bool Ltalk::Center::UpdateUserInfo(const std::string &uid, const std::string &token) {
+    UserInfo userInfo;
+    userInfo.linux_fd = -1;
+    userInfo.windows_fd = -1;
+    userInfo.android_fd = -1;
+    userInfo.web_fd = -1;
+    userInfo.uid = uid;
+
+    if(global_map_user_info.find(uid) != global_map_user_info.end()) {
+        userInfo = global_map_user_info[uid];
+    }
+
+    if(platform_ == "linux") {
+        userInfo.linux_fd = fd_;
+        userInfo.linux_token = token;
+    }else if(platform_ == "windows") {
+        userInfo.windows_fd = fd_;
+        userInfo.windows_token = token;
+    }else if(platform_ == "android") {
+        userInfo.android_fd = fd_;
+        userInfo.android_token = token;
+    }else if(platform_ == "web") {
+        userInfo.web_fd = fd_;
+        userInfo.web_token = token;
+    }else {
+        return false;
+    }
+    global_map_user_info[uid] = userInfo;
+
+    return true;
 }

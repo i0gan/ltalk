@@ -15,7 +15,7 @@
 #define EPOLL_WAIT_TIME 10000
 #define MAX_BUF_SIZE 4096
 
-#define SERVER_NAME "Ltalk Server Linux(x64) 2020"
+#define SERVER_NAME "Ltalk Server Debian Linux x64"
 
 namespace Ltalk {
 class StartUp;
@@ -47,14 +47,41 @@ using SPNetTimerManager = std::shared_ptr<NetTimerManager>;
 using SPEventLoopThread = std::shared_ptr<EventLoopThread>;
 
 
-struct UserInfo {
+class UserInfo {
+public:
+    void operator=(const UserInfo &user_info) {
+        uid = user_info.uid;
+        account = user_info.account;
+        linux_fd = user_info.linux_fd;
+        windows_fd = user_info.windows_fd;
+        android_fd = user_info.android_fd;
+        web_fd = user_info.web_fd;
+        linux_token = user_info.linux_token;
+        windows_token = user_info.windows_token;
+        android_token = user_info.android_token;
+        web_token = user_info.web_token;
+    }
+
     std::string uid;
     std::string account;
-    int fd;
-    bool online;
+    int linux_fd;
+    int windows_fd;
+    int android_fd;
+    int web_fd;
+    std::string linux_token;
+    std::string windows_token;
+    std::string android_token;
+    std::string web_token;
 };
 
-struct GroupInfo {
+class GroupInfo {
+public:
+    void operator=(const GroupInfo &group_info) {
+        gid = group_info.gid;
+        account = group_info.account;
+        member_list = group_info.member_list;
+    }
+
     std::string gid;
     std::string account;
     std::list<UserInfo> member_list;

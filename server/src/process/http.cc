@@ -2,6 +2,9 @@
 #include "http.hh"
 
 //declare static variable
+extern std::unordered_map<std::string, Ltalk::UserInfo> Ltalk::global_map_user_info;
+extern std::unordered_map<std::string, Ltalk::GroupInfo> Ltalk::global_map_group_info;
+
 std::unordered_map<std::string, std::string> HttpContentType::umap_type_;
 pthread_once_t HttpContentType::once_control_;
 
@@ -56,8 +59,10 @@ Ltalk::Http::Http(int fd,EventLoop *eventloop) :
 }
 Ltalk::Http::~Http() {
     //std::cout << "free http\n";
+    DealWithOffline();
     close(fd_);
 }
+
 void Ltalk::Http::Reset() {
     http_process_state_ = HttpRecvState::PARSE_HEADER;
     in_content_buffer_.clear();
@@ -292,9 +297,37 @@ Ltalk::HttpParseHeaderResult Ltalk::Http::ParseHeader() {
 
     return result;
 }
+void Ltalk::Http::DealWithOffline() {
+    if(uid_.empty())
+        return;
+
+    UserInfo user_info = global_map_user_info[uid_];
+    if(platform_ == "linux") {
+        user_info.linux_fd = -1;
+        user_info.linux_token.clear();
+        std::cout << "linux 客户端下线\n";
+    }else if(platform_ == "windows") {
+        user_info.windows_fd = -1;
+        user_info.windows_token.clear();
+        std::cout << "windows 客户端下线\n";
+    }else if(platform_ == "android") {
+        user_info.android_fd = -1;
+        user_info.android_token.clear();
+        std::cout << "android 客户端下线\n";
+    }else if(platform_ == "web") {
+        user_info.web_fd = -1;
+        user_info.web_token.clear();
+        std::cout << "web 客户端下线\n";
+    }
+
+    // update info
+    global_map_user_info[uid_] = user_info;
+}
+
 
 void Ltalk::Http::HandleProcess() {
-    Ltalk::Center center(map_header_info_, in_content_buffer_);
+    Ltalk::Center center(map_header_info_, in_content_buffer_, uid_, platform_);
+    center.set_fd(fd_);
     center.set_send_data_handler(std::bind(&Http::SendData, this, std::placeholders::_1, std::placeholders::_2));
     center.set_send_file_handler(std::bind(&Http::SendFile, this, std::placeholders::_1));
     center.Process();

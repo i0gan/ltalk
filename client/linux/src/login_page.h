@@ -6,9 +6,13 @@
 #include <QDesktopWidget>
 #include <QMouseEvent>
 #include "ltalk.h"
+#include <QJsonArray>
+#include <QJsonDocument>
+#include <QJsonObject>
 
 namespace Ui {
 class LoginPage;
+
 }
 
 class LoginPage : public QWidget
@@ -19,6 +23,9 @@ public:
     explicit LoginPage(QWidget *parent = nullptr);
     ~LoginPage();
     void init();
+    void dealWithFailed(int code);
+    void dealWithSuccess();
+    void dealWithRecv(QJsonObject &json_obj);
 signals:
     void login(QString account, QString password);
 private:

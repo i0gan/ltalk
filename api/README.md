@@ -43,10 +43,10 @@ Accept-Language: en-US,*
 ```json
 {
 	"request" : 4,
-	"uid" : "none"
+	"uid" : "none",
 	"date" : "2020-06-5 18:00:33",
 	"token" : "none",
-	"content_type" : "user info"
+	"content_type" : "user info",
 	"content" : 
     [
 		{
@@ -62,13 +62,13 @@ Accept-Language: en-US,*
 
 
 
-
-
-## 注册模块API
+## 注册
 
 ### 请求
 
-post 以下json数据
+#### post
+
+json数据格式为
 
 ```json
 {
@@ -76,7 +76,7 @@ post 以下json数据
 	"datetime" : "2020-06-5 18:00:33",
 	"token" : "none",
     "uid" : "none",
-	"content_type" : "register_info"
+	"content_type" : "register_info",
 	"content" : 
 	{
     	"name": "I0gan", 
@@ -91,28 +91,105 @@ post 以下json数据
 
 ### 响应
 
-注意, 响应分为两种情况, 一种是错误响应,响应码1代表失败, 11代表帐号已经存,  json格式为
+#### 错误响应
+
+响应码1代表失败, 11代表帐号已经存在
 
 ```json
 {
- 	"server", "SERVER_NAME",
-	"code", "1",
-	"datetime" , "2020-06-5 18:00:33"
+ 	"server": "Ltalk Server Debian Linux x64",
+	"code" : "1",
+	"datetime" : "2020-06-5 18:00:33"
 }
 ```
 
 
+#### 成功响应
 
-成功响应, 响应代码code 为0 代表成功, 这时会返回以下内容, uid, token, access_url (用于页面跳转)
+响应代码code 为0 代表成功, 这时会返回以下内容, uid, token, access_url (用于页面跳转)
 
 ```json
 {
-	"server" : 0,
+	"server" : "Ltalk Server Debian Linux x64",
     "code" : 0,
 	"datetime" : "2020-06-5 18:00:33",
 	"uid" : "***********",
-	"token", "*****"
+	"token" : "**********",
 	"access_url" : "/?request=register_success&platform=web"
 }
 ```
+
+## 登录
+
+### 请求
+
+#### url:
+
+```
+http://ltalk.co/?request=login&platform=linux
+```
+#### post
+
+json数据格式为
+
+```json
+{
+	"request" : 1,
+	"datetime" : "2020-06-5 18:00:33",
+	"token" : "none",
+    "uid" : "none",
+	"content_type" : "login_info",
+	"content" : 
+	{
+    	"account": "I0gan", 
+    	"email" : "418894113@qq.com",
+  		"phone_number": "1571807****",
+        "address" : "GuiZhou",
+    	"occupation" : "programer",
+    	"password" : "******"
+  	}
+}
+
+```
+
+
+### 响应
+
+#### 失败
+响应码为1代表密码错误, 12代表帐号不存在,json格式为
+
+```json
+{
+ 	"server": "Ltalk Server Debian Linux x64",
+	"code" : "1",
+	"datetime" : "2020-06-5 18:00:33"
+}
+```
+
+
+
+成功响应, 响应代码code 为0 代表成功, 这时会返回以下内容, uid, token
+
+```json
+{
+	"server" : "Ltalk Server Debian Linux x64",
+    "code" : 0,
+	"datetime" : "2020-06-5 18:00:33",
+	"uid" : "***********",
+	"token" : "**********",
+}
+```
+
+
+
+## 登录成功后获取各种信息
+
+### GET请求
+
+#### url:
+
+```
+http://ltalk.co/?request=get_info&platform=linux&token=*****&uid=****
+```
+
 

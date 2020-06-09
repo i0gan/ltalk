@@ -27,7 +27,7 @@ void LoginPage::init() {
     QString html;
     html = "<html><head/><body><p><a href=\"";
     html += SERVER_REQUEST_URL;
-    html += "/register/index.html\">";
+    html += "/?request=register&platform=web\">";
     html += "<span style=\" text-decoration: underline; color:#00ffff;\">";
     html += "register";
     html += "</span></a></p></body></html>";
@@ -39,6 +39,7 @@ void LoginPage::init() {
     html += "forgot";
     html += "</span></a></p></body></html>";
     ui->label_forgot->setText(html);
+
     ui->label_register->setOpenExternalLinks(true);
     ui->label_forgot->setOpenExternalLinks(true);
 }
@@ -81,4 +82,31 @@ void LoginPage::mouseMoveEvent(QMouseEvent *event) {
 void LoginPage::on_toolButton_min_clicked()
 {
     showMinimized();
+}
+
+void LoginPage::dealWithSuccess() {
+    ui->label_process_text->setText("<html><head/><body><p align=\"center\"><span style=\" color:#00ff26;\">登录成功</span></p></body></html>");
+}
+
+void LoginPage::dealWithFailed(int code) {
+    QString show_text = "<html><head/><body><p align=\"center\"><span style=\" color:#ff0000;\">";
+    if(code == 1) {
+        show_text += "帐号或密码错误";
+    }else if(code == 12){
+        show_text += "帐号不存在";
+    }else {
+        show_text += "登录失败";
+    }
+    show_text += "</span></p></body></html>";
+    ui->label_process_text->setText(show_text);
+}
+
+void LoginPage::dealWithRecv(QJsonObject &json_obj) {
+    QJsonValue json_value_code = json_obj.value("code");
+    int code = json_value_code.toInt();
+    if(code == 0) {
+        dealWithSuccess();
+    }else {
+        dealWithFailed(code);
+    }
 }
