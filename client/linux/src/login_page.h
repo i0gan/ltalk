@@ -9,6 +9,7 @@
 #include <QJsonArray>
 #include <QJsonDocument>
 #include <QJsonObject>
+#include <QSqlDatabase>
 
 namespace Ui {
 class LoginPage;
@@ -28,10 +29,12 @@ public:
     void dealWithRecv(QJsonObject &json_obj);
 signals:
     void login(QString account, QString password);
+    void logined(QString account, QString uid, QString token);
 private:
     Ui::LoginPage *ui;
     QPoint mouse_pos_;
     bool pressed_;
+    QString account_;
 
 private slots:
     void on_pushButton_login_clicked();

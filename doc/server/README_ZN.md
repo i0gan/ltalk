@@ -55,7 +55,6 @@ use ltalk;
 #### 创建表
 
 ```sql
-# 用户表, 储存用户的信息
 create table user_(
 id int primary key auto_increment,
 uid varchar(256),
@@ -73,7 +72,6 @@ password varchar(256),
 last_login varchar(256)
 );
 
-# 群组表, 储存群组的信息
 create table group_(
 id int primary key auto_increment,
 gid varchar(256),
@@ -86,21 +84,18 @@ total int,
 creation_time varchar(256)
 );
 
-# 好友关系表, 储存用户之间的关系
 create table user_friend_(
 id int primary key auto_increment,
 uid varchar(256),
 tid varchar(256)
 );
 
-# 群组关系表, 储存群组与用户的关系
 create table group_user_(
 id int primary key auto_increment,
 gid varchar(256),
 tid varchar(256)
 );
 
-/# 事件表, 储存某些事件没有处理完成, 就将其储存起来
 create table event_(
 id int primary key auto_increment,
 eid varchar(256),
@@ -131,26 +126,30 @@ make
 在运行之前，确保配置文件正确， 配置文件为当前目录下的config.json文件中。默认配置如下，注意，不能有注释
 
 ```json
- {
+{
     "server" : {
-        "tcp port" : "8080",
-        "udp port" : "8000",
-        "number of thread" : "8",
-        "log path" : "./"
+        "tcp_port" : 80,
+        "udp_port" : 8000,
+        "number_of_thread": 8,
+        "data_path" : "data",
+        "log_path" : "data/log",
+        "web_root" : "data/web",
+        "web_page" : "download/index.html",
+        "web_404_page" : "data/web/404.html"
     },
     "database" : {
         "host" : "127.0.0.1",
-        "port" : "3306",
+        "port" : 3306,
         "user" : "ltalk",
         "password" : "123456",
         "name" : "ltalk"
     }
- }
+}
 ```
 
 确保配置文件正确后即可编译
 
 ```
-./dev # 或则 cd ./bin && ./ltalks
+./dev # 或则 sudo cd ./bin && ./ltalks
 ```
 

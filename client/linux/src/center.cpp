@@ -16,8 +16,10 @@ void Center::init() {
     opened_login_page_ = true;
     login_page_->init();
     connect(login_page_, &LoginPage::login, this, &Center::requestLogin);
+    connect(login_page_, &LoginPage::logined, this, &Center::dealWithLogined);
     network_access_mannager = new QNetworkAccessManager(this);
     connect(network_access_mannager, &QNetworkAccessManager::finished, this, &Center::requestReply);
+
 }
 
 void Center::start() {
@@ -94,6 +96,10 @@ void Center::requestReply(QNetworkReply *reply) {
             break;
         }
     } while(false);
+}
+
+void Center::dealWithLogined(QString account, QString uid, QString token) {
+    qDebug() << account << " uid: " << uid << "token: " << token;
 }
 
 QString Center::getTime() {

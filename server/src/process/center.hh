@@ -28,7 +28,8 @@ enum class ResponseCode {
     ERROR_JSON_CONTENT_TYPE,
     ERROR_JSON_CONTENT = 10,
     EXIST,
-    NOT_EXIST
+    NOT_EXIST,
+    LOGINED,
 };
 
 class Center {
@@ -60,7 +61,7 @@ private:
     std::string &http_platform_;
     int fd_;
     void SendData(const std::string &suffix, const std::string &content);
-    void SendJson(Json json_obj);
+    void SendJson(Json &json_obj);
     void SendFile(std::string file_name);
     bool ParseUrl();
     void HandleNotFound();
@@ -71,6 +72,7 @@ private:
 
     void DealWithRegisterGroup();
     void DealWithLogin();
+    bool CheckIsLogined(const std::string &uid);
     void DealWithSendUserInfo();
     bool CheckJsonBaseContent(Json &json_obj);
     bool UpdateUserInfo(const std::string &uid, const std::string &token); // Update memory infomation

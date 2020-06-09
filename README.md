@@ -12,10 +12,10 @@ HTTP is used as the transport protocol, C + + is used as the language for server
 Your can enter ltalk website: http://39.97.119.22
 
 
-## devloping  5.0 %
+## devloping  7.0 %
 
-* server 4.5 %
-* linux  0.5 %
+* server 5.5 %
+* linux  1.5 %
 * windows 0.0 %
 * mac os 0.0 %
 * android 0.0%

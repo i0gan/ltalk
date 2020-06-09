@@ -17,6 +17,7 @@ void LoginPage::init() {
     pressed_ = false;
     setWindowTitle("Ltalk login");
     setWindowIcon(QIcon(":/ui/logo.ico"));
+    ui->pushButton_login->setShortcut(Qt::Key_Return);
     QPoint pos;
     pos.setX((QApplication::desktop()->width() - width()) / 2);
     pos.setY((QApplication::desktop()->height() - height()) / 2);
@@ -47,15 +48,15 @@ void LoginPage::on_pushButton_login_clicked()
 {
     QString account = ui->lineEdit_account->text();
     QString password = ui->lineEdit_password->text();
-    if(account.size() <= 2) {
+    if(account.size() < 4) {
         qDebug() << "account formate error";
         return;
     }
-    if(password.size() < 2) {
+    if(password.size() < 6) {
         qDebug() << "password formate error";
         return;
     }
-
+    account_ = account;
     emit login(account, password);
 }
 
@@ -94,6 +95,8 @@ void LoginPage::dealWithFailed(int code) {
         show_text += "帐号或密码错误";
     }else if(code == 12){
         show_text += "帐号不存在";
+    }else if(code == 13){
+        show_text += "你已经在其他地方登录";
     }else {
         show_text += "登录失败";
     }
@@ -102,10 +105,12 @@ void LoginPage::dealWithFailed(int code) {
 }
 
 void LoginPage::dealWithRecv(QJsonObject &json_obj) {
-    QJsonValue json_value_code = json_obj.value("code");
-    int code = json_value_code.toInt();
+    int code = json_obj.value("code").toInt();
     if(code == 0) {
+        QString token = json_obj.value("token").toString();
+        QString uid = json_obj.value("uid").toString();
         dealWithSuccess();
+        emit logined(account_, uid, token);
     }else {
         dealWithFailed(code);
     }

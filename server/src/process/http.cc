@@ -58,7 +58,6 @@ Ltalk::Http::Http(int fd,EventLoop *eventloop) :
     sp_channel_->set_connected_handler(std::bind(&Http::HandleConnect, this));
 }
 Ltalk::Http::~Http() {
-    //std::cout << "free http\n";
     DealWithOffline();
     close(fd_);
 }
@@ -305,19 +304,19 @@ void Ltalk::Http::DealWithOffline() {
     if(platform_ == "linux") {
         user_info.linux_fd = -1;
         user_info.linux_token.clear();
-        std::cout << "linux 客户端下线\n";
+        std::cout << "linux 客户端下线:" << uid_ << "\n";
     }else if(platform_ == "windows") {
         user_info.windows_fd = -1;
         user_info.windows_token.clear();
-        std::cout << "windows 客户端下线\n";
+        std::cout << "windows 客户端下线" << uid_ << "\n";
     }else if(platform_ == "android") {
         user_info.android_fd = -1;
         user_info.android_token.clear();
-        std::cout << "android 客户端下线\n";
+        std::cout << "android 客户端下线" << uid_ << "\n";
     }else if(platform_ == "web") {
         user_info.web_fd = -1;
         user_info.web_token.clear();
-        std::cout << "web 客户端下线\n";
+        std::cout << "web 客户端下线" << uid_ << "\n";
     }
 
     // update info
@@ -441,7 +440,6 @@ void Ltalk::Http::SendFile(const std::string &file_name) {
 void Ltalk::Http::HandleConnect() {
     int ms_timeout = 0;
     __uint32_t &event = sp_channel_->get_event();
-
     UnlinkTimer();
     if(!recv_error_ && http_connection_state_ == HttpConnectionState::CONNECTED) {
         if(event != 0) {
@@ -477,14 +475,15 @@ void Ltalk::Http::HandleError(int error_number, std::string message) {
     body_buffer += "<html><title>Bad request</title>";
     body_buffer += "<body bgcolor=\"dead00\">";
     body_buffer += std::to_string(error_number) + message;
-    body_buffer += "<hr><em> Linux x64 LYXF Ltalk Server </em>\n</body></html>";
+    body_buffer += "<hr><em> " +  std::string(SERVER_NAME) + " </em>\n</body></html>";
     header_buffer += "HTTP/1.1 " + std::to_string(error_number) + message + "\r\n";
     header_buffer += "Access-Control-Allow-Origin: *\r\n";
+    header_buffer += "Server: " + std::string(SERVER_NAME) + "\r\n";
     header_buffer += "Connection: Close\r\n";
     header_buffer += "Content-Type: text/html\r\n";
     header_buffer += "Content-Length: " + std::to_string(body_buffer.size()) + "\r\n";
-    header_buffer += "Server: Linux x64 LYXF Ltalk Server\r\n";
     header_buffer += "\r\n";
+
     out_buffer_ << header_buffer;
     out_buffer_ << body_buffer;
     HandleWrite();

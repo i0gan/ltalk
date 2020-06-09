@@ -22,6 +22,7 @@ Ltalk::Center::Center(const std::map<std::string, std::string> &map_header_info,
 Ltalk::Center::~Center() {
 
 }
+
 void Ltalk::Center::set_fd(int fd) {
     fd_ = fd;
 }
@@ -37,7 +38,7 @@ void Ltalk::Center::Process() {
     std::string http_method;
     try {
         http_method = map_header_info_.at("method");
-    } catch (std::out_of_range e) { std::cout << "out..\n"; }
+    } catch (std::out_of_range e) { std::cout << "no method\n"; }
 
     if(ParseUrl() == false) {
         Response(ResponseCode::ERROR_PARSING_URL);
@@ -101,10 +102,9 @@ void Ltalk::Center::HandlePost() {
     do {
         if(request_ == "register" && platform_ == "web") {
             DealWithRegisterUser();
-        }else if(request_ == "login") {
+        }else if(request_ == "login" && !platform_.empty()) {
             DealWithLogin();
         }
-
         else {
             Response(ResponseCode::NO_ACCESS);
             return;
@@ -183,7 +183,7 @@ void Ltalk::Center::Response(ResponseCode code) {
     SendJson(json_obj);
 }
 
-void Ltalk::Center::SendJson(Json json_obj) {
+void Ltalk::Center::SendJson(Json &json_obj) {
     std::ostringstream json_sstream;
     json_sstream << json_obj;
     std::string data = json_sstream.str();
@@ -333,6 +333,7 @@ void Ltalk::Center::DealWithRegisterUser() {
     sql_query.Select("user_", "email", "email = '" + json_email + '\'');
     if(sql_query.Next()) {
         Response(ResponseCode::EXIST);
+        return;
     }
 
     std::string uid = MakeUid(json_email);
@@ -454,6 +455,14 @@ void Ltalk::Center::DealWithLogin() {
 
     std::string db_uid = sql_query.Value(0);
     std::string token = MakeToken(db_uid);
+    http_uid_ = db_uid;
+    http_platform_ = platform_;
+
+
+    if(CheckIsLogined(db_uid)) {
+        Response(ResponseCode::LOGINED);
+        return;
+    }
 
     if(!UpdateUserInfo(db_uid, token)) {
         Response(ResponseCode::FAILURE);
@@ -471,36 +480,66 @@ void Ltalk::Center::DealWithLogin() {
     };
     SendJson(send_json);
 }
+bool Ltalk::Center::CheckIsLogined(const std::string &uid) {
+    UserInfo user_info;
+    bool ret_result = false;
+    do {
+        if(global_map_user_info.find(uid) != global_map_user_info.end()) {
+            user_info = global_map_user_info[uid];
+        }else {
+            std::cout << "not exited!\n";
+            std::cout << "check uid[" << uid << "]\n";
+            break;
+        }
 
+        if(platform_ == "linux" && user_info.linux_fd != -1) {
+            ret_result =  true;
+            break;
+        }else if(platform_ == "windows" && user_info.windows_fd != -1) {
+            ret_result =  true;
+            break;
+        }else if(platform_ == "android" && user_info.android_fd != - 1) {
+            ret_result =  true;
+            break;
+        }else if(platform_ == "web" && user_info.web_fd != - 1) {
+            ret_result =  true;
+            break;
+        }else {
+            ret_result =  false;
+            break;
+        }
+    } while(false);
+    return ret_result;
+}
 
 bool Ltalk::Center::UpdateUserInfo(const std::string &uid, const std::string &token) {
-    UserInfo userInfo;
-    userInfo.linux_fd = -1;
-    userInfo.windows_fd = -1;
-    userInfo.android_fd = -1;
-    userInfo.web_fd = -1;
-    userInfo.uid = uid;
-
+    UserInfo user_info;
+    user_info.linux_fd = -1;
+    user_info.windows_fd = -1;
+    user_info.android_fd = -1;
+    user_info.web_fd = -1;
+    user_info.uid = uid;
+    std::cout << "update uid[" << uid << "]\n";
     if(global_map_user_info.find(uid) != global_map_user_info.end()) {
-        userInfo = global_map_user_info[uid];
+        user_info = global_map_user_info[uid];
     }
 
     if(platform_ == "linux") {
-        userInfo.linux_fd = fd_;
-        userInfo.linux_token = token;
+        user_info.linux_fd = fd_;
+        user_info.linux_token = token;
     }else if(platform_ == "windows") {
-        userInfo.windows_fd = fd_;
-        userInfo.windows_token = token;
+        user_info.windows_fd = fd_;
+        user_info.windows_token = token;
     }else if(platform_ == "android") {
-        userInfo.android_fd = fd_;
-        userInfo.android_token = token;
+        user_info.android_fd = fd_;
+        user_info.android_token = token;
     }else if(platform_ == "web") {
-        userInfo.web_fd = fd_;
-        userInfo.web_token = token;
+        user_info.web_fd = fd_;
+        user_info.web_token = token;
     }else {
         return false;
     }
-    global_map_user_info[uid] = userInfo;
+    global_map_user_info[uid] = user_info;
 
     return true;
 }
