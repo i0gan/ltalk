@@ -15,6 +15,8 @@
 * windows客户端 0.0 %
 * android 客户端0.0%
 
+[开发日志](doc/dev-log/log.md)
+
 ## 下载
 
 进入该网址: http://ltalk.co 进行下载
@@ -23,9 +25,9 @@
 
 ## 环境搭建
 
-[服务端]()
+[服务端](doc/server/env.md)
 
-[linux客户端]()
+[linux客户端](doc/linux/env.md)
 
 [windows客户端]()
 
@@ -35,9 +37,9 @@
 
 ## 编译
 
-[服务端]()
+[服务端](doc/server/complie.md)
 
-[linux客户端]()
+[linux客户端](doc/linux/env.md)
 
 [windows客户端]()
 
@@ -48,7 +50,7 @@
 
 ## 帮助
 
-
+[服务端框架](doc/server/framework.md)
 
 
 
