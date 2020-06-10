@@ -1,6 +1,6 @@
 #include "eventloop_thread.hh"
 
-Ltalk::EventLoopThread::EventLoopThread() :
+Net::EventLoopThread::EventLoopThread() :
     eventloop_(nullptr),
     exiting_(false),
     thread_(std::bind(&EventLoopThread::ThreadFunc, this), "EventLoopThread"),
@@ -9,19 +9,19 @@ Ltalk::EventLoopThread::EventLoopThread() :
 
 }
 
-Ltalk::EventLoopThread::~EventLoopThread() {
+Net::EventLoopThread::~EventLoopThread() {
     exiting_ = true;
     if(eventloop_ != nullptr) {
         eventloop_->Quit();
         thread_.Join();
     }
 }
-EventLoop *Ltalk::EventLoopThread::StartLoop() {
+Net::EventLoop *Net::EventLoopThread::StartLoop() {
     assert(thread_.IsStarted() == false);
     thread_.Start();
 
     //Waiting for run
-    MutexLockGuard mutex_lock_guard(mutex_lock_);
+    Thread::MutexLockGuard mutex_lock_guard(mutex_lock_);
     while(eventloop_ == nullptr)
         condition_.Wait();
 
@@ -29,7 +29,7 @@ EventLoop *Ltalk::EventLoopThread::StartLoop() {
     return eventloop_;
 }
 
-void Ltalk::EventLoopThread::ThreadFunc() {
+void Net::EventLoopThread::ThreadFunc() {
     // create a new eventloop
     EventLoop eventloop;
     eventloop_ = &eventloop;

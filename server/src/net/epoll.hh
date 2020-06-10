@@ -10,7 +10,7 @@
 #include "timer.hh"
 #include "../ltalk.hh"
 
-namespace Ltalk {
+namespace Net {
 class Epoll {
 public:
     Epoll();
@@ -28,7 +28,7 @@ private:
     std::vector<epoll_event> v_events_;
     SPChannel sp_channels_[MAX_CONNECTED_FDS_NUM];
     SPHttp sp_https_[MAX_CONNECTED_FDS_NUM]; // It's not https protocol
-    SPNetTimerManager sp_net_timer_manager_;
+    SPTimerManager sp_timer_manager_;
 };
 }
 

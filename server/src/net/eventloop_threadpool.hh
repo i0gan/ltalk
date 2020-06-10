@@ -4,8 +4,7 @@
 #include "eventloop.hh"
 #include "eventloop_thread.hh"
 
-namespace Ltalk {
-
+namespace Net {
 class EventLoopThreadPool {
 public:
     EventLoopThreadPool(EventLoop *base_eventloop, int number_of_thread);

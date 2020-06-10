@@ -14,10 +14,10 @@
 #include "channel.hh"
 #include "eventloop_threadpool.hh"
 #include "util.hh"
+#include "http.hh"
 
-#include "../process/http.hh"
 
-namespace Ltalk {
+namespace Net {
 class Net final{
 public:
     Net(int port,int thread_number);

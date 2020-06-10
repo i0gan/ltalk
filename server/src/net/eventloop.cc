@@ -1,13 +1,13 @@
 #include "eventloop.hh"
-__thread Ltalk::EventLoop * global_eventloop = nullptr;
+__thread Net::EventLoop * global_eventloop = nullptr;
 
-Ltalk::EventLoop::EventLoop() :
+Net::EventLoop::EventLoop() :
     looping_(false),
     awake_fd_(EventLoop::CreateEventFd()),
     quit_(false),
     event_handling_(false),
-    thread_id_(CurrentThread::get_tid()),
-    sp_epoll_(new Epoll()),
+    thread_id_(Thread::CurrentThread::get_tid()),
+    sp_epoll_(new Net::Epoll()),
     sp_awake_channel_(new Channel(this, awake_fd_))
 {
     if(global_eventloop) {
@@ -20,33 +20,33 @@ Ltalk::EventLoop::EventLoop() :
     sp_awake_channel_->set_connected_handler(std::bind(&EventLoop::HandleConnect, this));
     sp_epoll_->Add(sp_awake_channel_, 0);
 }
-Ltalk::EventLoop::~EventLoop() {
+Net::EventLoop::~EventLoop() {
 
 }
 
-void Ltalk::EventLoop::HandleRead() {
+void Net::EventLoop::HandleRead() {
     char buf[8];
-    ssize_t read_len = Util::ReadData(awake_fd_, &buf, sizeof (buf));
+    ssize_t read_len = Util::Read(awake_fd_, &buf, sizeof (buf));
     if(read_len != sizeof (buf)) {
         std::cout << "EventLoop::handRead() reads " << read_len << "instead of 8\n";
     }
     sp_awake_channel_->set_event(EPOLLIN | EPOLLET);
 }
 
-void Ltalk::EventLoop::HandleConnect() {
+void Net::EventLoop::HandleConnect() {
 
 }
 
-void Ltalk::EventLoop::UpdateEpoll(SPChannel sp_channel, int ms_timeout) {
+void Net::EventLoop::UpdateEpoll(SPChannel sp_channel, int ms_timeout) {
     sp_epoll_->Mod(sp_channel, ms_timeout);
 }
 
-void Ltalk::EventLoop::AddToEpoll(SPChannel sp_channel, int ms_timeout) {
+void Net::EventLoop::AddToEpoll(SPChannel sp_channel, int ms_timeout) {
     sp_epoll_->Add(sp_channel, ms_timeout);
 }
 
 
-int Ltalk::EventLoop::CreateEventFd() {
+int Net::EventLoop::CreateEventFd() {
     int event_fd = eventfd(0, EFD_NONBLOCK | EFD_CLOEXEC);
     if(event_fd < 0) {
         perror("eventfd:");
@@ -55,7 +55,7 @@ int Ltalk::EventLoop::CreateEventFd() {
     return event_fd;
 }
 
-void Ltalk::EventLoop::Loop() {
+void Net::EventLoop::Loop() {
     assert(looping_ == false);
     assert(IsInLoopThread());
     looping_ = true;
@@ -74,46 +74,46 @@ void Ltalk::EventLoop::Loop() {
     }
 }
 
-void Ltalk::EventLoop::Quit() {
+void Net::EventLoop::Quit() {
     quit_ = true;
     if(IsInLoopThread() == false) {
         WakeUp();
     }
 }
-void Ltalk::EventLoop::RunInLoop(CallBack &&func) {
+void Net::EventLoop::RunInLoop(::Util::CallBack &&func) {
     if(IsInLoopThread())
         func();
     else
         QueueInLoop(std::move(func));
 }
 
-void Ltalk::EventLoop::QueueInLoop(CallBack &&func) {
-    MutexLockGuard mutex_lock_guard(mutex_lock_);
+void Net::EventLoop::QueueInLoop(::Util::CallBack &&func) {
+    Thread::MutexLockGuard mutex_lock_guard(mutex_lock_);
     pending_callback_functions_.emplace_back(std::move(func));
     if(!IsInLoopThread() || calling_pending_callback_function_)
         WakeUp();
 }
 
-bool Ltalk::EventLoop::IsInLoopThread() {
-    return thread_id_ == CurrentThread::get_tid();
+bool Net::EventLoop::IsInLoopThread() {
+    return thread_id_ == Thread::CurrentThread::get_tid();
 }
 
-void Ltalk::EventLoop::RemoveFromEpoll(SPChannel sp_channel) {
+void Net::EventLoop::RemoveFromEpoll(SPChannel sp_channel) {
     sp_epoll_->Del(sp_channel);
 }
 
-void Ltalk::EventLoop::WakeUp() {
+void Net::EventLoop::WakeUp() {
     char buf[8];
-    ssize_t write_len = Util::WriteData(awake_fd_, buf, sizeof (buf));
+    ssize_t write_len = Util::Write(awake_fd_, buf, sizeof (buf));
     if(write_len != sizeof (buf)) {
         d_cout << "eventloop::wakeup write:" << write_len << " instead of 8\n";
     }
 }
 
-void Ltalk::EventLoop::RunPendingCallBackFunc() {
+void Net::EventLoop::RunPendingCallBackFunc() {
     std::vector<CallBack> v_callback_functions;
     calling_pending_callback_function_ = true;
-    MutexLockGuard mutex_lock_guard(mutex_lock_);
+    Thread::MutexLockGuard mutex_lock_guard(mutex_lock_);
 
     //Calling all functions in pending vecotr
     v_callback_functions.swap(pending_callback_functions_);
@@ -123,10 +123,10 @@ void Ltalk::EventLoop::RunPendingCallBackFunc() {
     calling_pending_callback_function_ = false;
 }
 
-void Ltalk::EventLoop::AssertInLoopThread() {
+void Net::EventLoop::AssertInLoopThread() {
     assert(IsInLoopThread());
 }
 
-void Ltalk::EventLoop::Shutdown(SPChannel sp_channel) {
+void Net::EventLoop::Shutdown(SPChannel sp_channel) {
     Util::ShutDownWriteFd(sp_channel->get_fd());
 }

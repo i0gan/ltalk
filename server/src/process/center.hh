@@ -1,7 +1,7 @@
 #pragma once
 
 #include "../ltalk.hh"
-#include "../db/mysql/mysql.hh"
+#include "../database/mysql/mysql.hh"
 #include <map>
 #include <string>
 #include "../json/json.hpp"
@@ -14,8 +14,7 @@
 
 using Json = nlohmann::json;
 
-namespace Ltalk {
-enum class ResponseCode {
+enum class Process::ResponseCode {
     SUCCESS = 0,
     FAILURE,
     NOT_FOUND,
@@ -32,14 +31,14 @@ enum class ResponseCode {
     LOGINED,
 };
 
-class Center {
+class Process::Center {
 public:
     explicit Center(const std::map<std::string, std::string> &map_header_info, std::string &content, std::string &http_uid, std::string &http_platform); // uid for deal with offline
     ~Center();
     void Process();
-    void set_send_data_handler(CallBack2 send_data_handler);
-    void set_error_handler(CallBack2 error_handler);
-    void set_send_file_handler(CallBack1 send_file_handler);
+    void set_send_data_handler(Util::CallBack2 send_data_handler);
+    void set_error_handler(Util::CallBack2 error_handler);
+    void set_send_file_handler(Util::CallBack1 send_file_handler);
     void set_fd(int fd) ;
 
     void HandleGet();
@@ -50,9 +49,9 @@ public:
 private:
     const std::map<std::string, std::string> &map_header_info_;
     std::string &content_;
-    CallBack1 send_file_handler_;
-    CallBack2 send_data_handler_;
-    CallBack2 error_handler_;
+    Util::CallBack1 send_file_handler_;
+    Util::CallBack2 send_data_handler_;
+    Util::CallBack2 error_handler_;
     std::map<std::string, std::string> map_url_info_;
     std::map<std::string, std::string> map_url_value_info_;
     std::string request_;
@@ -65,7 +64,7 @@ private:
     void SendFile(std::string file_name);
     bool ParseUrl();
     void HandleNotFound();
-    void Response(ResponseCode error_code);
+    void Response(Process::ResponseCode error_code);
     /* */
     void DealWithRegisterUser();
     bool CheckJsonContentType(Json &recv_json_obj, const std::string &type);
@@ -81,4 +80,3 @@ private:
     std::string MakeToken(std::string uid);
     std::string MakeUid(std::string str);
 };
-}

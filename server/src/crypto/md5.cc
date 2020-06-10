@@ -55,8 +55,8 @@ Rotation is separate from addition to prevent recomputation.
 }
 
 
-const byte Ltalk::Crypto::MD5::PADDING[64] = { 0x80 };
-const char Ltalk::Crypto::MD5::HEX[16] = {
+const byte Crypto::MD5::PADDING[64] = { 0x80 };
+const char Crypto::MD5::HEX[16] = {
 	'0', '1', '2', '3',
 	'4', '5', '6', '7',
     '8', '9', 'A', 'B',
@@ -64,30 +64,30 @@ const char Ltalk::Crypto::MD5::HEX[16] = {
 };
 
 /* Default construct. */
-Ltalk::Crypto::MD5::MD5() {
+Crypto::MD5::MD5() {
 	reset();
 }
 
 /* Construct a MD5 object with a input buffer. */
-Ltalk::Crypto::MD5::MD5(const void *input, size_t length) {
+Crypto::MD5::MD5(const void *input, size_t length) {
 	reset();
 	update(input, length);
 }
 
 /* Construct a MD5 object with a string. */
-Ltalk::Crypto::MD5::MD5(const std::string &str) {
+Crypto::MD5::MD5(const std::string &str) {
 	reset();
 	update(str);
 }
 
 /* Construct a MD5 object with a file. */
-Ltalk::Crypto::MD5::MD5(std::ifstream &in) {
+Crypto::MD5::MD5(std::ifstream &in) {
 	reset();
 	update(in);
 }
 
 /* Return the message-digest */
-const byte* Ltalk::Crypto::MD5::digest() {
+const byte* Crypto::MD5::digest() {
 	if (!_finished) {
 		_finished = true;
 		final();
@@ -96,7 +96,7 @@ const byte* Ltalk::Crypto::MD5::digest() {
 }
 
 /* Reset the calculate state */
-void Ltalk::Crypto::MD5::reset() {
+void Crypto::MD5::reset() {
 
 	_finished = false;
 	/* reset number of bits. */
@@ -109,17 +109,17 @@ void Ltalk::Crypto::MD5::reset() {
 }
 
 /* Updating the context with a input buffer. */
-void Ltalk::Crypto::MD5::update(const void *input, size_t length) {
+void Crypto::MD5::update(const void *input, size_t length) {
 	update((const byte*)input, length);
 }
 
 /* Updating the context with a string. */
-void Ltalk::Crypto::MD5::update(const std::string &str) {
+void Crypto::MD5::update(const std::string &str) {
 	update((const byte*)str.c_str(), str.length());
 }
 
 /* Updating the context with a file. */
-void Ltalk::Crypto::MD5::update(std::ifstream &in) {
+void Crypto::MD5::update(std::ifstream &in) {
 
 	if (!in)
 		return;
@@ -138,7 +138,7 @@ void Ltalk::Crypto::MD5::update(std::ifstream &in) {
 operation, processing another message block, and updating the
 context.
 */
-void Ltalk::Crypto::MD5::update(const byte *input, size_t length) {
+void Crypto::MD5::update(const byte *input, size_t length) {
 
 	ulong i, index, partLen;
 
@@ -175,7 +175,7 @@ void Ltalk::Crypto::MD5::update(const byte *input, size_t length) {
 /* MD5 finalization. Ends an MD5 message-_digest operation, writing the
 the message _digest and zeroizing the context.
 */
-void Ltalk::Crypto::MD5::final() {
+void Crypto::MD5::final() {
 
 	byte bits[8];
 	ulong oldState[4];
@@ -206,7 +206,7 @@ void Ltalk::Crypto::MD5::final() {
 }
 
 /* MD5 basic transformation. Transforms _state based on block. */
-void Ltalk::Crypto::MD5::transform(const byte block[64]) {
+void Crypto::MD5::transform(const byte block[64]) {
 
 	ulong a = _state[0], b = _state[1], c = _state[2], d = _state[3], x[16];
 
@@ -293,7 +293,7 @@ void Ltalk::Crypto::MD5::transform(const byte block[64]) {
 /* Encodes input (ulong) into output (byte). Assumes length is
 a multiple of 4.
 */
-void Ltalk::Crypto::MD5::encode(const ulong *input, byte *output, size_t length) {
+void Crypto::MD5::encode(const ulong *input, byte *output, size_t length) {
 
 	for(size_t i=0, j=0; j<length; i++, j+=4) {
 		output[j]= (byte)(input[i] & 0xff);
@@ -306,7 +306,7 @@ void Ltalk::Crypto::MD5::encode(const ulong *input, byte *output, size_t length)
 /* Decodes input (byte) into output (ulong). Assumes length is
 a multiple of 4.
 */
-void Ltalk::Crypto::MD5::decode(const byte *input, ulong *output, size_t length) {
+void Crypto::MD5::decode(const byte *input, ulong *output, size_t length) {
 
 	for(size_t i=0, j=0; j<length; i++, j+=4) {	
 		output[i] = ((ulong)input[j]) | (((ulong)input[j+1]) << 8) |
@@ -315,7 +315,7 @@ void Ltalk::Crypto::MD5::decode(const byte *input, ulong *output, size_t length)
 }
 
 /* Convert byte array to hex string. */
-std::string Ltalk::Crypto::MD5::bytesToHexString(const byte *input, size_t length) {
+std::string Crypto::MD5::bytesToHexString(const byte *input, size_t length) {
     std::string str;
 	str.reserve(length << 1);
 	for(size_t i = 0; i < length; i++) {
@@ -329,6 +329,6 @@ std::string Ltalk::Crypto::MD5::bytesToHexString(const byte *input, size_t lengt
 }
 
 /* Convert digest to string value */
-std::string Ltalk::Crypto::MD5::toString() {
+std::string Crypto::MD5::toString() {
 	return bytesToHexString(digest(), 16);
 }

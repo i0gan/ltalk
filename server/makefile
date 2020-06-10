@@ -20,8 +20,8 @@ NET_PATH    :=  ./src/net
 THREAD_PATH :=  ./src/thread
 PROCESS_PATH := ./src/process
 
-DB_MYSQL_PATH     :=  ./src/db/mysql
-DB_REDIS_PATH     :=  ./src/db/redis
+DB_MYSQL_PATH     :=  ./src/database/mysql
+DB_REDIS_PATH     :=  ./src/database/redis
 
 CRYPTO_PATH :=  ./src/crypto
 JSON_PATH   :=  ./src/json

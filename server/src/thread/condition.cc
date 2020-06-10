@@ -1,26 +1,26 @@
 #include "condition.hh"
 
-Ltalk::Condition::Condition(MutexLock &mutex_lock) : mutex_(mutex_lock) {
+Thread::Condition::Condition(MutexLock &mutex_lock) : mutex_(mutex_lock) {
     pthread_cond_init(&cond_, nullptr);
 }
-Ltalk::Condition::~Condition() {
+Thread::Condition::~Condition() {
     pthread_cond_destroy(&cond_);
 }
 
-void Ltalk::Condition::Wait() {
+void Thread::Condition::Wait() {
     pthread_cond_wait(&cond_, mutex_.get_mutex());
 
 }
 
-void Ltalk::Condition::Signal() {
+void Thread::Condition::Signal() {
     pthread_cond_signal(&cond_);
 }
 
-void Ltalk::Condition::Broadcast() {
+void Thread::Condition::Broadcast() {
     pthread_cond_broadcast(&cond_);
 }
 
-bool Ltalk::Condition::WaitForSeconds(int seconds) {
+bool Thread::Condition::WaitForSeconds(int seconds) {
     struct timespec time_spec;
     clock_gettime(CLOCK_REALTIME, &time_spec);
     time_spec.tv_sec += static_cast<__time_t>(seconds);

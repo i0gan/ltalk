@@ -7,23 +7,18 @@
 #include <sys/time.h>
 #include <unistd.h>
 #include "../ltalk.hh"
-#include "../process/http.hh"
-
-
-using namespace Ltalk;
+#include "http.hh"
 
 /*
  *  Network Timer Class set
  */
 
-namespace Ltalk {
-
-class NetTimer {
+namespace Net {
+class Timer {
 public:
-    NetTimer(SPHttp sp_http, int ms_timeout);
-    NetTimer(NetTimer &net_timer);
-    ~NetTimer();
-
+    Timer(SPHttp sp_http, int ms_timeout);
+    Timer(Timer &timer);
+    ~Timer();
     void Update(int ms_timeout);
     bool IsValid();
     void Clear();
@@ -36,21 +31,21 @@ private:
     SPHttp sp_http_;
 };
 
-class NetTimerCompare {
+class TimerCompare {
 public:
-    bool operator()(SPNetTimer &sp_timer_1, SPNetTimer &sp_timer_2) const {
+    bool operator()(SPTimer &sp_timer_1, SPTimer &sp_timer_2) const {
         return sp_timer_1->GetExpiredTime() > sp_timer_2->GetExpiredTime();
     }
 };
 
-class NetTimerManager {
+class TimerManager {
 public:
-    explicit NetTimerManager();
-    ~NetTimerManager();
+    explicit TimerManager();
+    ~TimerManager();
     void AddTimer(std::shared_ptr<Http> sp_http, int ms_timeout);
     void HandleExpiredEvent();
 private:
-    std::priority_queue<SPNetTimer, std::deque<SPNetTimer>, NetTimerCompare>
+    std::priority_queue<SPTimer, std::deque<SPTimer>, TimerCompare>
     sort_sp_timer_queue;
 };
 }

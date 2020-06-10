@@ -6,7 +6,7 @@
 #include "../thread/mutex_lock.hh"
 #include "../thread/condition.hh"
 
-namespace Ltalk {
+namespace Net {
 
 class EventLoopThread {
 public:
@@ -17,9 +17,9 @@ public:
 private:
     EventLoop *eventloop_;
     bool exiting_;
-    Thread thread_;
-    MutexLock mutex_lock_;
-    Condition condition_;
+    Thread::Thread thread_;
+    Thread::MutexLock mutex_lock_;
+    Thread::Condition condition_;
     void ThreadFunc();
 };
 }

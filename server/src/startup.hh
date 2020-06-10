@@ -14,10 +14,9 @@
 #include "net/net.hh"
 #include "net/eventloop.hh"
 #include "ltalk.hh"
-#include "db/mysql/mysql.hh"
+#include "database/mysql/mysql.hh"
 
-namespace Ltalk {
-class StartUp final{
+class Ltalk::StartUp final{
 public:
      StartUp();
     ~StartUp();
@@ -40,7 +39,5 @@ private:
     std::string db_user_;
     std::string db_password_;
     std::string db_name_;
-
     std::string log_path_;
-};
 };

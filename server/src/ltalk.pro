@@ -5,13 +5,13 @@ HEADERS += \
     ltalk.hh \
     startup.hh \
     \
-    db/mysql/mysql.hh \
-    db/redis/redis.hh \
+    database/mysql/mysql.hh \
+    database/redis/redis.hh \
     \
     json/json.hpp\
-    process/http.hh \
     process/center.hh \
     \
+    net/http.hh \
     net/epoll.hh \
     net/net.hh \
     net/util.hh \
@@ -35,12 +35,12 @@ SOURCES += \
     main.cc \
     startup.cc \
     \
-    db/mysql/mysql.cc \
-    db/redis/redis.cc \
+    database/mysql/mysql.cc \
+    database/redis/redis.cc \
     \
-    process/http.cc \
     process/center.cc \
     \
+    net/http.cc \
     net/epoll.cc \
     net/net.cc \
     net/util.cc \

@@ -13,57 +13,50 @@
 #include "../ltalk.hh"
 #include "../net/eventloop.hh"
 #include "../net/timer.hh"
-#include "center.hh"
-#include "../net/vessel.hpp"
+#include "../process/center.hh"
+#include "../util/vessel.hpp"
 
-namespace Ltalk {
 
-enum class HttpRecvState {
+enum class Net::HttpRecvState {
     PARSE_HEADER = 0,
     RECV_CONTENT,
     PROCESS,
     FINISH
 };
 
-enum class HttpConnectionState {
+enum class Net::HttpConnectionState {
     CONNECTED = 0,
     DISCONNECTING,
     DISCONNECTED
 };
 
-enum class HttpParseURIResult {
+enum class Net::HttpParseURIResult {
     SUCCESS = 0,
     ERROR
 };
 
-enum class HttpParseHeaderResult {
+enum class Net::HttpParseHeaderResult {
     SUCCESS = 0,
     ERROR
 };
 
-enum class HttpAnalysisResult {
-    SUCCESS = 0,
-    ERROR
-};
+//enum class HttpMethod {
+//    GET = 0,
+//    POST,
+//    PUT,
+//    HEAD,
+//    DELETE,
+//    CONNECT,
+//    TRACE,
+//    OPTIONS
+//};
 
+//enum class HttpVersion {
+//    V_1_0 = 0,
+//    V_1_1
+//};
 
-enum class HttpMethod {
-    GET = 0,
-    POST,
-    PUT,
-    HEAD,
-    DELETE,
-    CONNECT,
-    TRACE,
-    OPTIONS
-};
-
-enum class HttpVersion {
-    V_1_0 = 0,
-    V_1_1
-};
-
-enum class HttpResponseCode {
+enum class Net::HttpResponseCode {
     OK = 200,
     CREATED,
     ACCEPTED,
@@ -110,8 +103,7 @@ enum class HttpResponseCode {
     NETWORK_AUTHENTICATION_REQUIRED
 };
 
-
-class HttpContentType {
+class Net::HttpContentType {
 public:
     static std::string GetType(const std::string name);
 private:
@@ -120,13 +112,13 @@ private:
     static void Init();
 };
 
-class Http final : public std::enable_shared_from_this<Http> {
+class Net::Http final : public std::enable_shared_from_this<Net::Http> {
 public:
     explicit Http(int fd,EventLoop *eventloop);
     ~Http();
     void Reset();
     void UnlinkTimer();
-    void LinkTimer(SPNetTimer sp_net_timer);
+    void LinkTimer(SPTimer sp_timer);
     SPChannel get_sp_channel();
     EventLoop *get_eventloop();
     void HandleClose();
@@ -137,7 +129,7 @@ private:
     EventLoop *eventloop_;
     SPChannel sp_channel_;
     std::string in_buffer_;
-    Ltalk::Vessel out_buffer_;
+    ::Util::Vessel out_buffer_;
     std::string in_content_buffer_;
     bool recv_error_;
     HttpConnectionState http_connection_state_;
@@ -146,7 +138,7 @@ private:
 
     bool keep_alive_;
     std::map<std::string, std::string> map_header_info_;
-    std::weak_ptr<NetTimer> wp_net_timer_;
+    std::weak_ptr<Timer> wp_timer_;
     std::string uid_;      // logined uid for deal with offline
     std::string platform_; // logined uid for deal with offline
 
@@ -164,4 +156,4 @@ private:
     //Http
     void DealWithOffline();
 };
-}
+

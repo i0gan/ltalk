@@ -1,6 +1,6 @@
 #include "util.hh"
 
-ssize_t Ltalk::Util::ReadData(int fd, void *buffer, size_t length) {
+ssize_t Net::Util::Read(int fd, void *buffer, size_t length) {
     ssize_t read_left = length;
     ssize_t read_len = 0;
     ssize_t read_sum = 0;
@@ -24,7 +24,7 @@ ssize_t Ltalk::Util::ReadData(int fd, void *buffer, size_t length) {
     return read_sum;
 }
 
-ssize_t Ltalk::Util::ReadData(int fd, std::string &in_buffer) {
+ssize_t Net::Util::Read(int fd, std::string &in_buffer) {
     ssize_t read_len = 0;
     ssize_t read_sum = 0;
     in_buffer.clear();
@@ -48,7 +48,7 @@ ssize_t Ltalk::Util::ReadData(int fd, std::string &in_buffer) {
     return read_sum;
 }
 
-ssize_t Ltalk::Util::ReadData(int fd, std::string &in_buffer, int length) {
+ssize_t Net::Util::Read(int fd, std::string &in_buffer, int length) {
     ssize_t read_len = 0;
     ssize_t read_sum = 0;
     ssize_t read_left = length;
@@ -74,7 +74,7 @@ ssize_t Ltalk::Util::ReadData(int fd, std::string &in_buffer, int length) {
     return read_sum;
 }
 
-ssize_t Ltalk::Util::WriteData(int fd, void *buffer, size_t length) {
+ssize_t Net::Util::Write(int fd, void *buffer, size_t length) {
     ssize_t write_left = length;
     ssize_t write_len = 0;
     ssize_t write_sum = 0;
@@ -96,7 +96,7 @@ ssize_t Ltalk::Util::WriteData(int fd, void *buffer, size_t length) {
     return write_sum;
 }
 
-ssize_t Ltalk::Util::WriteData(int fd, Ltalk::Vessel &out_buffer) {
+ssize_t Net::Util::Write(int fd, ::Util::Vessel &out_buffer) {
     ssize_t write_len = 0;
     ssize_t write_sum = 0;
     while(out_buffer.size() > 0) {
@@ -117,7 +117,7 @@ ssize_t Ltalk::Util::WriteData(int fd, Ltalk::Vessel &out_buffer) {
     return write_sum;
 }
 
-void Ltalk::Util::IgnoreSigpipe() {
+void Net::Util::IgnoreSigpipe() {
     struct sigaction sa;
     bzero(&sa, sizeof(sa));
     sa.sa_handler = SIG_IGN;
@@ -125,7 +125,7 @@ void Ltalk::Util::IgnoreSigpipe() {
     sigaction(SIGPIPE, &sa, NULL);
 }
 
-bool Ltalk::Util::SetFdNonBlocking(int listen_fd) {
+bool Net::Util::SetFdNonBlocking(int listen_fd) {
     do {
     int flag = fcntl(listen_fd, F_GETFL, 0);
     if(flag == - 1)
@@ -138,17 +138,17 @@ bool Ltalk::Util::SetFdNonBlocking(int listen_fd) {
     return false;
 }
 
-void Ltalk::Util::SetFdNoDelay(int fd) {
+void Net::Util::SetFdNoDelay(int fd) {
     int enable = 1;
     setsockopt(fd, IPPROTO_TCP, TCP_NODELAY, (void *)&enable, sizeof (enable));
 }
-void Ltalk::Util::SetFdNoLinger(int fd) {
+void Net::Util::SetFdNoLinger(int fd) {
     struct linger linger_s;
     linger_s.l_onoff = 1;
     linger_s.l_linger = 30;
     setsockopt(fd, SOL_SOCKET, SO_LINGER, &linger_s, sizeof (linger_s));
 
 }
-void Ltalk::Util::ShutDownWriteFd(int fd) {
+void Net::Util::ShutDownWriteFd(int fd) {
     shutdown(fd, SHUT_WR);
 }

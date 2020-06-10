@@ -2,17 +2,17 @@
 #include "http.hh"
 
 //declare static variable
-extern std::unordered_map<std::string, Ltalk::UserInfo> Ltalk::global_map_user_info;
-extern std::unordered_map<std::string, Ltalk::GroupInfo> Ltalk::global_map_group_info;
+extern std::unordered_map<std::string, Data::User> Data::map_user;
+extern std::unordered_map<std::string, Data::Group> Data::map_group;
 
-std::unordered_map<std::string, std::string> HttpContentType::umap_type_;
-pthread_once_t HttpContentType::once_control_;
+std::unordered_map<std::string, std::string> Net::HttpContentType::umap_type_;
+pthread_once_t Net::HttpContentType::once_control_;
 
 const __uint32_t EPOLL_DEFAULT_EVENT = EPOLLIN | EPOLLET | EPOLLONESHOT;
 const int DEFAULT_EXPIRED_TIME = 2000;              //ms
 const int DEFAULT_KEEP_ALIVE_TIME = 5 * 60 * 1000;  //ms
 
-void Ltalk::HttpContentType::Init() {
+void Net::HttpContentType::Init() {
     //init http content type
     HttpContentType::umap_type_[".html"] = "text/html";
     HttpContentType::umap_type_[".css"] = "text/css";
@@ -35,7 +35,7 @@ void Ltalk::HttpContentType::Init() {
     HttpContentType::umap_type_["default"] = "obj";
 }
 
-std::string Ltalk::HttpContentType::GetType(const std::string name) {
+std::string Net::HttpContentType::GetType(const std::string name) {
     pthread_once(&HttpContentType::once_control_, HttpContentType::Init);
     if(umap_type_.find(name) == umap_type_.end())
         return umap_type_["default"];
@@ -43,7 +43,7 @@ std::string Ltalk::HttpContentType::GetType(const std::string name) {
         return umap_type_[name];
 }
 
-Ltalk::Http::Http(int fd,EventLoop *eventloop) :
+Net::Http::Http(int fd,EventLoop *eventloop) :
     fd_(fd),
     eventloop_(eventloop),
     sp_channel_(new Channel(eventloop, fd)),
@@ -57,58 +57,58 @@ Ltalk::Http::Http(int fd,EventLoop *eventloop) :
     sp_channel_->set_write_handler(std::bind(&Http::HandleWrite, this));
     sp_channel_->set_connected_handler(std::bind(&Http::HandleConnect, this));
 }
-Ltalk::Http::~Http() {
+Net::Http::~Http() {
     DealWithOffline();
     close(fd_);
 }
 
-void Ltalk::Http::Reset() {
+void Net::Http::Reset() {
     http_process_state_ = HttpRecvState::PARSE_HEADER;
     in_content_buffer_.clear();
     in_buffer_.clear();
     map_header_info_.clear();
     recv_error_ = false;
-    if(wp_net_timer_.lock()) {
-        SPNetTimer sp_net_timer(wp_net_timer_.lock());
+    if(wp_timer_.lock()) {
+        SPTimer sp_net_timer(wp_timer_.lock());
         sp_net_timer->Clear();
-        wp_net_timer_.reset();
+        wp_timer_.reset();
     }
 }
 
-void Ltalk::Http::HandleClose() {
+void Net::Http::HandleClose() {
     http_connection_state_ = HttpConnectionState::DISCONNECTED;
     SPHttp guard(shared_from_this()); // avoid delete
     eventloop_->RemoveFromEpoll(sp_channel_);
 }
 
-void Ltalk::Http::NewEvnet() {
+void Net::Http::NewEvnet() {
     sp_channel_->set_event(EPOLL_DEFAULT_EVENT);
     eventloop_->AddToEpoll(sp_channel_, DEFAULT_EXPIRED_TIME);
 }
 
-void Ltalk::Http::LinkTimer(SPNetTimer sp_net_timer) {
-    wp_net_timer_ = sp_net_timer;
+void Net::Http::LinkTimer(SPTimer sp_timer) {
+    wp_timer_ = sp_timer;
 }
 
-SPChannel Ltalk::Http::get_sp_channel() {
+Net::SPChannel Net::Http::get_sp_channel() {
     return sp_channel_;
 }
 
-EventLoop *Ltalk::Http::get_eventloop() {
+Net::EventLoop *Net::Http::get_eventloop() {
     return eventloop_;
 }
 
-void Ltalk::Http::UnlinkTimer() {
-    if(wp_net_timer_.lock()) {
-        SPNetTimer sp_net_timer(wp_net_timer_.lock());
+void Net::Http::UnlinkTimer() {
+    if(wp_timer_.lock()) {
+        SPTimer sp_net_timer(wp_timer_.lock());
         sp_net_timer->Clear();
-        wp_net_timer_.reset();
+        wp_timer_.reset();
     }
 }
-void Ltalk::Http::HandleRead() {
+void Net::Http::HandleRead() {
     __uint32_t &event = sp_channel_->get_event();
     do {
-        int read_len = Util::ReadData(fd_, in_buffer_);
+        int read_len = Util::Read(fd_, in_buffer_);
         //std::cout << "http_content:__[" << in_buffer_ << "]__";
         //if state as disconnecting will clean th in buffer
         if(http_connection_state_ == HttpConnectionState::DISCONNECTING) {
@@ -191,9 +191,9 @@ void Ltalk::Http::HandleRead() {
     }
 }
 
-Ltalk::HttpParseHeaderResult Ltalk::Http::ParseHeader() {
+Net::HttpParseHeaderResult Net::Http::ParseHeader() {
     std::string &recv_data = in_buffer_;
-    Ltalk::HttpParseHeaderResult  result = HttpParseHeaderResult::SUCCESS;
+    Net::HttpParseHeaderResult  result = HttpParseHeaderResult::SUCCESS;
 
     int first_line_read_pos = 0;
     do {
@@ -296,43 +296,43 @@ Ltalk::HttpParseHeaderResult Ltalk::Http::ParseHeader() {
 
     return result;
 }
-void Ltalk::Http::DealWithOffline() {
+void Net::Http::DealWithOffline() {
     if(uid_.empty())
         return;
 
-    UserInfo user_info = global_map_user_info[uid_];
+    Data::User user = Data::map_user[uid_];
     if(platform_ == "linux") {
-        user_info.linux_fd = -1;
-        user_info.linux_token.clear();
+        user.linux_fd = -1;
+        user.linux_token.clear();
         std::cout << "linux 客户端下线:" << uid_ << "\n";
     }else if(platform_ == "windows") {
-        user_info.windows_fd = -1;
-        user_info.windows_token.clear();
+        user.windows_fd = -1;
+        user.windows_token.clear();
         std::cout << "windows 客户端下线" << uid_ << "\n";
     }else if(platform_ == "android") {
-        user_info.android_fd = -1;
-        user_info.android_token.clear();
+        user.android_fd = -1;
+        user.android_token.clear();
         std::cout << "android 客户端下线" << uid_ << "\n";
     }else if(platform_ == "web") {
-        user_info.web_fd = -1;
-        user_info.web_token.clear();
+        user.web_fd = -1;
+        user.web_token.clear();
         std::cout << "web 客户端下线" << uid_ << "\n";
     }
 
     // update info
-    global_map_user_info[uid_] = user_info;
+    Data::map_user[uid_] = user;
 }
 
 
-void Ltalk::Http::HandleProcess() {
-    Ltalk::Center center(map_header_info_, in_content_buffer_, uid_, platform_);
+void Net::Http::HandleProcess() {
+    Process::Center center(map_header_info_, in_content_buffer_, uid_, platform_);
     center.set_fd(fd_);
     center.set_send_data_handler(std::bind(&Http::SendData, this, std::placeholders::_1, std::placeholders::_2));
     center.set_send_file_handler(std::bind(&Http::SendFile, this, std::placeholders::_1));
     center.Process();
 }
 
-void Ltalk::Http::HandleWrite() {
+void Net::Http::HandleWrite() {
     //std::cout << "write: \n";
     __uint32_t &event = sp_channel_->get_event();
     if(http_connection_state_ == HttpConnectionState::DISCONNECTED) {
@@ -340,7 +340,7 @@ void Ltalk::Http::HandleWrite() {
     }
     //std::cout << "write size: " << out_buffer_.size() << "] end\n";
     if(out_buffer_.size() > 0) {
-        if(Util::WriteData(fd_, out_buffer_) < 0) {
+        if(Util::Write(fd_, out_buffer_) < 0) {
             perror("write header data");
             sp_channel_->set_event(0);
             out_buffer_.clear();
@@ -353,7 +353,7 @@ void Ltalk::Http::HandleWrite() {
     }
 }
 
-std::string Ltalk::Http::GetSuffix(std::string file_name) {
+std::string Net::Http::GetSuffix(std::string file_name) {
     std::string suffix = file_name;
     while (true) {
         int suffix_pos = suffix.find('.');
@@ -365,7 +365,7 @@ std::string Ltalk::Http::GetSuffix(std::string file_name) {
     return suffix;
 }
 
-void Ltalk::Http::SendData(const std::string &type,const std::string &content) {
+void Net::Http::SendData(const std::string &type,const std::string &content) {
     out_buffer_.clear();
     out_buffer_ << "HTTP/1.1 200 OK\r\n";
     if (map_header_info_.find("connection") != map_header_info_.end() &&
@@ -384,7 +384,7 @@ void Ltalk::Http::SendData(const std::string &type,const std::string &content) {
 }
 
 // Send file
-void Ltalk::Http::SendFile(const std::string &file_name) {
+void Net::Http::SendFile(const std::string &file_name) {
     do {
         if(recv_error_ || http_connection_state_ == HttpConnectionState::DISCONNECTED) {
             break;;
@@ -437,7 +437,7 @@ void Ltalk::Http::SendFile(const std::string &file_name) {
     } while(false);
 }
 
-void Ltalk::Http::HandleConnect() {
+void Net::Http::HandleConnect() {
     int ms_timeout = 0;
     __uint32_t &event = sp_channel_->get_event();
     UnlinkTimer();
@@ -468,7 +468,7 @@ void Ltalk::Http::HandleConnect() {
     }
 }
 
-void Ltalk::Http::HandleError(int error_number, std::string message) {
+void Net::Http::HandleError(int error_number, std::string message) {
     out_buffer_.clear();
     message = " " + message;
     std::string header_buffer, body_buffer;
@@ -489,7 +489,7 @@ void Ltalk::Http::HandleError(int error_number, std::string message) {
     HandleWrite();
 }
 
-void Ltalk::Http::StrLower(std::string &str) {
+void Net::Http::StrLower(std::string &str) {
     for (size_t index = 0; index < str.size(); ++index) {
         str[index] = tolower(str[index]);
     }

@@ -10,7 +10,7 @@
  * Realize the synchronization mechanism through Condition class
  */
 
-namespace Ltalk {
+namespace Thread {
 class Condition : Noncopyable {
   public:
     explicit Condition(MutexLock &mutex_lock);

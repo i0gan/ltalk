@@ -9,7 +9,7 @@
 #include <sys/epoll.h>
 #include <sys/eventfd.h>
 
-namespace Ltalk {
+namespace Net {
 class EventLoop {
     typedef std::function<void()> CallBack;
 public:
@@ -34,7 +34,7 @@ private:
     const pid_t thread_id_;
     SPEpoll sp_epoll_;
     SPChannel sp_awake_channel_;
-    mutable MutexLock mutex_lock_;
+    mutable Thread::MutexLock mutex_lock_;
     std::vector<CallBack> pending_callback_functions_;
     bool calling_pending_callback_function_;
 

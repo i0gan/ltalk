@@ -6,7 +6,7 @@
  * The main function of CountDownLatch class is to ensure that the func passed
  * in the thread really starts before the start of the outer layer returns.
  */
-namespace Ltalk {
+namespace Thread {
 class CountDownLatch : Noncopyable {
 public:
     explicit CountDownLatch(int count);

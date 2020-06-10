@@ -2,7 +2,7 @@
 #include "noncopyable.hh"
 #include <pthread.h>
 
-namespace Ltalk {
+namespace Thread {
 class MutexLock : Noncopyable {
 public:
     MutexLock();

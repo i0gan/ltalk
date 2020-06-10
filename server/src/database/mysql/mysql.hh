@@ -8,8 +8,7 @@
 //#define DB_WAIT_TIMES 1000 // wait times
 //#define DB_WAIT_TIME  10   // will usleep(WAIT_TIME)
 
-namespace Ltalk {
-namespace Db {
+namespace  Database{
 
 extern MYSQL  global_mysql;
 #define MYSQL_DEFAULT_CONNECT_PORT 3306
@@ -53,5 +52,4 @@ private:
     void Clean();
 
 };
-}
 }

@@ -1,58 +1,58 @@
 #include "channel.hh"
 
-Ltalk::Channel::Channel(EventLoop *eventloop) {
+Net::Channel::Channel(EventLoop *eventloop) {
     eventloop_ = eventloop;
 }
-Ltalk::Channel::Channel(EventLoop *eventloop, int fd) {
+Net::Channel::Channel(EventLoop *eventloop, int fd) {
     eventloop_ = eventloop;
     fd_ = fd;
 }
 
-Ltalk::Channel::~Channel() {
+Net::Channel::~Channel() {
 
 }
 
-void Ltalk::Channel::set_fd(int fd) {
+void Net::Channel::set_fd(int fd) {
     fd_ = fd;
 }
 
-int Ltalk::Channel::get_fd() {
+int Net::Channel::get_fd() {
     return fd_;
 }
 
-void Ltalk::Channel::set_holder(SPHttp sp_http) {
+void Net::Channel::set_holder(SPHttp sp_http) {
     holder_ = sp_http;
 }
 
-Ltalk::SPHttp Ltalk::Channel::get_holder() {
-    SPHttp ret = holder_.lock();
+Net::SPHttp Net::Channel::get_holder() {
+    Net::SPHttp ret = holder_.lock();
     return ret;
 }
 
-void Ltalk::Channel::HandleRead() {
+void Net::Channel::HandleRead() {
     if(read_handler_) {
         read_handler_();
     }
 }
 
-void Ltalk::Channel::HandleWrite() {
+void Net::Channel::HandleWrite() {
     if(write_handler_) {
         write_handler_();
     }
 }
 
-void Ltalk::Channel::HandleConnect() {
+void Net::Channel::HandleConnect() {
     if(connected_handler_) {
         connected_handler_();
     }
 }
-void Ltalk::Channel::HandleError() {
+void Net::Channel::HandleError() {
     if(error_handler_) {
         error_handler_();
     }
 }
 
-void Ltalk::Channel::HandleEvent() {
+void Net::Channel::HandleEvent() {
     event_ = 0;
     if((revent_ & EPOLLHUP) && !(revent_ & EPOLLIN)) {
         event_ = 0;
@@ -73,44 +73,43 @@ void Ltalk::Channel::HandleEvent() {
     HandleConnect();
 }
 
-void Ltalk::Channel::set_revent(__uint32_t revent) {
+void Net::Channel::set_revent(__uint32_t revent) {
     revent_ = revent;
 }
-void Ltalk::Channel::set_event(__uint32_t event) {
+void Net::Channel::set_event(__uint32_t event) {
     event_ = event;
 }
 
-void Ltalk::Channel::set_read_handler(CallBack  &&read_handler) {
+void Net::Channel::set_read_handler(::Util::CallBack  &&read_handler) {
     read_handler_ = read_handler;
 }
 
-void Ltalk::Channel::set_write_handler(CallBack  &&write_handler) {
+void Net::Channel::set_write_handler(::Util::CallBack  &&write_handler) {
     write_handler_ = write_handler;
 }
 
-void Ltalk::Channel::set_error_handler(CallBack  &&error_handler) {
+void Net::Channel::set_error_handler(::Util::CallBack  &&error_handler) {
     error_handler_ = error_handler;
 }
 
 // For deal with connected client event
-void Ltalk::Channel::set_connected_handler(CallBack  &&connected_handler) {
+void Net::Channel::set_connected_handler(::Util::CallBack  &&connected_handler) {
     connected_handler_ = connected_handler;
 }
 
-
-__uint32_t &Ltalk::Channel::get_event() {
+__uint32_t &Net::Channel::get_event() {
     return event_;
 }
 
-__uint32_t Ltalk::Channel::get_last_event() {
+__uint32_t Net::Channel::get_last_event() {
     return last_event_;
 }
 
-void Ltalk::Channel::UpdateLastEvnet() {
+void Net::Channel::UpdateLastEvnet() {
     last_event_ = event_;
 }
 
-bool Ltalk::Channel::IsLastEvent() {
+bool Net::Channel::IsLastEvent() {
     return last_event_ == event_;
 }
 

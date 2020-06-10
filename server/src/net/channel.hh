@@ -5,7 +5,7 @@
 #include <sys/epoll.h>
 
 #include "eventloop.hh"
-#include "../process/http.hh"
+#include "http.hh"
 #include "../ltalk.hh"
 #include <iostream>
 
@@ -14,7 +14,7 @@
  *
  */
 
-namespace Ltalk {
+namespace Net {
 class Channel {
 public:
     Channel(EventLoop *eventloop);
@@ -32,10 +32,10 @@ public:
     void HandleError();
     void set_revent(__uint32_t revent);
     void set_event(__uint32_t event);
-    void set_read_handler( CallBack &&read_handler);
-    void set_write_handler(CallBack &&write_handler);
-    void set_error_handler(CallBack &&error_handler);
-    void set_connected_handler(CallBack &&connected_handler);
+    void set_read_handler( ::Util::CallBack &&read_handler);
+    void set_write_handler(::Util::CallBack &&write_handler);
+    void set_error_handler(::Util::CallBack &&error_handler);
+    void set_connected_handler(::Util::CallBack &&connected_handler);
     __uint32_t &get_event();
     __uint32_t get_last_event();
     void UpdateLastEvnet();
@@ -47,10 +47,10 @@ private:
     __uint32_t event_ = 0;
     __uint32_t revent_ = 0;
     __uint32_t last_event_ = 0;
-    std::weak_ptr<Ltalk::Http> holder_;
-    CallBack read_handler_ = nullptr;
-    CallBack write_handler_ = nullptr;
-    CallBack error_handler_ = nullptr;
-    CallBack connected_handler_ = nullptr;
+    std::weak_ptr<Http> holder_;
+    ::Util::CallBack read_handler_ = nullptr;
+    ::Util::CallBack write_handler_ = nullptr;
+    ::Util::CallBack error_handler_ = nullptr;
+    ::Util::CallBack connected_handler_ = nullptr;
 };
-};
+}

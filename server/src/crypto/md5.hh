@@ -3,17 +3,15 @@
 #include <string>
 #include <fstream>
 #include <cstring>
+#include "../ltalk.hh"
 
 /* Type define */
 typedef unsigned char byte;
 typedef unsigned long ulong;
 
-namespace Ltalk {
-namespace Crypto {
-
 
 /* MD5 declaration. */
-class MD5 {
+class Crypto::MD5 {
 public:
 	MD5();
 	MD5(const void *input, size_t length);
@@ -47,5 +45,3 @@ private:
 	static const char HEX[16];
 	static const size_t BUFFER_SIZE = 1024;
 };
-}
-}

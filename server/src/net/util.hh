@@ -9,29 +9,27 @@
 #include <netinet/in.h>
 #include <netinet/tcp.h>
 #include "../ltalk.hh"
-#include "vessel.hpp"
+#include "../util/vessel.hpp"
 //std::basic_string
 /*
  * This file is static function set
  *
 */
 
-namespace Ltalk {
+namespace Net {
 namespace Util {
+ssize_t Read(int fd, void *buffer, size_t length);
+ssize_t Read(int fd, std::string &in_buffer);
+ssize_t Read(int fd, std::string &in_buffer, int length);
 
-ssize_t ReadData(int fd, void *buffer, size_t length);
-ssize_t ReadData(int fd, std::string &in_buffer);
-ssize_t ReadData(int fd, std::string &in_buffer, int length);
+ssize_t Write(int fd, void *buffer, size_t length);
+ssize_t Write(int fd, ::Util::Vessel &out_buffer);
 
-ssize_t WriteData(int fd, void *buffer, size_t length);
-ssize_t WriteData(int fd, Ltalk::Vessel &out_buffer);
-
-void IgnoreSigpipe(); //avoid server terminate with SIGPIPE signal
+void IgnoreSigpipe();                 //avoid server terminate with SIGPIPE signal
 bool SetFdNonBlocking(int listen_fd); //set fd as non bloking
 void SetFdNoDelay(int fd);
 void SetFdNoLinger(int fd);
 void ShutDownWriteFd(int fd);
-
 }
 }
 

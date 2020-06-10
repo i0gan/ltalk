@@ -1,6 +1,6 @@
 #pragma once
 
-namespace Ltalk {
+namespace Thread {
 class Noncopyable {
 protected:
     Noncopyable() {}

@@ -1,17 +1,17 @@
 #include "epoll.hh"
 
-Ltalk::Epoll::Epoll() :
+Net::Epoll::Epoll() :
     epoll_fd_(epoll_create1(EPOLL_CLOEXEC)),
     v_events_(EPOLL_MAX_EVENT_NUM),
-    sp_net_timer_manager_(new NetTimerManager) {
+    sp_timer_manager_(new TimerManager) {
     assert(epoll_fd_ > 0);
 }
 
-Ltalk::Epoll::~Epoll() {
+Net::Epoll::~Epoll() {
 
 }
 
-void Ltalk::Epoll::Add(SPChannel sp_channel, int ms_timeout) {
+void Net::Epoll::Add(SPChannel sp_channel, int ms_timeout) {
     int fd = sp_channel->get_fd();
     if(ms_timeout > 0) { //If set timer will add a timer
         AddTimer(sp_channel, ms_timeout);
@@ -29,7 +29,7 @@ void Ltalk::Epoll::Add(SPChannel sp_channel, int ms_timeout) {
     }
 }
 
-void Ltalk::Epoll::Mod(SPChannel sp_channel, int ms_timeout) {
+void Net::Epoll::Mod(SPChannel sp_channel, int ms_timeout) {
     if(ms_timeout > 0)
         AddTimer(sp_channel, ms_timeout);
 
@@ -47,7 +47,7 @@ void Ltalk::Epoll::Mod(SPChannel sp_channel, int ms_timeout) {
     }
 }
 
-void Ltalk::Epoll::Del(SPChannel sp_channel) {
+void Net::Epoll::Del(SPChannel sp_channel) {
     int fd = sp_channel->get_fd();
     struct epoll_event event;
     event.data.fd = fd;
@@ -62,7 +62,7 @@ void Ltalk::Epoll::Del(SPChannel sp_channel) {
 }
 
 // Get all events from epoll
-std::vector<SPChannel> Ltalk::Epoll::GetAllEventChannels() {
+std::vector<Net::SPChannel> Net::Epoll::GetAllEventChannels() {
     while (true) {
         int number_of_events =
                 //get all events
@@ -70,16 +70,18 @@ std::vector<SPChannel> Ltalk::Epoll::GetAllEventChannels() {
         if(number_of_events < 0)
             perror("epoll_wait: ");
 
-        std::vector<SPChannel> v_sp_channel_all_events = GetEventChannelsAfterGetEvents(number_of_events);
+        std::vector<Net::SPChannel> v_sp_channel_all_events = GetEventChannelsAfterGetEvents(number_of_events);
         if(v_sp_channel_all_events.size() > 0)
             return v_sp_channel_all_events;
     }
 }
-std::vector<SPChannel> Ltalk::Epoll::GetEventChannelsAfterGetEvents(int number_of_events) {
-    std::vector<SPChannel> v_sp_event_channels;
+
+
+std::vector<Net::SPChannel> Net::Epoll::GetEventChannelsAfterGetEvents(int number_of_events) {
+    std::vector<Net::SPChannel> v_sp_event_channels;
     for (int idx = 0; idx < number_of_events; ++idx) {
         int fd = v_events_[idx].data.fd;
-        SPChannel sp_single_event_channel = sp_channels_[fd];
+        Net::SPChannel sp_single_event_channel = sp_channels_[fd];
         if(sp_single_event_channel != nullptr) {
             sp_single_event_channel->set_revent(v_events_[idx].events);
             sp_single_event_channel->set_event(0);
@@ -93,18 +95,18 @@ std::vector<SPChannel> Ltalk::Epoll::GetEventChannelsAfterGetEvents(int number_o
     return v_sp_event_channels;
 }
 
-void Ltalk::Epoll::AddTimer(SPChannel sp_channel, int ms_timeout) {
+void Net::Epoll::AddTimer(Net::SPChannel sp_channel, int ms_timeout) {
     if(ms_timeout > 0) {
-        sp_net_timer_manager_->AddTimer(sp_channel->get_holder(), ms_timeout);
+        sp_timer_manager_->AddTimer(sp_channel->get_holder(), ms_timeout);
     }else{
         d_cout << "add timer failed!\n";
     }
 }
 
-int Ltalk::Epoll::get_epoll_fd() {
+int Net::Epoll::get_epoll_fd() {
     return epoll_fd_;
 }
 
-void Ltalk::Epoll::HandleExpiredEvent() {
-    sp_net_timer_manager_->HandleExpiredEvent();
+void Net::Epoll::HandleExpiredEvent() {
+    sp_timer_manager_->HandleExpiredEvent();
 }

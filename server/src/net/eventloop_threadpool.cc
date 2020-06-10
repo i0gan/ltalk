@@ -1,7 +1,7 @@
 #include "eventloop_threadpool.hh"
 
 
-Ltalk::EventLoopThreadPool::EventLoopThreadPool(EventLoop *base_eventloop, int number_of_thread) :
+Net::EventLoopThreadPool::EventLoopThreadPool(EventLoop *base_eventloop, int number_of_thread) :
     started_(false),
     base_eventloop_(base_eventloop),
     number_of_thread_(number_of_thread),
@@ -12,7 +12,7 @@ Ltalk::EventLoopThreadPool::EventLoopThreadPool(EventLoop *base_eventloop, int n
     }
 }
 
-EventLoop *Ltalk::EventLoopThreadPool::get_next_eventloop() {
+Net::EventLoop *Net::EventLoopThreadPool::get_next_eventloop() {
     base_eventloop_->AssertInLoopThread();
     assert(started_);
     EventLoop *eventloop = base_eventloop_;
@@ -24,11 +24,11 @@ EventLoop *Ltalk::EventLoopThreadPool::get_next_eventloop() {
     return eventloop;
 }
 
-Ltalk::EventLoopThreadPool::~EventLoopThreadPool() {
+Net::EventLoopThreadPool::~EventLoopThreadPool() {
     d_cout << "~EventLoopThreadPool()\n";
 }
 
-void Ltalk::EventLoopThreadPool::Start() {
+void Net::EventLoopThreadPool::Start() {
     base_eventloop_->AssertInLoopThread();
     started_ = true;
     for(int idx = 0; idx < number_of_thread_; ++idx) {

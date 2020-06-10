@@ -1,11 +1,11 @@
 #include "startup.hh"
 
-extern MYSQL Ltalk::Db::global_mysql;
-extern std::unordered_map<std::string, Ltalk::UserInfo> Ltalk::global_map_user_info;
-extern std::unordered_map<std::string, Ltalk::GroupInfo> Ltalk::global_map_group_info;
-extern std::string Ltalk::global_web_root;
-extern std::string Ltalk::global_web_page;
-extern std::string Ltalk::global_web_404_page;
+extern MYSQL Database::global_mysql;
+extern std::unordered_map<std::string, Data::User> Data::map_user;
+extern std::unordered_map<std::string, Data::Group> Data::map_group;
+extern std::string Data::web_root;
+extern std::string Data::web_page;
+extern std::string Data::web_404_page;
 
 Ltalk::StartUp::StartUp() {
 
@@ -98,9 +98,9 @@ bool Ltalk::StartUp::LoadConfig() {
         db_user_ = obj["database"]["user"];
         db_password_ = obj["database"]["password"];
         db_name_ = obj["database"]["name"];
-        global_web_root = obj["server"]["web_root"];
-        global_web_page = obj["server"]["web_page"];
-        global_web_404_page = obj["server"]["web_404_page"];
+        Data::web_root = obj["server"]["web_root"];
+        Data::web_page = obj["server"]["web_page"];
+        Data::web_404_page = obj["server"]["web_404_page"];
     }  catch (json::exception &e) {
         d_cout << e.what() << '\n';
         abort();
@@ -108,13 +108,13 @@ bool Ltalk::StartUp::LoadConfig() {
     return true;
 }
 bool Ltalk::StartUp::RunNetworkModule() {
-    Ltalk::Net net(tcp_port_, number_of_thread_);
+    Net::Net net(tcp_port_, number_of_thread_);
     net.Start();
 
     return true;
 }
 bool Ltalk::StartUp::RunDatabaseModule() {
-    return Db::Mysql::Connect(db_host_, db_user_, db_password_, db_name_, db_port_);;
+    return Database::Mysql::Connect(db_host_, db_user_, db_password_, db_name_, db_port_);;
 }
 bool Ltalk::StartUp::RunLoggerModule() {
     return true;

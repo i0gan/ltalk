@@ -12,9 +12,8 @@
 #include "count_down_latch.hh"
 #include "../ltalk.hh"
 
-namespace Ltalk {
+namespace Thread {
 namespace CurrentThread {
-
 enum State{
     STARTING,
     RUNING,
@@ -39,7 +38,7 @@ inline pid_t get_tid() {
  */
 class Thread : Noncopyable {
 public:
-    explicit Thread(const CallBack &call_back, const std::string &name = std::string());
+    explicit Thread(const Util::CallBack &call_back, const std::string &name = std::string());
     ~Thread();
     void Start();
     int Join();
@@ -54,7 +53,7 @@ private:
     bool joined_;
     pthread_t pthread_id;
     pid_t tid_;
-    CallBack func_;
+    Util::CallBack func_;
     std::string name_;
     CountDownLatch count_down_latch_;
 };
@@ -62,13 +61,13 @@ private:
 
 class ThreadData {
 public:
-    ThreadData(const CallBack &func, const std::string &name,
+    ThreadData(const Util::CallBack &func, const std::string &name,
                pid_t *tid, CountDownLatch *count_down_latch);
     ~ThreadData();
     void Run();
 
 private:
-    CallBack func_;
+    Util::CallBack func_;
     std::string name_;
     pid_t *tid_;
     CountDownLatch *count_down_latch_;

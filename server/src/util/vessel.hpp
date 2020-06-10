@@ -6,7 +6,7 @@
 #define VESSEL_DEFAULT_SIZE 1024
 #define VESSEL_DEFAULT_ALIGN 256
 
-namespace Ltalk {
+namespace Util {
 class Vessel {
 public:
     Vessel() :
