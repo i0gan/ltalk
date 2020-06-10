@@ -1,85 +1,58 @@
-# Ltalk ( very simple )
-
-[中文](README_ZN.md)
+# Ltalk 即时通讯
 
 
- Ltalk is a very simple instant messaging software, the pursuit of small practical and learning 
+这是一个非常简单的即时通讯软件, 客户端实现跨平台, 服务端采用c++ epoll 非阻塞模式实现处理大量并发, 传输协议为http, json数据格式来进行交互
 
-
-
-## Brief introduction
-
-HTTP is used as the transport protocol, C + + is used as the language for server development. The epoll et model is used to achieve high concurrency, and JSON is used as the interaction protocol
-
-Your can enter ltalk website: http://39.97.119.22
-
-
-## devloping  7.0 %
-
-* server 5.5 %
-* linux  1.5 %
-* windows 0.0 %
-* mac os 0.0 %
-* android 0.0%
-
-## Download
+你可以进入该网址: http://39.97.119.22 来浏览web接口
 
 
 
-For detailed instructions and requirements, see Ltalk's [download and setup docs page]().
 
-You can download a bin file from github's [releases page]().
+## 开发进度:  7.0 %
 
+* 服务端 5.5 %
+* linux客户端  1.5 %
+* windows客户端 0.0 %
+* android 客户端0.0%
 
+## 下载
 
-## Compatibility
-
-Suport platform
-
-* linux
-* windows
-* mac os
-* android
+进入该网址: http://ltalk.co 进行下载
 
 
 
-## Build
+## 环境搭建
 
-[complie server]()
+[服务端]()
 
-[complie clinent for linux]()
+[linux客户端]()
 
-[complie clinent for windows]()
+[windows客户端]()
 
-[complie clinent for android]()
+[android客户端]()
 
 
 
-## Samples
+## 编译
+
+[服务端]()
+
+[linux客户端]()
+
+[windows客户端]()
+
+[android客户端]()
+
+
+
+
+## 帮助
 
 
 
 
 
-
-## Development
-
-
-
-
-
-
-## Getting Help
-
-
-
-
-
-## Author
+## 作者
 
 I0gan (徐绿国)
-
-## License
-
-BSD, part MIT and Apache 2.0. 
 

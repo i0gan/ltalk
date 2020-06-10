@@ -117,8 +117,8 @@ public:
     explicit Http(int fd,EventLoop *eventloop);
     ~Http();
     void Reset();
-    void UnlinkTimer();
-    void LinkTimer(SPTimer sp_timer);
+    void UnbindTimer();
+    void BindTimer(SPTimer sp_timer);
     SPChannel get_sp_channel();
     EventLoop *get_eventloop();
     void HandleClose();

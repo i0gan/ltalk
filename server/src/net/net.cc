@@ -104,7 +104,7 @@ void Net::Net::HandleNewConnection() {
         EventLoop *next_eventloop = up_eventloop_threadpool_->get_next_eventloop();
         SPHttp sp_http(new Http(accept_fd, next_eventloop));
         sp_http->get_sp_channel()->set_holder(sp_http);
-        next_eventloop->QueueInLoop(std::bind(&Http::NewEvnet, sp_http));
+        next_eventloop->PushBack(std::bind(&Http::NewEvnet, sp_http));
     }
 
     accept_channel_->set_event(EPOLLIN | EPOLLET);

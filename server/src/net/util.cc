@@ -20,7 +20,6 @@ ssize_t Net::Util::Read(int fd, void *buffer, size_t length) {
         read_left -= read_len;
         read_ptr += read_len;
     }
-
     return read_sum;
 }
 

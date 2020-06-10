@@ -86,7 +86,7 @@ void Net::Http::NewEvnet() {
     eventloop_->AddToEpoll(sp_channel_, DEFAULT_EXPIRED_TIME);
 }
 
-void Net::Http::LinkTimer(SPTimer sp_timer) {
+void Net::Http::BindTimer(SPTimer sp_timer) {
     wp_timer_ = sp_timer;
 }
 
@@ -98,7 +98,7 @@ Net::EventLoop *Net::Http::get_eventloop() {
     return eventloop_;
 }
 
-void Net::Http::UnlinkTimer() {
+void Net::Http::UnbindTimer() {
     if(wp_timer_.lock()) {
         SPTimer sp_net_timer(wp_timer_.lock());
         sp_net_timer->Clear();
@@ -440,7 +440,8 @@ void Net::Http::SendFile(const std::string &file_name) {
 void Net::Http::HandleConnect() {
     int ms_timeout = 0;
     __uint32_t &event = sp_channel_->get_event();
-    UnlinkTimer();
+    UnbindTimer();
+
     if(!recv_error_ && http_connection_state_ == HttpConnectionState::CONNECTED) {
         if(event != 0) {
             if(keep_alive_)
@@ -483,7 +484,6 @@ void Net::Http::HandleError(int error_number, std::string message) {
     header_buffer += "Content-Type: text/html\r\n";
     header_buffer += "Content-Length: " + std::to_string(body_buffer.size()) + "\r\n";
     header_buffer += "\r\n";
-
     out_buffer_ << header_buffer;
     out_buffer_ << body_buffer;
     HandleWrite();

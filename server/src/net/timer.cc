@@ -63,7 +63,7 @@ Net::TimerManager::~TimerManager() {
 void Net::TimerManager::AddTimer(std::shared_ptr<Net::Http> sp_http, int ms_timeout) {
     SPTimer sp_net_timer(new Net::Timer(sp_http, ms_timeout));
     sort_sp_timer_queue.push(sp_net_timer);
-    sp_http->LinkTimer(sp_net_timer); //set http to link timer
+    sp_http->BindTimer(sp_net_timer); //set http to link timer
 }
 
 void Net::TimerManager::HandleExpiredEvent() {

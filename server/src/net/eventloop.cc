@@ -84,10 +84,10 @@ void Net::EventLoop::RunInLoop(::Util::CallBack &&func) {
     if(IsInLoopThread())
         func();
     else
-        QueueInLoop(std::move(func));
+        PushBack(std::move(func));
 }
 
-void Net::EventLoop::QueueInLoop(::Util::CallBack &&func) {
+void Net::EventLoop::PushBack(::Util::CallBack &&func) {
     Thread::MutexLockGuard mutex_lock_guard(mutex_lock_);
     pending_callback_functions_.emplace_back(std::move(func));
     if(!IsInLoopThread() || calling_pending_callback_function_)

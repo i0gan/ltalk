@@ -19,7 +19,7 @@ public:
     void Loop();
     void Quit();
     void RunInLoop(CallBack &&func);
-    void QueueInLoop(CallBack &&func);
+    void PushBack(CallBack &&func);
     bool IsInLoopThread();
     void AssertInLoopThread();
     void Shutdown(SPChannel sp_channel);

@@ -27,9 +27,9 @@ ssize_t Write(int fd, ::Util::Vessel &out_buffer);
 
 void IgnoreSigpipe();                 //avoid server terminate with SIGPIPE signal
 bool SetFdNonBlocking(int listen_fd); //set fd as non bloking
-void SetFdNoDelay(int fd);
-void SetFdNoLinger(int fd);
-void ShutDownWriteFd(int fd);
+void SetFdNoDelay(int fd);            //set fd no delay
+void SetFdNoLinger(int fd);           //set fd no linger
+void ShutDownWriteFd(int fd);         //shutdown fd of write
 }
 }
 
