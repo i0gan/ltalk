@@ -68,13 +68,13 @@ private:
     /* */
     void DealWithRegisterUser();
     bool CheckJsonContentType(Json &recv_json_obj, const std::string &type);
-
     void DealWithRegisterGroup();
     void DealWithLogin();
     bool CheckIsLogined(const std::string &uid);
-    void DealWithSendUserInfo();
+    void DealWithGetUserInfo(); // GET method to get user info
     bool CheckJsonBaseContent(Json &json_obj);
     bool UpdateUserInfo(const std::string &uid, const std::string &token); // Update memory infomation
+    bool CheckToken(const std::string &uid, const std::string &token);
 
     std::string GetDateTime();
     std::string MakeToken(std::string uid);

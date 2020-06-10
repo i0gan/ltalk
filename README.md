@@ -1,5 +1,7 @@
 # Ltalk ( very simple )
 
+[中文](README_ZN.md)
+
 
  Ltalk is a very simple instant messaging software, the pursuit of small practical and learning 
 

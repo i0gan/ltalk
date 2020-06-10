@@ -85,7 +85,9 @@ void Process::Center::HandleGet() {
             break;
         }else if(platform_ == "web"){
             HandleWebRequest();
-        }else {
+        }else if(request_ == "get_user_info" && !platform_.empty()){
+            DealWithGetUserInfo();
+        } else {
             path = Data::web_root + path;
             SendFile(path);
         }
@@ -512,33 +514,64 @@ bool Process::Center::CheckIsLogined(const std::string &uid) {
 }
 
 bool Process::Center::UpdateUserInfo(const std::string &uid, const std::string &token) {
-    Data::User user_info;
-    user_info.linux_fd = -1;
-    user_info.windows_fd = -1;
-    user_info.android_fd = -1;
-    user_info.web_fd = -1;
-    user_info.uid = uid;
+    Data::User user;
+    user.linux_fd = -1;
+    user.windows_fd = -1;
+    user.android_fd = -1;
+    user.web_fd = -1;
+    user.uid = uid;
     std::cout << "update uid[" << uid << "]\n";
     if(Data::map_user.find(uid) != Data::map_user.end()) {
-        user_info = Data::map_user[uid];
+        user = Data::map_user[uid];
     }
 
     if(platform_ == "linux") {
-        user_info.linux_fd = fd_;
-        user_info.linux_token = token;
+        user.linux_fd = fd_;
+        user.linux_token = token;
     }else if(platform_ == "windows") {
-        user_info.windows_fd = fd_;
-        user_info.windows_token = token;
+        user.windows_fd = fd_;
+        user.windows_token = token;
     }else if(platform_ == "android") {
-        user_info.android_fd = fd_;
-        user_info.android_token = token;
+        user.android_fd = fd_;
+        user.android_token = token;
     }else if(platform_ == "web") {
-        user_info.web_fd = fd_;
-        user_info.web_token = token;
+        user.web_fd = fd_;
+        user.web_token = token;
     }else {
         return false;
     }
-    Data::map_user[uid] = user_info;
+    Data::map_user[uid] = user;
 
     return true;
+}
+
+void Process::Center::DealWithGetUserInfo() {
+    std::string account;
+    std::string uid;
+    std::string token;
+    try {
+        account = map_header_info_.at("account");
+        uid = map_header_info_.at("uid");
+        token = map_header_info_.at("token");
+    }  catch (std::out_of_range e) {
+        Response(ResponseCode::NO_ACCESS);
+        return;
+    }
+
+    if(!CheckToken(uid, token)) {
+        Response(ResponseCode::FAILURE);
+        return;
+    }
+
+    Response(ResponseCode::SUCCESS);
+}
+
+bool Process::Center::CheckToken(const std::string &uid, const std::string &token) {
+    Data::User user;
+    if(Data::map_user.find(uid) != Data::map_user.end()) {
+        user = Data::map_user[uid];
+    }else {
+        return false;
+    }
+    return false;
 }
