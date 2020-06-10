@@ -162,7 +162,7 @@ json数据格式为
 {
  	"server": "Ltalk Server Debian Linux x64",
 	"code" : "1",
-    "request", "login",
+    "request" : "login",
 	"datetime" : "2020-06-5 18:00:33"
 }
 ```
@@ -175,7 +175,7 @@ json数据格式为
 {
 	"server" : "Ltalk Server Debian Linux x64",
     "code" : 0,
-    "request", "login",
+    "request" : "login",
 	"datetime" : "2020-06-5 18:00:33",
 	"uid" : "***********",
 	"token" : "**********",

@@ -5,7 +5,7 @@
 CC      := g++ 
 TARGET  := ltalks
 CFLAGS  := -O3 -std=c++11   
-LDFLAGS := -lmysqlclient -lpthread  -lssl -lcrypto
+LDFLAGS := -lmysqlclient -lpthread
 RM := rm -f 
 CP := cp -r
 MKDIR := mkdir
