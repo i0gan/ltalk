@@ -1,5 +1,7 @@
 # Ltalk 即时通讯
 
+[English](README_EN.md)
+
 
 这是一个非常简单的即时通讯软件, 客户端实现跨平台, 服务端采用c++ epoll 非阻塞模式实现处理大量并发, 传输协议为http, json数据格式来进行交互
 
@@ -47,8 +49,9 @@
 
 
 
-
 ## 帮助
+
+[api](doc/api/core.md)
 
 [服务端框架](doc/server/framework.md)
 
@@ -56,5 +59,7 @@
 
 ## 作者
 
-I0gan (徐绿国)
+[I0gan (徐绿国)](https://i0gan.github.io/)
+
+联系QQ: 418894113
 
