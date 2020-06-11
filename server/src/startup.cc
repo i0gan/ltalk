@@ -14,36 +14,8 @@ Ltalk::StartUp::StartUp() {
 Ltalk::StartUp::~StartUp() {
 
 }
-
-bool Ltalk::StartUp::Init(int argv, char **argc) {
-    setbuf(stdout, nullptr);
-
-    if(argv < 2) {
-        std::cout << "-h get more info" << std::endl;
-        return false;
-    }
-
-    std::string arg = argc[1];
-    if(arg == "-h" || arg == "--help") {
-        std::cout << "Usage: ./ltalks [OPTION...] [SECTION] PAGE...\n"
-                     "-r, --run    run ltalk server\n"
-                     "-s, --stop   stop ltalk server\n"
-                     "-h, --help   help of ltalk server\n"
-                     ;
-    }else if(arg == "-r" || arg == "--run") {
-        this->Run();
-    }else if(arg == "-s" || arg == "--stop") {
-
-    }else if(arg == "-p" || arg == "--print") {
-
-    }else {
-        std::cout << "-h get more info" << std::endl;
-    }
-    return true;
-}
-
 bool Ltalk::StartUp::Run() {
-
+    //setbuf(stdout, nullptr);
     if(LoadConfig() == false) {
         std::cout << "Load config file failed!\n" << std::endl;
         abort();
@@ -64,26 +36,25 @@ bool Ltalk::StartUp::Run() {
         std::cout << "Run network module failed!\n";
         abort();
     }
-
     return true;
 }
 
 // Load config file
 bool Ltalk::StartUp::LoadConfig() {
-    using json = nlohmann::json;
     std::string file_json;
     FILE* config_file_ptr = fopen(DEFAULT_CONFIG_FILE, "r");
     while(!feof(config_file_ptr)) {
         char buffer[MAX_BUF_SIZE];
-        fread(buffer, 1, MAX_BUF_SIZE, config_file_ptr);
-        file_json += buffer;
+        int len = fread(buffer, 1, MAX_BUF_SIZE, config_file_ptr);
+        file_json += std::string(buffer, len);
     }
-    fclose(config_file_ptr);
 
-    json obj;
+    fclose(config_file_ptr);
+    std::cout << "json [" << file_json << "]\n";
+    Third::Json obj;
     try{
-        obj = json::parse(file_json);
-    } catch(json::parse_error &e) {
+        obj = Third::Json::parse(file_json);
+    } catch(Third::Json::parse_error &e) {
         d_cout << e.what() << '\n';
         return false;
     }
@@ -101,7 +72,7 @@ bool Ltalk::StartUp::LoadConfig() {
         Data::web_root = obj["server"]["web_root"];
         Data::web_page = obj["server"]["web_page"];
         Data::web_404_page = obj["server"]["web_404_page"];
-    }  catch (json::exception &e) {
+    }  catch (Third::Json::exception &e) {
         d_cout << e.what() << '\n';
         abort();
     }
@@ -110,7 +81,6 @@ bool Ltalk::StartUp::LoadConfig() {
 bool Ltalk::StartUp::RunNetworkModule() {
     Net::Net net(tcp_port_, number_of_thread_);
     net.Start();
-
     return true;
 }
 bool Ltalk::StartUp::RunDatabaseModule() {

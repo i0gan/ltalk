@@ -10,7 +10,6 @@
 #include <sys/types.h>
 #include <sys/mman.h>
 
-#include "json/json.hpp"
 #include "net/net.hh"
 #include "net/eventloop.hh"
 #include "ltalk.hh"
@@ -20,7 +19,6 @@ class Ltalk::StartUp final{
 public:
      StartUp();
     ~StartUp();
-    bool Init(int argv, char **argc);
     bool Run();
     bool Stop();
     bool LoadConfig();

@@ -6,6 +6,8 @@
 #include <pthread.h>
 #include <list>
 #include <unordered_map>
+#include "json/json.hpp"
+
 
 #define DEFAULT_CONFIG_FILE "./data/config.json"
 
@@ -72,10 +74,17 @@ class Vessel;
 }
 
 
-namespace Crypto {
-class MD5;
-
+namespace Database {
+class Redis;
+class Mysql;
+class MysqlQuery;
+class Mongo;
 }
+
+namespace Third {
+using Json = nlohmann::json;
+}
+
 
 namespace Data {
 class User{

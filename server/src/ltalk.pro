@@ -7,6 +7,7 @@ HEADERS += \
     \
     database/mysql/mysql.hh \
     database/redis/redis.hh \
+    database/mongo/mongo.hh \
     \
     json/json.hpp\
     process/center.hh \
@@ -37,6 +38,7 @@ SOURCES += \
     \
     database/mysql/mysql.cc \
     database/redis/redis.cc \
+    database/mongo/mongo.cc \
     \
     process/center.cc \
     \

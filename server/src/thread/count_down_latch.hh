@@ -3,8 +3,7 @@
 #include "condition.hh"
 #include "mutex_lock.hh"
 /*
- * The main function of CountDownLatch class is to ensure that the func passed
- * in the thread really starts before the start of the outer layer returns.
+ * 这个类的主要功能是确保在主线程运行之前确保创建的线程启动成功
  */
 namespace Thread {
 class CountDownLatch : Noncopyable {

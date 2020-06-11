@@ -17,7 +17,7 @@ private:
 };
 
 /*
- * MutexLockGuard class for more convenient locking and unlocking
+ * MutexLockGuard 类确保线程实现同步机制
  */
 class MutexLockGuard : Noncopyable {
 public:
