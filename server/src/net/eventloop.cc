@@ -63,13 +63,13 @@ void Net::EventLoop::Loop() {
     std::vector<SPChannel> v_sp_event_channels;
     while(!quit_) {
         v_sp_event_channels.clear();
-        v_sp_event_channels = sp_epoll_->GetAllEventChannels(); // get all event
+        v_sp_event_channels = sp_epoll_->GetAllEventChannels(); // 获取所有未处理事件
         event_handling_ = true;
         for (auto &sp_channel : v_sp_event_channels) {
-            sp_channel->HandleEvent(); // Handel event
+            sp_channel->HandleEvent(); // 处理事件
         }
         event_handling_  = false;
-        RunPendingCallBackFunc(); // Run pending callback function
+        RunPendingCallBackFunc(); // 运行等待的回调函数
         sp_epoll_->HandleExpiredEvent();
     }
 }
@@ -94,14 +94,19 @@ void Net::EventLoop::PushBack(::Util::CallBack &&func) {
         WakeUp();
 }
 
+//判断是否在事件循环的线程中
 bool Net::EventLoop::IsInLoopThread() {
+    // 只需通过tid来进行判断, 若是事件循环的线程, 那么是通过Thread创建出来的, 所以Thread::CurrentThread::get_tid()的值是子线程的值,
+    // 这就可以判断是否为子线程了, 而thread_id_始终是父线程的id
     return thread_id_ == Thread::CurrentThread::get_tid();
 }
 
+// 从epoll中移除事件
 void Net::EventLoop::RemoveFromEpoll(SPChannel sp_channel) {
     sp_epoll_->Del(sp_channel);
 }
 
+// 用于保持长连接避免断开连接
 void Net::EventLoop::WakeUp() {
     char buf[8];
     ssize_t write_len = Util::Write(awake_fd_, buf, sizeof (buf));
@@ -110,15 +115,17 @@ void Net::EventLoop::WakeUp() {
     }
 }
 
+// 运行待运行的回调函数
 void Net::EventLoop::RunPendingCallBackFunc() {
     std::vector<CallBack> v_callback_functions;
     calling_pending_callback_function_ = true;
-    Thread::MutexLockGuard mutex_lock_guard(mutex_lock_);
+    Thread::MutexLockGuard mutex_lock_guard(mutex_lock_); // 保证线程单个线程执行
 
     //Calling all functions in pending vecotr
-    v_callback_functions.swap(pending_callback_functions_);
+    v_callback_functions.swap(pending_callback_functions_); // 获取所有等待的毁掉函数
+    // 依次运行回调函数
     for( size_t idx = 0; idx < v_callback_functions.size(); ++idx) {
-        v_callback_functions[idx]();
+        v_callback_functions[idx](); // 依次运行
     }
     calling_pending_callback_function_ = false;
 }

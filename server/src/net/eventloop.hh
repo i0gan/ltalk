@@ -20,12 +20,12 @@ public:
     void Quit();
     void RunInLoop(CallBack &&func);
     void PushBack(CallBack &&func);
-    bool IsInLoopThread();
-    void AssertInLoopThread();
-    void Shutdown(SPChannel sp_channel);
-    void RemoveFromEpoll(SPChannel sp_channel);
-    void UpdateEpoll(SPChannel sp_channel, int ms_timeout = 0);
-    void AddToEpoll(SPChannel sp_channel, int ms_timeout = 0);
+    bool IsInLoopThread();              // 判断是否在事件循环的线程中
+    void AssertInLoopThread();          // 在线程中断言
+    void Shutdown(SPChannel sp_channel);                        // 关闭fd的写端
+    void RemoveFromEpoll(SPChannel sp_channel);                 // 移除事件
+    void UpdateEpoll(SPChannel sp_channel, int ms_timeout = 0); // 更新epoll事件
+    void AddToEpoll(SPChannel sp_channel, int ms_timeout = 0);  // 添加epoll事件
 private:
     bool looping_;
     int awake_fd_;
@@ -33,8 +33,8 @@ private:
     bool event_handling_;
     const pid_t thread_id_;
     SPEpoll sp_epoll_;
-    SPChannel sp_awake_channel_;
-    mutable Thread::MutexLock mutex_lock_;
+    SPChannel sp_awake_channel_;           // 用于唤醒的Channel
+    mutable Thread::MutexLock mutex_lock_; // 互斥锁
     std::vector<CallBack> pending_callback_functions_;
     bool calling_pending_callback_function_;
 

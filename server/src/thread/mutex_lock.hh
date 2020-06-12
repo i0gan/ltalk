@@ -3,11 +3,14 @@
 #include <pthread.h>
 
 namespace Thread {
+
+// 互斥锁机制: 用来保证在任一时刻，只能有一个线程访问该对象
+
 class MutexLock : Noncopyable {
 public:
     MutexLock();
     ~MutexLock();
-    void Lock();
+    void Lock(); // 给该
     void Unlock();
     pthread_mutex_t *get_mutex();
 private:
@@ -17,7 +20,8 @@ private:
 };
 
 /*
- * MutexLockGuard 类确保线程实现同步机制
+ * MutexLockGuard 封装了 MutexLock, 使用更加方便
+ *
  */
 class MutexLockGuard : Noncopyable {
 public:

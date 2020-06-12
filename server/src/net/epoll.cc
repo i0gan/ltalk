@@ -47,21 +47,23 @@ void Net::Epoll::Mod(SPChannel sp_channel, int ms_timeout) {
     }
 }
 
+// 删除channel
 void Net::Epoll::Del(SPChannel sp_channel) {
     int fd = sp_channel->get_fd();
     struct epoll_event event;
     event.data.fd = fd;
     event.events = sp_channel->get_last_event();
+    // 设置事件为EPOLL_CTL_DEL, 用于处理该事件时调用回调函数
     if(epoll_ctl(epoll_fd_, EPOLL_CTL_DEL, fd, &event) < 0) {
         perror("epoll_ctrl [EPOLL_CTL_DEL] ");
     }
 
-    //clean event
+    //释放内存
     sp_channels_[fd].reset();
     sp_https_[fd].reset();
 }
 
-// Get all events from epoll
+// 获取所有的Channel
 std::vector<Net::SPChannel> Net::Epoll::GetAllEventChannels() {
     while (true) {
         int number_of_events =
@@ -76,17 +78,16 @@ std::vector<Net::SPChannel> Net::Epoll::GetAllEventChannels() {
     }
 }
 
-
+// 在获取事件后, 获取channel
 std::vector<Net::SPChannel> Net::Epoll::GetEventChannelsAfterGetEvents(int number_of_events) {
     std::vector<Net::SPChannel> v_sp_event_channels;
     for (int idx = 0; idx < number_of_events; ++idx) {
         int fd = v_events_[idx].data.fd;
-        Net::SPChannel sp_single_event_channel = sp_channels_[fd];
+        Net::SPChannel sp_single_event_channel = sp_channels_[fd]; // 从储存容器中取出等待的事件
         if(sp_single_event_channel != nullptr) {
             sp_single_event_channel->set_revent(v_events_[idx].events);
             sp_single_event_channel->set_event(0);
-
-            v_sp_event_channels.push_back(sp_single_event_channel);
+            v_sp_event_channels.push_back(sp_single_event_channel);// 添加未处理事件
         }else {
             d_cout << "sp_channel is invalid\n";
         }
