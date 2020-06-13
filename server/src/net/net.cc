@@ -30,7 +30,7 @@ Net::Net::~Net() {
 
 void Net::Net::Start() {
     up_eventloop_threadpool_->Start();
-    accept_channel_->set_event(EPOLLIN | EPOLLET); // set as accept data event
+    accept_channel_->set_event(EPOLLIN | EPOLLET); // Set as accept data event
     accept_channel_->set_read_handler(std::bind(&Net::HandleNewConnection, this));
     accept_channel_->set_connected_handler(std::bind(&Net::HandleConnected, this));
     base_eventloop_->AddToEpoll(accept_channel_, 0);

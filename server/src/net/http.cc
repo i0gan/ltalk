@@ -437,10 +437,11 @@ void Net::Http::SendFile(const std::string &file_name) {
     } while(false);
 }
 
+// 处理连接
 void Net::Http::HandleConnect() {
     int ms_timeout = 0;
     __uint32_t &event = sp_channel_->get_event();
-    UnbindTimer();
+    UnbindTimer(); //解除计时器, 避免有两个计时器监视
 
     if(!recv_error_ && http_connection_state_ == HttpConnectionState::CONNECTED) {
         if(event != 0) {
