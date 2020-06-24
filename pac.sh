@@ -3,8 +3,8 @@
 if [ $1 == '1' ]
 then
 	echo "scp"
-	scp -r server root@39.97.119.22:/root/
+	scp -r server ltalk@39.97.119.22:/home/ltalk/
 else
 	echo "ssh"
-	ssh root@39.97.119.22
+	ssh ltalk@39.97.119.22
 fi

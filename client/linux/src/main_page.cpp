@@ -3,13 +3,11 @@
 
 MainPage::MainPage(QWidget *parent) :
     QWidget(parent),
-    ui(new Ui::MainPage)
-{
+    ui(new Ui::MainPage) {
     ui->setupUi(this);
 }
 
-MainPage::~MainPage()
-{
+MainPage::~MainPage() {
     if(opened_floating_settings_window_)
         delete floating_settings_window_;
     if(opened_tray_icon_)
@@ -30,6 +28,7 @@ void MainPage::init() {
     setWindowFlag(Qt::FramelessWindowHint);
     setAttribute(Qt::WA_TranslucentBackground);
     floating_settings_window_ = new FloatingSettingsWindow();
+    connect(floating_settings_window_, &FloatingSettingsWindow::localCmd, this, &MainPage::dealWithLocalCmd);
     floating_settings_window_->init();
     opened_floating_settings_window_ = true;
     opened_tray_icon_ = true;

@@ -15,6 +15,9 @@ void TrayIcon::init() {
     action_3_.setIcon(QIcon(":/ui/logo.ico"));
     action_3_.setText("退出");
     connect(&action_1_, &QAction::triggered, this, &TrayIcon::clickAction_1);
+    connect(&action_2_, &QAction::triggered, this, &TrayIcon::clickAction_2);
+    connect(&action_3_, &QAction::triggered, this, &TrayIcon::clickAction_3);
+
     menu_.addAction(&action_1_);
     menu_.addAction(&action_2_);
     menu_.addAction(&action_3_);

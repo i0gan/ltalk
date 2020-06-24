@@ -1,7 +1,6 @@
 #include "center.h"
 
-Center::Center(QObject *parent) : QObject(parent)
-{
+Center::Center(QObject *parent) : QObject(parent) {
 
 }
 
@@ -26,7 +25,7 @@ void Center::start() {
 
 
 void Center::requestLogin(QString account, QString password) {
-    qDebug() << "requstlogin : " << account << " " << password;
+    //qDebug() << "requstlogin : " << account << " " << password;
     QNetworkRequest request;
     request.setRawHeader("Origin", "http://lyxf.xyz");
     request.setRawHeader("Accept", "*/*");
@@ -60,9 +59,10 @@ void Center::requestReply(QNetworkReply *reply) {
     QJsonDocument json_document;
     QJsonObject json_object;
     QJsonParseError json_error;
+    QByteArray recv_data;
     do {
         if(reply->rawHeader(QString("Content-Type").toUtf8()) == QString("application/json").toUtf8()) {
-            QByteArray recv_data = reply->readAll();
+            recv_data = reply->readAll();
             //qDebug() << recv_data;
             json_document = QJsonDocument::fromJson(recv_data, &json_error);
             if(json_error.error != QJsonParseError::NoError) {
@@ -85,6 +85,7 @@ void Center::requestReply(QNetworkReply *reply) {
             login_page_->dealWithRecv(json_object);
             break;
         }else if(request == "get_user_info") {
+            qDebug() << "get_user_info: " << recv_data;
             break;
         }else {
              qDebug() << "收到数据出错";
@@ -94,10 +95,15 @@ void Center::requestReply(QNetworkReply *reply) {
 }
 
 void Center::dealWithLogined(QString account, QString uid, QString token) {
+    user_.account = account;
+    user_.uid = uid;
+    token_ = token;
     qDebug() << account << " uid: " << uid << "token: " << token;
     login_page_->close();
     main_page_->init();
     main_page_->show();
+
+    requestGetUserInfo();
 }
 
 QString Center::getTime() {
@@ -105,9 +111,48 @@ QString Center::getTime() {
 }
 
 void Center::dealWithLocalCmd(size_t cmd) {
+    qDebug() << "sss";
     switch (cmd) {
     case LOCAL_CMD_EXIT: {
+        this->exit();
+    } break;
+    case LOCAL_CMD_LOG_OUT: {
+
+    } break;
+    default: {
 
     } break;
     }
+}
+
+void Center::exit() {
+    login_page_->close();
+    main_page_->close();
+    delete  main_page_;
+    delete  login_page_;
+}
+
+void Center::keepConnect() {
+
+}
+
+void Center::requestGetUserInfo() {
+    QNetworkRequest request;
+    request.setRawHeader("Origin", "http://lyxf.xyz");
+    request.setRawHeader("Accept", "*/*");
+    request.setRawHeader("Content-Type", "application/json");
+    request.setRawHeader("Accept", "application/json");
+    request.setRawHeader("Date", getTime().toUtf8().data());
+    QUrl url;
+    url = SERVER_REQUEST_URL + QString("/?request=get_user_info&platform=linux&account=") + user_.account + "&uid=" + user_.uid + "&token=" + token_;
+    request.setUrl(url);
+    network_access_mannager->get(request);
+}
+
+void Center::requestGetFriendList() {
+
+}
+
+void Center::requestGetGroupList() {
+
 }

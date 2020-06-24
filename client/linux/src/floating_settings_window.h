@@ -2,6 +2,7 @@
 #define FLOATING_SETTINGS_WINDOW_H
 
 #include <QWidget>
+#include "ltalk.h"
 
 namespace Ui {
 class FloatingSettingsWindow;
@@ -16,12 +17,15 @@ public:
     ~FloatingSettingsWindow();
     void init();
     void setParentPos(QPoint pos);
-
+signals:
+    void localCmd(size_t cmd);
 private:
     Ui::FloatingSettingsWindow *ui;
 
 protected:
     bool event(QEvent *event);
+private slots:
+    void on_pushButton_exit_clicked();
 };
 
 #endif // FLOATING_SETTINGS_WINDOW_H

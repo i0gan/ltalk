@@ -50,7 +50,7 @@ bool Ltalk::StartUp::LoadConfig() {
     }
 
     fclose(config_file_ptr);
-    std::cout << "json [" << file_json << "]\n";
+    //std::cout << "json [" << file_json << "]\n";
     Third::Json obj;
     try{
         obj = Third::Json::parse(file_json);

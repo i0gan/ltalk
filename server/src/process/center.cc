@@ -43,7 +43,6 @@ void Process::Center::Process() {
         Response(ResponseCode::ERROR_PARSING_URL);
         return;
     }
-
     try {
         platform_ = map_url_value_info_.at("platform");
         request_ = map_url_value_info_.at("request");
@@ -551,10 +550,11 @@ void Process::Center::DealWithGetUserInfo() {
     std::string uid;
     std::string token;
     try {
-        account = map_header_info_.at("account");
-        uid = map_header_info_.at("uid");
-        token = map_header_info_.at("token");
+        account = map_url_value_info_.at("account");
+        uid = map_url_value_info_.at("uid");
+        token = map_url_value_info_.at("token");
     }  catch (std::out_of_range e) {
+        std::cout << "NO_access\n";
         Response(ResponseCode::NO_ACCESS);
         return;
     }
@@ -563,16 +563,27 @@ void Process::Center::DealWithGetUserInfo() {
         Response(ResponseCode::FAILURE);
         return;
     }
-
     Response(ResponseCode::SUCCESS);
 }
 
 bool Process::Center::CheckToken(const std::string &uid, const std::string &token) {
     Data::User user;
+    bool ret_value = false;
     if(Data::map_user.find(uid) != Data::map_user.end()) {
         user = Data::map_user[uid];
     }else {
         return false;
     }
-    return false;
+    if(platform_ == "linux") {
+        ret_value =  user.linux_token == token;
+    } else if(platform_ == "windows"){
+        ret_value =  user.windows_token == token;
+    } else if(platform_ == "android") {
+        ret_value =  user.android_token == token;
+    } else if(platform_ == "web") {
+        ret_value =  user.web_token == token;
+    }else
+        ret_value = false;
+
+    return ret_value;
 }

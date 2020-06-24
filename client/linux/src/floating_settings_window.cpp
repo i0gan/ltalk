@@ -31,3 +31,7 @@ bool FloatingSettingsWindow::event(QEvent *event) {
     }
     return QWidget::event(event);
 }
+
+void FloatingSettingsWindow::on_pushButton_exit_clicked() {
+    localCmd(LOCAL_CMD_EXIT);
+}

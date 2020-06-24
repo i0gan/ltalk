@@ -109,7 +109,7 @@ void Net::Http::HandleRead() {
     __uint32_t &event = sp_channel_->get_event();
     do {
         int read_len = Util::Read(fd_, in_buffer_);
-        //std::cout << "http_content:__[" << in_buffer_ << "]__";
+        std::cout << "http_content:__[" << in_buffer_ << "]__";
         //if state as disconnecting will clean th in buffer
         if(http_connection_state_ == HttpConnectionState::DISCONNECTING) {
             std::cout << "DISCONNECTING\n";
