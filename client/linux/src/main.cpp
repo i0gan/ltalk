@@ -2,8 +2,7 @@
 
 #include <QApplication>
 
-int main(int argc, char *argv[])
-{
+int main(int argc, char *argv[]) {
     QApplication app(argc, argv);
     app.setApplicationName("Ltalk for linux");
     app.setApplicationVersion("0.1");
@@ -13,5 +12,6 @@ int main(int argc, char *argv[])
     Center center;
     center.init();
     center.start();
+
     return app.exec();
 }

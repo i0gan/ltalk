@@ -15,7 +15,7 @@
 
 #include "ltalk.h"
 #include "login_page.h"
-
+#include "main_page.h"
 
 struct UserInfo {
     QString account;
@@ -39,13 +39,15 @@ public:
 
     void requestLogin(QString account, QString password);
     void requestReply(QNetworkReply *reply);
-    void dealWithLogined(QString account, QString uid, QString token) ;
+    void dealWithLogined(QString account, QString uid, QString token);
+private slots:
+    void dealWithLocalCmd(size_t cmd);
+
 private:
     LoginPage *login_page_;
-    bool opened_login_page_;
+    MainPage *main_page_;
     QNetworkAccessManager *network_access_mannager;
     QString getTime();
-signals:
 
 };
 

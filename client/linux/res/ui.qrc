@@ -4,16 +4,24 @@
         <file>ui/addition/img_2.png</file>
         <file>ui/addition/img_3.png</file>
         <file>ui/addition/img_4.png</file>
-        <file>ui/theme-love/dialog_page.png</file>
-        <file>ui/theme-love/head_frame.png</file>
-        <file>ui/theme-love/main_page.png</file>
-        <file>ui/theme-love/notice_page.png</file>
-        <file>ui/theme/dialog_page.png</file>
-        <file>ui/theme/head_frame.png</file>
-        <file>ui/theme/main_page.png</file>
-        <file>ui/theme/notice_page.png</file>
+        <file>ui/themes/default/dialog_page.png</file>
+        <file>ui/themes/default/head_frame.png</file>
+        <file>ui/themes/default/main_page.png</file>
+        <file>ui/themes/default/notice_page.png</file>
+        <file>ui/themes/love/dialog_page.png</file>
+        <file>ui/themes/love/head_frame.png</file>
+        <file>ui/themes/love/main_page.png</file>
+        <file>ui/themes/love/notice_page.png</file>
         <file>ui/btn_close.png</file>
         <file>ui/btn_min.png</file>
         <file>ui/logo.ico</file>
+        <file>ui/add-group.png</file>
+        <file>ui/add-user.png</file>
+        <file>ui/friends.png</file>
+        <file>ui/groups.png</file>
+        <file>ui/messages.png</file>
+        <file>ui/search.png</file>
+        <file>ui/settings.png</file>
+        <file>ui/signin-group.png</file>
     </qresource>
 </RCC>

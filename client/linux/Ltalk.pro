@@ -17,18 +17,32 @@ DEFINES += QT_DEPRECATED_WARNINGS
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
 SOURCES += \
+    src/floating_settings_window.cpp \
+    src/group_list_item.cpp \
+    src/main_page.cpp \
     src/ltalk.h \
     src/login_page.cpp \
     src/center.cpp \
     src/main.cpp \
+    src/tray_icon.cpp \
+    src/user_list_item.cpp
 
 HEADERS += \
+    src/floating_settings_window.h \
+    src/group_list_item.h \
+    src/main_page.h \
     src/login_page.h \
     src/center.h \ \
-    src/ltalk.h
+    src/ltalk.h \
+    src/tray_icon.h \
+    src/user_list_item.h
 
 FORMS += \
-    src/form/login_page.ui
+    src/form/floating_settings_window.ui \
+    src/form/main_page.ui \
+    src/form/login_page.ui \
+    src/form/group_list_item.ui \
+    src/form/user_list_item.ui
 
 
 # Default rules for deployment.

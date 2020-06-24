@@ -6,20 +6,18 @@ Center::Center(QObject *parent) : QObject(parent)
 }
 
 Center::~Center() {
-    if(opened_login_page_)
-        delete login_page_;
+
 }
 
 void Center::init() {
-    opened_login_page_ = false;
     login_page_ = new LoginPage();
-    opened_login_page_ = true;
+    main_page_ = new MainPage();
     login_page_->init();
     connect(login_page_, &LoginPage::login, this, &Center::requestLogin);
     connect(login_page_, &LoginPage::logined, this, &Center::dealWithLogined);
     network_access_mannager = new QNetworkAccessManager(this);
     connect(network_access_mannager, &QNetworkAccessManager::finished, this, &Center::requestReply);
-
+    connect(main_page_, &MainPage::localCmd, this, &Center::dealWithLocalCmd);
 }
 
 void Center::start() {
@@ -49,14 +47,12 @@ void Center::requestLogin(QString account, QString password) {
     json_object_content.insert("account", account.toUtf8().data());
     json_object_content.insert("password", password.toUtf8().toBase64().data());
     json_object.insert("content", json_object_content);
-
     json_document.setObject(json_object);
     QByteArray byte_array = json_document.toJson(QJsonDocument::Compact);
     //qDebug() << byte_array;
     QUrl url;
     url = SERVER_REQUEST_URL + QString("/?request=login&platform=linux");
     request.setUrl(url);
-
     network_access_mannager->post(request, byte_array);
 }
 
@@ -74,11 +70,10 @@ void Center::requestReply(QNetworkReply *reply) {
                 break;
             }
         }else {
-            qDebug() << "接收类型不对";
-            reply->readAll();
+            qDebug() << "接收类型不对" << reply->rawHeader(QString("content-type").toUtf8());
+            //qDebug() << reply->readAll();
             break;
         }
-
         json_object = json_document.object();
         QJsonValue json_value_request = json_object.value("request");
         if(!json_value_request.isString()) {
@@ -100,8 +95,19 @@ void Center::requestReply(QNetworkReply *reply) {
 
 void Center::dealWithLogined(QString account, QString uid, QString token) {
     qDebug() << account << " uid: " << uid << "token: " << token;
+    login_page_->close();
+    main_page_->init();
+    main_page_->show();
 }
 
 QString Center::getTime() {
     return QDateTime::currentDateTime().toString("yy-MM-dd hh:mm:ss");
+}
+
+void Center::dealWithLocalCmd(size_t cmd) {
+    switch (cmd) {
+    case LOCAL_CMD_EXIT: {
+
+    } break;
+    }
 }

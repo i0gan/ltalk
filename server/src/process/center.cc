@@ -482,6 +482,7 @@ void Process::Center::DealWithLogin() {
     };
     SendJson(send_json);
 }
+
 bool Process::Center::CheckIsLogined(const std::string &uid) {
     Data::User user_info;
     bool ret_result = false;

@@ -60,9 +60,12 @@ void LoginPage::on_pushButton_login_clicked()
     emit login(account, password);
 }
 
-void LoginPage::on_toolButton_close_clicked()
-{
+void LoginPage::on_toolButton_close_clicked() {
     close();
+}
+
+void LoginPage::on_toolButton_min_clicked() {
+    showMinimized();
 }
 
 void LoginPage::mousePressEvent(QMouseEvent *event) {
@@ -80,10 +83,7 @@ void LoginPage::mouseMoveEvent(QMouseEvent *event) {
     }
 }
 
-void LoginPage::on_toolButton_min_clicked()
-{
-    showMinimized();
-}
+
 
 void LoginPage::dealWithSuccess() {
     ui->label_process_text->setText("<html><head/><body><p align=\"center\"><span style=\" color:#00ff26;\">登录成功</span></p></body></html>");

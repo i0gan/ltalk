@@ -1,0 +1,259 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>FloatingSettingsWindow</class>
+ <widget class="QWidget" name="FloatingSettingsWindow">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>121</width>
+    <height>241</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Form</string>
+  </property>
+  <widget class="QPushButton" name="pushButton_addUser">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>121</width>
+     <height>31</height>
+    </rect>
+   </property>
+   <property name="font">
+    <font>
+     <family>楷体</family>
+     <pointsize>10</pointsize>
+    </font>
+   </property>
+   <property name="styleSheet">
+    <string notr="true">QPushButton{ 
+     background-color: rgb(0, 170, 255, 20%);
+     border: none;
+     border-radius:2px;
+     color:white;
+}
+QPushButton:hover{ 
+     background-color: rgb(85, 255, 255, 50%);
+}</string>
+   </property>
+   <property name="text">
+    <string>添加好友</string>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="pushButton_logout">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>180</y>
+     <width>121</width>
+     <height>31</height>
+    </rect>
+   </property>
+   <property name="font">
+    <font>
+     <family>楷体</family>
+     <pointsize>10</pointsize>
+    </font>
+   </property>
+   <property name="styleSheet">
+    <string notr="true">QPushButton{ 
+     background-color: rgb(0, 170, 255, 20%);
+     border: none;
+     border-radius:2px;
+     color:white;
+}
+QPushButton:hover{ 
+     background-color: rgb(85, 255, 255, 50%);
+}</string>
+   </property>
+   <property name="text">
+    <string>退出登录</string>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="pushButton_about">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>120</y>
+     <width>121</width>
+     <height>31</height>
+    </rect>
+   </property>
+   <property name="font">
+    <font>
+     <family>楷体</family>
+     <pointsize>10</pointsize>
+    </font>
+   </property>
+   <property name="styleSheet">
+    <string notr="true">QPushButton{ 
+     background-color: rgb(0, 170, 255, 20%);
+     border: none;
+     border-radius:2px;
+     color:white;
+}
+QPushButton:hover{ 
+     background-color: rgb(85, 255, 255, 50%);
+}</string>
+   </property>
+   <property name="text">
+    <string>关于Ltalk</string>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="pushButton_signinGroup">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>60</y>
+     <width>121</width>
+     <height>31</height>
+    </rect>
+   </property>
+   <property name="font">
+    <font>
+     <family>楷体</family>
+     <pointsize>10</pointsize>
+    </font>
+   </property>
+   <property name="styleSheet">
+    <string notr="true">QPushButton{ 
+     background-color: rgb(0, 170, 255, 20%);
+     border: none;
+     border-radius:2px;
+     color:white;
+}
+QPushButton:hover{ 
+     background-color: rgb(85, 255, 255, 50%);
+}</string>
+   </property>
+   <property name="text">
+    <string>创建群组</string>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="pushButton_addGroup">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>30</y>
+     <width>121</width>
+     <height>31</height>
+    </rect>
+   </property>
+   <property name="font">
+    <font>
+     <family>楷体</family>
+     <pointsize>10</pointsize>
+    </font>
+   </property>
+   <property name="styleSheet">
+    <string notr="true">QPushButton{ 
+     background-color: rgb(0, 170, 255, 20%);
+     border: none;
+     border-radius:2px;
+     color:white;
+}
+QPushButton:hover{ 
+     background-color: rgb(85, 255, 255, 50%);
+}</string>
+   </property>
+   <property name="text">
+    <string>添加群组</string>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="pushButton_changeTheme">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>90</y>
+     <width>121</width>
+     <height>31</height>
+    </rect>
+   </property>
+   <property name="font">
+    <font>
+     <family>楷体</family>
+     <pointsize>10</pointsize>
+    </font>
+   </property>
+   <property name="styleSheet">
+    <string notr="true">QPushButton{ 
+     background-color: rgb(0, 170, 255, 20%);
+     border: none;
+     border-radius:2px;
+     color:white;
+}
+QPushButton:hover{ 
+     background-color: rgb(85, 255, 255, 50%);
+}</string>
+   </property>
+   <property name="text">
+    <string>跟换主题</string>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="pushButton_exit">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>210</y>
+     <width>121</width>
+     <height>31</height>
+    </rect>
+   </property>
+   <property name="font">
+    <font>
+     <family>楷体</family>
+     <pointsize>10</pointsize>
+    </font>
+   </property>
+   <property name="styleSheet">
+    <string notr="true">QPushButton{ 
+     background-color: rgb(0, 170, 255, 20%);
+     border: none;
+     border-radius:2px;
+     color:white;
+}
+QPushButton:hover{ 
+     background-color: rgb(85, 255, 255, 50%);
+}</string>
+   </property>
+   <property name="text">
+    <string>退出 Ltalk</string>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="pushButton_settings">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>150</y>
+     <width>121</width>
+     <height>31</height>
+    </rect>
+   </property>
+   <property name="font">
+    <font>
+     <family>楷体</family>
+     <pointsize>10</pointsize>
+    </font>
+   </property>
+   <property name="styleSheet">
+    <string notr="true">QPushButton{ 
+     background-color: rgb(0, 170, 255, 20%);
+     border: none;
+     border-radius:2px;
+     color:white;
+}
+QPushButton:hover{ 
+     background-color: rgb(85, 255, 255, 50%);
+}</string>
+   </property>
+   <property name="text">
+    <string>Ltalk设置</string>
+   </property>
+  </widget>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>

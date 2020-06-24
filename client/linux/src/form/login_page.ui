@@ -48,6 +48,9 @@ QLineEdit:focus{
 	border-radius:2px;
 }</string>
    </property>
+   <property name="text">
+    <string>418894113@qq.com</string>
+   </property>
    <property name="placeholderText">
     <string>account/email</string>
    </property>
@@ -73,6 +76,9 @@ QLineEdit:focus{
 	border:1px solid rgb(78, 125, 255);
 	border-radius:2px;
 }</string>
+   </property>
+   <property name="text">
+    <string>123456</string>
    </property>
    <property name="echoMode">
     <enum>QLineEdit::Password</enum>
@@ -115,7 +121,7 @@ QPushButton:hover{
    </property>
    <property name="styleSheet">
     <string notr="true">
-	border-image  : url(':/ui/theme/dialog_page.png');</string>
+	border-image  : url(':/ui/themes/default/dialog_page.png');</string>
    </property>
    <property name="text">
     <string/>
