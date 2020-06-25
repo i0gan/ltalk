@@ -8,11 +8,9 @@ extern std::string Data::web_page;
 extern std::string Data::web_404_page;
 
 Ltalk::StartUp::StartUp() {
-
 }
 
 Ltalk::StartUp::~StartUp() {
-
 }
 bool Ltalk::StartUp::Run() {
     //setbuf(stdout, nullptr);

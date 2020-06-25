@@ -1,6 +1,7 @@
 #include "main_page.h"
 #include "ui_main_page.h"
 
+
 MainPage::MainPage(QWidget *parent) :
     QWidget(parent),
     ui(new Ui::MainPage) {
@@ -35,6 +36,8 @@ void MainPage::init() {
     tray_icon_ = new TrayIcon();
     connect(tray_icon_, &TrayIcon::localCmd, this, &MainPage::dealWithLocalCmd);
     tray_icon_->init();
+    network_get_head_image = new QNetworkAccessManager(this);
+    connect(network_get_head_image, &QNetworkAccessManager::finished, this, &MainPage::requestGetHeadImageReply);
 }
 
 void MainPage::mousePressEvent(QMouseEvent *event) {
@@ -95,4 +98,33 @@ void MainPage::dealWithLocalCmd(size_t cmd) {
     }
 }
 
+void MainPage::setUserInfo(const UserInfo &user_info) {
+    ui->label_email->setText(user_info.email);
+    ui->label_nickname->setText(user_info.nickname);
+    requestGetHeadImage(user_info.uid, user_info.token, user_info.head_image_url);
+}
+
+void MainPage::requestGetHeadImage(QString uid, QString token, QString head_image_url) {
+    QNetworkRequest request;
+    request.setRawHeader("Origin", "http://ltalk.co");
+    request.setRawHeader("Accept", "*/*");
+    request.setRawHeader("Content-Type", "application/json");
+    request.setRawHeader("Accept", "application/json");
+    request.setRawHeader("Date", Util::getTime().toUtf8().data());
+    request.setRawHeader("Connection", "close");
+    QUrl url;
+    head_image_url = "http://192.168.100.8/user/418894113@qq.com/public/test.png";
+    url = head_image_url + QString("/?request=get_public_file&platform=linux");
+    request.setUrl(url);
+    network_get_head_image->get(request);
+}
+
+void MainPage::requestGetHeadImageReply(QNetworkReply *reply) {
+    qDebug() << "recv: ";
+    QFile head_image_file;
+    head_image_file.setFileName("./test.png");
+    head_image_file.open(QIODevice::WriteOnly);
+    head_image_file.write(reply->readAll());
+    head_image_file.close();
+}
 

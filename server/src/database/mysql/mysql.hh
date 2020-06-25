@@ -3,6 +3,8 @@
 #include <mysql/mysql.h>
 #include <iostream>
 #include <unistd.h>
+#include <exception>
+
 #include "../../ltalk.hh"
 
 //#define DB_WAIT_TIMES 1000 // wait times
@@ -25,13 +27,20 @@ class Mysql {
         static void Disconnect();
 };
 
+class out_of_range : public std::exception {
+public:
+    const char *what() const throw() {
+        return "Get value out of range";
+    }
+};
+
 class MysqlQuery {
 public:
     MysqlQuery();
     MysqlQuery(MYSQL *mysql);
     ~MysqlQuery();
     bool Next();
-    char* Value(int index);
+    const char* Value(int index);
     bool Exec(std::string sql);
     bool Select(const std::string &table_name, const std::string &key_sql, const std::string &condition = "none");
     bool Insert(const std::string &table_name, const std::string &key_sql, const std::string &value_sql);

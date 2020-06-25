@@ -7,9 +7,18 @@
 #include <QSystemTrayIcon>
 #include <QDebug>
 #include <QMenu>
+#include <QNetworkAccessManager>
+#include <QNetworkRequest>
+#include <QNetworkReply>
+#include <QPicture>
+#include <QFile>
+#include <QDir>
 
 #include "floating_settings_window.h"
 #include "tray_icon.h"
+#include "ltalk.h"
+#include "util.h"
+
 namespace Ui {
 class MainPage;
 }
@@ -22,6 +31,7 @@ public:
     explicit MainPage(QWidget *parent = nullptr);
     ~MainPage();
     void init();
+    void setUserInfo(const UserInfo &user_info);
 signals:
     void localCmd(size_t cmd);
 
@@ -33,6 +43,9 @@ private:
     bool opened_floating_settings_window_;
     TrayIcon *tray_icon_;
     bool opened_tray_icon_;
+    void requestGetHeadImage(QString uid, QString token, QString head_image_url);
+    void requestGetHeadImageReply(QNetworkReply *reply);
+    QNetworkAccessManager *network_get_head_image;
 
 protected:
     void mouseMoveEvent(QMouseEvent *event) override;

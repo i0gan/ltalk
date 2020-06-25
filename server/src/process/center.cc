@@ -82,10 +82,14 @@ void Process::Center::HandleGet() {
             path = Data::web_root + "/" + Data::web_page;
             SendFile(path);
             break;
-        }else if(platform_ == "web"){
+        } else if(platform_ == "web"){
             HandleWebRequest();
-        }else if(request_ == "get_user_info" && !platform_.empty()){
+        } else if(request_ == "get_user_info" && !platform_.empty()){
             DealWithGetUserInfo();
+        } else if(request_ == "get_public_file" && !platform_.empty()) {
+            DealWithGetPublicFile();
+        } else if(request_ == "get_private_file" && !platform_.empty()) {
+            DealWithGetPrivateFile();
         } else {
             path = Data::web_root + path;
             SendFile(path);
@@ -563,7 +567,66 @@ void Process::Center::DealWithGetUserInfo() {
         Response(ResponseCode::FAILURE);
         return;
     }
-    Response(ResponseCode::SUCCESS);
+
+    Database::MysqlQuery query;
+    Database::MysqlQuery::Escape(account);
+    query.Select("user_",
+                 "account, email, nickname, head_image_url, name, phone_number, address, occupation, creation_time, network_state",
+                 "uid = '" + uid + '\'');
+    if(!query.Next()) {
+        Response(ResponseCode::FAILURE);
+        return;
+    }
+
+    std::string db_account;
+    std::string db_email;
+    std::string db_nickname;
+    std::string db_head_image_url;
+    std::string db_name;
+    std::string db_phone_number;
+    std::string db_address;
+    std::string db_occupation;
+    std::string db_creation_time;
+    std::string db_network_state;
+    try {
+        db_account = query.Value(0);
+        db_email = query.Value(1);
+        db_nickname = query.Value(2);
+        db_head_image_url = query.Value(3);
+        db_name = query.Value(4);
+        db_phone_number = query.Value(5);
+        db_address = query.Value(6);
+        db_occupation = query.Value(7);
+        db_creation_time = query.Value(8);
+        db_network_state = query.Value(9);
+    }  catch (Database::out_of_range e) {
+        std::cout << e.what();
+        Response(ResponseCode::FAILURE);
+        return;
+    }
+
+    Json send_json = {
+        { "server", SERVER_NAME },
+        { "code", ResponseCode::SUCCESS },
+        { "request", request_},
+        { "datetime" , GetDateTime() },
+        { "platform", platform_ },
+        {"content-type", "user_info"},
+        {"content", {
+            {"account", db_account},
+            {"email", db_email},
+            {"nickname", db_nickname},
+            {"head_image_url", db_head_image_url},
+            {"name", db_name},
+            {"phone_number", db_phone_number},
+            {"address", db_address},
+            {"occupation", db_occupation},
+            {"creation_time", db_creation_time},
+            {"network_state", db_network_state}
+        }}
+    };
+    //std::cout << "[" << send_json << "]";
+    SendJson(send_json);
 }
 
 bool Process::Center::CheckToken(const std::string &uid, const std::string &token) {
@@ -586,4 +649,25 @@ bool Process::Center::CheckToken(const std::string &uid, const std::string &toke
         ret_value = false;
 
     return ret_value;
+}
+
+void Process::Center::DealWithGetPublicFile() {
+    std::string file_path;
+    try {
+        file_path = map_url_info_.at("path");
+    }  catch (std::out_of_range e) {
+        Response(ResponseCode::FAILURE);
+        return;
+    }
+    file_path = "data" + file_path;
+    std::cout << "get public file [" << file_path << "]\n";
+    SendFile(file_path);
+}
+
+void Process::Center::DealWithGetPrivateFile() {
+
+}
+
+void Process::Center::DealWithGetGetChatFile() {
+
 }

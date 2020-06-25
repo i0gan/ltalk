@@ -73,6 +73,9 @@ private:
     bool CheckIsLogined(const std::string &uid);
     void DealWithGetUserInfo(); // GET method to get user info
     bool CheckJsonBaseContent(Json &json_obj);
+    void DealWithGetPublicFile();
+    void DealWithGetPrivateFile();
+    void DealWithGetGetChatFile();
     bool UpdateUserInfo(const std::string &uid, const std::string &token); // Update memory infomation
     bool CheckToken(const std::string &uid, const std::string &token);
 

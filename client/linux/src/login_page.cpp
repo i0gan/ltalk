@@ -84,7 +84,6 @@ void LoginPage::mouseMoveEvent(QMouseEvent *event) {
 }
 
 
-
 void LoginPage::dealWithSuccess() {
     ui->label_process_text->setText("<html><head/><body><p align=\"center\"><span style=\" color:#00ff26;\">登录成功</span></p></body></html>");
 }

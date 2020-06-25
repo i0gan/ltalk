@@ -31,7 +31,7 @@ void Center::requestLogin(QString account, QString password) {
     request.setRawHeader("Accept", "*/*");
     request.setRawHeader("Content-Type", "application/json");
     request.setRawHeader("Accept", "application/json");
-    request.setRawHeader("Date", getTime().toUtf8().data());
+    request.setRawHeader("Date", Util::getTime().toUtf8().data());
 
     //mannager->post()
     QJsonDocument json_document;
@@ -59,12 +59,11 @@ void Center::requestReply(QNetworkReply *reply) {
     QJsonDocument json_document;
     QJsonObject json_object;
     QJsonParseError json_error;
-    QByteArray recv_data;
     do {
         if(reply->rawHeader(QString("Content-Type").toUtf8()) == QString("application/json").toUtf8()) {
-            recv_data = reply->readAll();
+            recved_data_ = reply->readAll();
             //qDebug() << recv_data;
-            json_document = QJsonDocument::fromJson(recv_data, &json_error);
+            json_document = QJsonDocument::fromJson(recved_data_, &json_error);
             if(json_error.error != QJsonParseError::NoError) {
                 qDebug() << "json 文件解析失败";
                 break;
@@ -85,7 +84,8 @@ void Center::requestReply(QNetworkReply *reply) {
             login_page_->dealWithRecv(json_object);
             break;
         }else if(request == "get_user_info") {
-            qDebug() << "get_user_info: " << recv_data;
+            qDebug() << "get_user_info: " << recved_data_;
+            handleGetUserInfoReply(json_object);
             break;
         }else {
              qDebug() << "收到数据出错";
@@ -97,7 +97,7 @@ void Center::requestReply(QNetworkReply *reply) {
 void Center::dealWithLogined(QString account, QString uid, QString token) {
     user_.account = account;
     user_.uid = uid;
-    token_ = token;
+    user_.token = token;
     qDebug() << account << " uid: " << uid << "token: " << token;
     login_page_->close();
     main_page_->init();
@@ -106,9 +106,6 @@ void Center::dealWithLogined(QString account, QString uid, QString token) {
     requestGetUserInfo();
 }
 
-QString Center::getTime() {
-    return QDateTime::currentDateTime().toString("yy-MM-dd hh:mm:ss");
-}
 
 void Center::dealWithLocalCmd(size_t cmd) {
     qDebug() << "sss";
@@ -138,13 +135,13 @@ void Center::keepConnect() {
 
 void Center::requestGetUserInfo() {
     QNetworkRequest request;
-    request.setRawHeader("Origin", "http://lyxf.xyz");
+    request.setRawHeader("Origin", "http://ltalk.co");
     request.setRawHeader("Accept", "*/*");
     request.setRawHeader("Content-Type", "application/json");
     request.setRawHeader("Accept", "application/json");
-    request.setRawHeader("Date", getTime().toUtf8().data());
+    request.setRawHeader("Date", Util::getTime().toUtf8().data());
     QUrl url;
-    url = SERVER_REQUEST_URL + QString("/?request=get_user_info&platform=linux&account=") + user_.account + "&uid=" + user_.uid + "&token=" + token_;
+    url = SERVER_REQUEST_URL + QString("/?request=get_user_info&platform=linux&account=") + user_.account + "&uid=" + user_.uid + "&token=" + user_.token;
     request.setUrl(url);
     network_access_mannager->get(request);
 }
@@ -155,4 +152,26 @@ void Center::requestGetFriendList() {
 
 void Center::requestGetGroupList() {
 
+}
+
+void Center::handleGetUserInfoReply(const QJsonObject &json_obj) {
+    int code = json_obj.value("code").toInt();
+    QJsonObject content;
+    if(code != 0) {
+        return;
+    }
+    if(json_obj.value("content").isObject())
+        content = json_obj.value("content").toObject();
+    user_.account = content.value("account").toString();
+    user_.email = content.value("email").toString();
+    user_.nickname = content.value("nickname").toString();
+    user_.head_image_url = content.value("head_image_url").toString();
+    user_.name = content.value("name").toString();
+    user_.phone_number = content.value("phone_number").toString();
+    user_.address = content.value("address").toString();
+    user_.creation_time = content.value("creation_time").toString();
+    user_.network_state = content.value("network_state").toString();
+    user_.ocupation = content.value("occupation").toString();
+    main_page_->setUserInfo(user_);
+    //qDebug() << "email" << user_.creation_time ;//json_obj;
 }

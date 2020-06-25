@@ -15,25 +15,7 @@
 #include "ltalk.h"
 #include "login_page.h"
 #include "main_page.h"
-
-struct UserInfo {
-    QString account;
-    QString uid;
-    QString name;
-    QString head_image_url;
-    QString email;
-    QString ocupation;
-    QString grade;
-};
-
-struct GroupInfo {
-    QString account;
-    QString gid;
-    QString name;
-    QString head_image_url;
-};
-
-
+#include "util.h"
 class Center : public QObject
 {
     Q_OBJECT
@@ -51,19 +33,18 @@ public:
     void requestGetUserInfo();
     void requestGetFriendList();
     void requestGetGroupList();
+    void handleGetUserInfoReply(const QJsonObject &json_obj);
 private slots:
     void dealWithLocalCmd(size_t cmd);
-
 
 private:
     LoginPage *login_page_;
     MainPage *main_page_;
     QNetworkAccessManager *network_access_mannager;
-    QString token_;
     UserInfo user_;
     QVector<UserInfo> friend_list_;
     QVector<GroupInfo> group_list_;
-    QString getTime();
+    QByteArray recved_data_;
 };
 
 #endif // CENTER_H

@@ -81,6 +81,7 @@ bool Database::MysqlQuery::Select(const std::string &table_name, const std::stri
     if(condition != "none")
         sql += " WHERE " + condition;
     sql += " ;";
+    //std::cout << "sql: " << sql << '\n';
     if(mysql_real_query(mysql_, sql.data(), sql.size())) {
         std::cout << "mysql_real_query : " << mysql_error(mysql_) << std::endl;
         return false;
@@ -145,10 +146,14 @@ bool Database::MysqlQuery::Next() {
     return result;
 }
 
-char* Database::MysqlQuery::Value(int index) {
+const char* Database::MysqlQuery::Value(int index) {
     if((number_of_fields_ < index + 1 ) && !row_) {
-        //std::cout << "out_of_range: " << index << " / " << number_of_fields_ << std::endl;
+        std::cout << "out_of_range: " << index << " / " << number_of_fields_ << std::endl;
+        throw out_of_range();
         return nullptr;
+    }
+    if(!row_[index]) {
+        return "none";
     }
     return row_[index];
 }

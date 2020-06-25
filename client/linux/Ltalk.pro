@@ -25,7 +25,8 @@ SOURCES += \
     src/center.cpp \
     src/main.cpp \
     src/tray_icon.cpp \
-    src/user_list_item.cpp
+    src/user_list_item.cpp \
+    src/util.cpp
 
 HEADERS += \
     src/floating_settings_window.h \
@@ -35,7 +36,8 @@ HEADERS += \
     src/center.h \ \
     src/ltalk.h \
     src/tray_icon.h \
-    src/user_list_item.h
+    src/user_list_item.h \
+    src/util.h
 
 FORMS += \
     src/form/floating_settings_window.ui \
