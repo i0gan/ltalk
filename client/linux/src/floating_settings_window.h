@@ -18,7 +18,7 @@ public:
     void init();
     void setParentPos(QPoint pos);
 signals:
-    void localCmd(size_t cmd);
+    void localCmd(LocalCmd cmd);
 private:
     Ui::FloatingSettingsWindow *ui;
 
@@ -26,6 +26,7 @@ protected:
     bool event(QEvent *event);
 private slots:
     void on_pushButton_exit_clicked();
+    void on_pushButton_changeTheme_clicked();
 };
 
 #endif // FLOATING_SETTINGS_WINDOW_H

@@ -7,12 +7,11 @@
 #define SERVER_REQUEST_URL "http://192.168.100.8"
 #define SERVER_BASE_URL_VALUE "/?platform=linux"
 
+#define DATA_PATH "Documents/Ltalk"
 
-// Local cmd
-#define LOCAL_CMD_EXIT           0x00
-#define LOCAL_CMD_SHOW_MAIN_PAGE 0x01
-#define LOCAL_CMD_HIDE_MAIN_PAGE 0x02
-#define LOCAL_CMD_LOG_OUT        0x100
+
+
+
 struct UserInfo {
     QString uid;
     QString token;
@@ -35,5 +34,16 @@ struct GroupInfo {
     QString name;
     QString head_image_url;
 };
+
+// Local cmd
+enum class LocalCmd {
+    EXIT,
+    SHOW_MAIN_PAGE,
+    SHOW_CHANGE_THEME_PAGE,
+    HIDE_MAIN_PAGE,
+    LOG_OUT
+};
+
+
 
 #endif // LTALK_H

@@ -32,11 +32,13 @@ public:
     ~MainPage();
     void init();
     void setUserInfo(const UserInfo &user_info);
+    void setTheme(QString theme);
 signals:
-    void localCmd(size_t cmd);
+    void localCmd(LocalCmd cmd);
 
 private:
     Ui::MainPage *ui;
+    QString account_;
     bool pressed_;
     QPoint mouse_pos_;
     FloatingSettingsWindow *floating_settings_window_;
@@ -58,7 +60,7 @@ private slots:
     void on_pushButton_friends_clicked();
     void on_pushButton_messages_clicked();
     void on_pushButton_settings_clicked();
-    void dealWithLocalCmd(size_t cmd);
+    void dealWithLocalCmd(LocalCmd cmd);
 };
 
 #endif // MAIN_PAGE_H

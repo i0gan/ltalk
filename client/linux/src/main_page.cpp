@@ -86,21 +86,14 @@ void MainPage::on_pushButton_settings_clicked()
     floating_settings_window_->show();
 }
 
-void MainPage::dealWithLocalCmd(size_t cmd) {
-    switch (cmd) {
-    case LOCAL_CMD_EXIT: {
-        localCmd(LOCAL_CMD_EXIT);
-    } break;
-    case LOCAL_CMD_SHOW_MAIN_PAGE: {
-        show();
-    } break;
-
-    }
+void MainPage::dealWithLocalCmd(LocalCmd cmd) {
+    emit localCmd(cmd);
 }
 
 void MainPage::setUserInfo(const UserInfo &user_info) {
     ui->label_email->setText(user_info.email);
     ui->label_nickname->setText(user_info.nickname);
+    account_ = user_info.account;
     requestGetHeadImage(user_info.uid, user_info.token, user_info.head_image_url);
 }
 
@@ -120,11 +113,29 @@ void MainPage::requestGetHeadImage(QString uid, QString token, QString head_imag
 }
 
 void MainPage::requestGetHeadImageReply(QNetworkReply *reply) {
-    qDebug() << "recv: ";
+    QDir dir;
+    QString user_images_dir = dir.homePath() + '/' +  DATA_PATH + ('/' + account_) + "/images";
+    QString head_image_path = user_images_dir + "/head_image";
+    if(!dir.exists(user_images_dir))
+        dir.mkpath(user_images_dir);
+
+    qDebug() << "recv: " << user_images_dir << "  " << dir.absolutePath();
     QFile head_image_file;
-    head_image_file.setFileName("./test.png");
+    head_image_file.setFileName(head_image_path);
     head_image_file.open(QIODevice::WriteOnly);
     head_image_file.write(reply->readAll());
     head_image_file.close();
+
+    // 设置头像
+    QString style = "QLabel{ border-image:";
+    style += QString("url(%1); border-radius:30px;} QLabel:hover{ border:4px;}").arg(head_image_path);
+    ui->label_headImage->setStyleSheet(style);
 }
 
+void MainPage::setTheme(QString theme) {
+    if(theme == "default") {
+        ui->label_frame->setStyleSheet("QLabel{ border-image : url(':/ui/themes/default/main_page.png')}");
+    }else if(theme == "love") {
+        ui->label_frame->setStyleSheet("QLabel{ border-image : url(':/ui/themes/love/main_page.png')}");
+    }
+}

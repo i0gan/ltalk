@@ -23,7 +23,7 @@
     </rect>
    </property>
    <property name="text">
-    <string>Login</string>
+    <string>登录</string>
    </property>
   </widget>
   <widget class="QLineEdit" name="lineEdit_account">
@@ -208,6 +208,27 @@ QToolButton:hover{
     <string/>
    </property>
   </widget>
+  <widget class="QToolButton" name="toolButton_changeTheme">
+   <property name="geometry">
+    <rect>
+     <x>50</x>
+     <y>350</y>
+     <width>30</width>
+     <height>30</height>
+    </rect>
+   </property>
+   <property name="styleSheet">
+    <string notr="true">QToolButton{
+	border-image: url(':/ui/theme.png')
+}
+QToolButton:hover{
+   border:2px solid;
+}</string>
+   </property>
+   <property name="text">
+    <string/>
+   </property>
+  </widget>
   <zorder>label_frame</zorder>
   <zorder>label_title</zorder>
   <zorder>lineEdit_account</zorder>
@@ -218,6 +239,7 @@ QToolButton:hover{
   <zorder>label_register</zorder>
   <zorder>label_forgot</zorder>
   <zorder>label_process_text</zorder>
+  <zorder>toolButton_changeTheme</zorder>
  </widget>
  <resources/>
  <connections/>

@@ -22,7 +22,7 @@ private:
     QAction action_2_;
     QAction action_3_;
 signals:
-    void localCmd(size_t cmd);
+    void localCmd(LocalCmd cmd);
 private slots:
     void clickAction_1();
     void clickAction_2();

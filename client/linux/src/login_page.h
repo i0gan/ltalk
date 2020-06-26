@@ -27,9 +27,11 @@ public:
     void dealWithFailed(int code);
     void dealWithSuccess();
     void dealWithRecv(QJsonObject &json_obj);
+    void setTheme(QString theme);
 signals:
     void login(QString account, QString password);
     void logined(QString account, QString uid, QString token);
+    void localCmd(LocalCmd cmd);
 private:
     Ui::LoginPage *ui;
     QPoint mouse_pos_;
@@ -40,6 +42,7 @@ private slots:
     void on_pushButton_login_clicked();
     void on_toolButton_close_clicked();
     void on_toolButton_min_clicked();
+    void on_toolButton_changeTheme_clicked();
 
 protected:
     void mouseMoveEvent(QMouseEvent *event) override;

@@ -13,7 +13,7 @@
   <property name="windowTitle">
    <string>Form</string>
   </property>
-  <widget class="QLabel" name="labelFrame">
+  <widget class="QLabel" name="label_frame">
    <property name="geometry">
     <rect>
      <x>0</x>
@@ -23,7 +23,9 @@
     </rect>
    </property>
    <property name="styleSheet">
-    <string notr="true">border-image: url(':/ui/themes/default/main_page.png')</string>
+    <string notr="true">QLabel {
+border-image: url(':/ui/themes/default/main_page.png');
+}</string>
    </property>
    <property name="text">
     <string/>

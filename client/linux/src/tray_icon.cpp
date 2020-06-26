@@ -27,13 +27,13 @@ void TrayIcon::init() {
 }
 
 void TrayIcon::clickAction_1() {
-    emit localCmd(LOCAL_CMD_SHOW_MAIN_PAGE);
+    emit localCmd(LocalCmd::SHOW_MAIN_PAGE);
 }
 void TrayIcon::clickAction_2() {
-    emit localCmd(LOCAL_CMD_LOG_OUT);
+    emit localCmd(LocalCmd::LOG_OUT);
 }
 void TrayIcon::clickAction_3() {
-    emit localCmd(LOCAL_CMD_EXIT);
+    emit localCmd(LocalCmd::EXIT);
 }
 
 
@@ -42,7 +42,7 @@ void TrayIcon::dealWithTrayIconActivated(QSystemTrayIcon::ActivationReason reaso
     case QSystemTrayIcon::DoubleClick:
         break;
     case QSystemTrayIcon::Trigger: {
-        emit localCmd(LOCAL_CMD_SHOW_MAIN_PAGE);
+        emit localCmd(LocalCmd::SHOW_MAIN_PAGE);
     } break;
     case QSystemTrayIcon::MiddleClick: {
 

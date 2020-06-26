@@ -33,5 +33,9 @@ bool FloatingSettingsWindow::event(QEvent *event) {
 }
 
 void FloatingSettingsWindow::on_pushButton_exit_clicked() {
-    localCmd(LOCAL_CMD_EXIT);
+    emit localCmd(LocalCmd::EXIT);
+}
+
+void FloatingSettingsWindow::on_pushButton_changeTheme_clicked() {
+    emit localCmd(LocalCmd::SHOW_CHANGE_THEME_PAGE);
 }

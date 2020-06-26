@@ -23,5 +23,8 @@
         <file>ui/search.png</file>
         <file>ui/settings.png</file>
         <file>ui/signin-group.png</file>
+        <file>ui/themes/default.jpg</file>
+        <file>ui/themes/love.jpg</file>
+        <file>ui/theme.png</file>
     </qresource>
 </RCC>

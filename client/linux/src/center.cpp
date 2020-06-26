@@ -14,9 +14,16 @@ void Center::init() {
     login_page_->init();
     connect(login_page_, &LoginPage::login, this, &Center::requestLogin);
     connect(login_page_, &LoginPage::logined, this, &Center::dealWithLogined);
+    connect(login_page_, &LoginPage::localCmd, this, &Center::dealWithLocalCmd);
     network_access_mannager = new QNetworkAccessManager(this);
     connect(network_access_mannager, &QNetworkAccessManager::finished, this, &Center::requestReply);
     connect(main_page_, &MainPage::localCmd, this, &Center::dealWithLocalCmd);
+    change_theme_page_ = new ChangeThemePage();
+    change_theme_page_->init();
+    connect(change_theme_page_, &ChangeThemePage::changed, this, &Center::changeTheme);
+
+    theme_ = "love";
+    changeTheme(theme_);
 }
 
 void Center::start() {
@@ -102,20 +109,24 @@ void Center::dealWithLogined(QString account, QString uid, QString token) {
     login_page_->close();
     main_page_->init();
     main_page_->show();
-
+    generateUserPath(); //目录生成
     requestGetUserInfo();
 }
 
-
-void Center::dealWithLocalCmd(size_t cmd) {
-    qDebug() << "sss";
+void Center::dealWithLocalCmd(LocalCmd cmd) {
     switch (cmd) {
-    case LOCAL_CMD_EXIT: {
+    case LocalCmd::EXIT: {
         this->exit();
     } break;
-    case LOCAL_CMD_LOG_OUT: {
+    case LocalCmd::LOG_OUT: {
 
     } break;
+    case LocalCmd::SHOW_CHANGE_THEME_PAGE: {
+        change_theme_page_->show();
+    } break;
+    case LocalCmd::SHOW_MAIN_PAGE: {
+        main_page_->show();
+    }
     default: {
 
     } break;
@@ -127,6 +138,7 @@ void Center::exit() {
     main_page_->close();
     delete  main_page_;
     delete  login_page_;
+    delete  change_theme_page_;
 }
 
 void Center::keepConnect() {
@@ -174,4 +186,19 @@ void Center::handleGetUserInfoReply(const QJsonObject &json_obj) {
     user_.ocupation = content.value("occupation").toString();
     main_page_->setUserInfo(user_);
     //qDebug() << "email" << user_.creation_time ;//json_obj;
+}
+
+void Center::generateUserPath() {
+    QString user_path =DATA_PATH + ('/' + user_.account);
+    QDir dir;
+    dir.cd(dir.homePath());
+    if(!dir.exists(user_path)) {
+        dir.mkpath(user_path);
+    }
+}
+
+void Center::changeTheme(QString theme) {
+    change_theme_page_->setTheme(theme);
+    login_page_->setTheme(theme);
+    main_page_->setTheme(theme);
 }

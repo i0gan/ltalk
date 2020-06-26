@@ -61,7 +61,7 @@ void LoginPage::on_pushButton_login_clicked()
 }
 
 void LoginPage::on_toolButton_close_clicked() {
-    close();
+    emit localCmd(LocalCmd::EXIT);
 }
 
 void LoginPage::on_toolButton_min_clicked() {
@@ -112,5 +112,17 @@ void LoginPage::dealWithRecv(QJsonObject &json_obj) {
         emit logined(account_, uid, token);
     }else {
         dealWithFailed(code);
+    }
+}
+
+void LoginPage::on_toolButton_changeTheme_clicked() {
+    localCmd(LocalCmd::SHOW_CHANGE_THEME_PAGE);
+}
+
+void LoginPage::setTheme(QString theme) {
+    if(theme == "default") {
+        ui->label_frame->setStyleSheet("QLabel{ border-image : url(':/ui/themes/default/dialog_page.png')}");
+    }else if(theme == "love") {
+        ui->label_frame->setStyleSheet("QLabel{ border-image : url(':/ui/themes/love/dialog_page.png')}");
     }
 }

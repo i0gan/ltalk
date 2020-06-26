@@ -11,11 +11,14 @@
 #include <QJsonObject>
 #include <QFile>
 #include <QDateTime>
+#include <QDir>
 
 #include "ltalk.h"
 #include "login_page.h"
 #include "main_page.h"
 #include "util.h"
+#include "change_theme_page.h"
+
 class Center : public QObject
 {
     Q_OBJECT
@@ -34,12 +37,17 @@ public:
     void requestGetFriendList();
     void requestGetGroupList();
     void handleGetUserInfoReply(const QJsonObject &json_obj);
+    void generateUserPath();
+
 private slots:
-    void dealWithLocalCmd(size_t cmd);
+    void dealWithLocalCmd(LocalCmd cmd);
+    void changeTheme(QString theme);
 
 private:
+    QString theme_;
     LoginPage *login_page_;
     MainPage *main_page_;
+    ChangeThemePage *change_theme_page_;
     QNetworkAccessManager *network_access_mannager;
     UserInfo user_;
     QVector<UserInfo> friend_list_;
