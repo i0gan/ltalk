@@ -10,6 +10,7 @@ int main(int argc, char *argv[]) {
     //app.setApplicationDisplayName("Ltalk");
     Center center;
     center.init();
+    center.changeTheme("default");
     center.start();
     return app.exec();
 }

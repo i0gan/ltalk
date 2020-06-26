@@ -17,6 +17,8 @@ DEFINES += QT_DEPRECATED_WARNINGS
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
 SOURCES += \
+    src/profile_page.cpp \
+    src/about_page.cpp \
     src/change_theme_page.cpp \
     src/floating_settings_window.cpp \
     src/group_list_item.cpp \
@@ -30,6 +32,8 @@ SOURCES += \
     src/util.cpp
 
 HEADERS += \
+    src/profile_page.h \
+    src/about_page.h \
     src/change_theme_page.h \
     src/floating_settings_window.h \
     src/group_list_item.h \
@@ -42,6 +46,8 @@ HEADERS += \
     src/util.h
 
 FORMS += \
+    src/form/profile_page.ui \
+    src/form/about_page.ui \
     src/form/change_theme_page.ui \
     src/form/floating_settings_window.ui \
     src/form/main_page.ui \

@@ -61,7 +61,7 @@ void LoginPage::on_pushButton_login_clicked()
 }
 
 void LoginPage::on_toolButton_close_clicked() {
-    emit localCmd(LocalCmd::EXIT);
+    emit localCmd(LocalCmd::exit);
 }
 
 void LoginPage::on_toolButton_min_clicked() {
@@ -116,7 +116,7 @@ void LoginPage::dealWithRecv(QJsonObject &json_obj) {
 }
 
 void LoginPage::on_toolButton_changeTheme_clicked() {
-    localCmd(LocalCmd::SHOW_CHANGE_THEME_PAGE);
+    localCmd(LocalCmd::showChnageThemePage);
 }
 
 void LoginPage::setTheme(QString theme) {

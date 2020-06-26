@@ -12,12 +12,13 @@
 #include <QFile>
 #include <QDateTime>
 #include <QDir>
-
 #include "ltalk.h"
 #include "login_page.h"
 #include "main_page.h"
 #include "util.h"
 #include "change_theme_page.h"
+#include "about_page.h"
+#include "profile_page.h"
 
 class Center : public QObject
 {
@@ -27,7 +28,6 @@ public:
     ~Center();
     void init();
     void start();
-
     void requestLogin(QString account, QString password);
     void requestReply(QNetworkReply *reply);
     void dealWithLogined(QString account, QString uid, QString token);
@@ -38,16 +38,18 @@ public:
     void requestGetGroupList();
     void handleGetUserInfoReply(const QJsonObject &json_obj);
     void generateUserPath();
+    void changeTheme(QString theme);
 
 private slots:
     void dealWithLocalCmd(LocalCmd cmd);
-    void changeTheme(QString theme);
 
 private:
     QString theme_;
     LoginPage *login_page_;
     MainPage *main_page_;
     ChangeThemePage *change_theme_page_;
+    AboutPage *about_page_;
+    ProfilePage *profile_page_;
     QNetworkAccessManager *network_access_mannager;
     UserInfo user_;
     QVector<UserInfo> friend_list_;

@@ -27,6 +27,7 @@ protected:
 private slots:
     void on_pushButton_exit_clicked();
     void on_pushButton_changeTheme_clicked();
+    void on_pushButton_about_clicked();
 };
 
 #endif // FLOATING_SETTINGS_WINDOW_H

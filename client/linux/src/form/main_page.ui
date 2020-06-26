@@ -24,7 +24,7 @@
    </property>
    <property name="styleSheet">
     <string notr="true">QLabel {
-border-image: url(':/ui/themes/default/main_page.png');
+	border-image: url(':/ui/themes/default/main_page.png');
 }</string>
    </property>
    <property name="text">
@@ -68,7 +68,7 @@ border-image: url(':/ui/themes/default/main_page.png');
 }</string>
      </property>
      <property name="currentIndex">
-      <number>3</number>
+      <number>0</number>
      </property>
      <widget class="QWidget" name="page_messageList">
       <property name="styleSheet">
@@ -479,9 +479,11 @@ border-radius: 3px;
        <height>60</height>
       </rect>
      </property>
+     <property name="whatsThis">
+      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;进入个人页面&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+     </property>
      <property name="styleSheet">
       <string notr="true">QLabel{
- border-image: url(':/ui/ui/group.png');
  background: rgb(0, 255, 255);
 }
 QLabel:hover{
@@ -689,7 +691,7 @@ QPushButton:hover{
      <string/>
     </property>
    </widget>
-   <widget class="QPushButton" name="pushButton_signinGroup">
+   <widget class="QPushButton" name="pushButton_changeTheme">
     <property name="geometry">
      <rect>
       <x>130</x>
@@ -700,7 +702,7 @@ QPushButton:hover{
     </property>
     <property name="styleSheet">
      <string notr="true">QPushButton{
- border-image: url(':/ui/signin-group.png');
+ border-image: url(':/ui/theme.png');
 }
 QPushButton:hover{
  	border:2px solid;

@@ -13,6 +13,8 @@
 #include <QPicture>
 #include <QFile>
 #include <QDir>
+#include <QEvent>
+#include <QUrl>
 
 #include "floating_settings_window.h"
 #include "tray_icon.h"
@@ -26,7 +28,12 @@ class MainPage;
 class MainPage : public QWidget
 {
     Q_OBJECT
-
+    enum class GetWhat{
+        none,
+        myHeadImage,
+        friendHeadImage,
+        groupHeadImage,
+    };
 public:
     explicit MainPage(QWidget *parent = nullptr);
     ~MainPage();
@@ -41,18 +48,23 @@ private:
     QString account_;
     bool pressed_;
     QPoint mouse_pos_;
+
     FloatingSettingsWindow *floating_settings_window_;
     bool opened_floating_settings_window_;
     TrayIcon *tray_icon_;
     bool opened_tray_icon_;
-    void requestGetHeadImage(QString uid, QString token, QString head_image_url);
-    void requestGetHeadImageReply(QNetworkReply *reply);
-    QNetworkAccessManager *network_get_head_image;
+    QNetworkAccessManager *net_mannager_;
+    GetWhat get_what_;
+    QString save_file_path_;
+    void requestGetFile(QString url, GetWhat what, QString save_file_path,  bool private_file = false);
+    void requestGetFileReply(QNetworkReply *reply);
+    UserInfo user_info_;
 
 protected:
     void mouseMoveEvent(QMouseEvent *event) override;
     void mousePressEvent(QMouseEvent *event) override;
     void mouseReleaseEvent(QMouseEvent *) override;
+    bool eventFilter(QObject *object, QEvent *e) override;
 private slots:
     void on_toolButton_min_clicked();
     void on_toolButton_close_clicked();
@@ -61,6 +73,7 @@ private slots:
     void on_pushButton_messages_clicked();
     void on_pushButton_settings_clicked();
     void dealWithLocalCmd(LocalCmd cmd);
+    void on_pushButton_changeTheme_clicked();
 };
 
 #endif // MAIN_PAGE_H

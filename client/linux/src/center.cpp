@@ -22,8 +22,11 @@ void Center::init() {
     change_theme_page_->init();
     connect(change_theme_page_, &ChangeThemePage::changed, this, &Center::changeTheme);
 
-    theme_ = "love";
-    changeTheme(theme_);
+    about_page_ = new AboutPage();
+    about_page_->init();
+
+    profile_page_ = new ProfilePage();
+    profile_page_->init();
 }
 
 void Center::start() {
@@ -95,7 +98,7 @@ void Center::requestReply(QNetworkReply *reply) {
             handleGetUserInfoReply(json_object);
             break;
         }else {
-             qDebug() << "收到数据出错";
+            qDebug() << "收到数据出错";
             break;
         }
     } while(false);
@@ -115,18 +118,26 @@ void Center::dealWithLogined(QString account, QString uid, QString token) {
 
 void Center::dealWithLocalCmd(LocalCmd cmd) {
     switch (cmd) {
-    case LocalCmd::EXIT: {
+    case LocalCmd::exit: {
         this->exit();
     } break;
-    case LocalCmd::LOG_OUT: {
+    case LocalCmd::logout: {
 
     } break;
-    case LocalCmd::SHOW_CHANGE_THEME_PAGE: {
+    case LocalCmd::showChnageThemePage: {
         change_theme_page_->show();
     } break;
-    case LocalCmd::SHOW_MAIN_PAGE: {
+    case LocalCmd::showMainPage: {
+        main_page_->showNormal();
         main_page_->show();
-    }
+    } break;
+    case LocalCmd::showAboutPage: {
+        about_page_->show();
+    } break;
+    case LocalCmd::ShowProfilePage : {
+        profile_page_->showNormal();
+        profile_page_->show();
+    } break;
     default: {
 
     } break;
@@ -136,9 +147,14 @@ void Center::dealWithLocalCmd(LocalCmd cmd) {
 void Center::exit() {
     login_page_->close();
     main_page_->close();
-    delete  main_page_;
-    delete  login_page_;
-    delete  change_theme_page_;
+    change_theme_page_->close();
+    about_page_->close();
+    profile_page_->close();
+    delete main_page_;
+    delete login_page_;
+    delete change_theme_page_;
+    delete about_page_;
+    delete profile_page_;
 }
 
 void Center::keepConnect() {
@@ -198,7 +214,10 @@ void Center::generateUserPath() {
 }
 
 void Center::changeTheme(QString theme) {
+    theme_ = theme;
     change_theme_page_->setTheme(theme);
     login_page_->setTheme(theme);
     main_page_->setTheme(theme);
+    profile_page_->setTheme(theme);
+    about_page_->setTheme(theme);
 }

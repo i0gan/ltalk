@@ -37,11 +37,12 @@ struct GroupInfo {
 
 // Local cmd
 enum class LocalCmd {
-    EXIT,
-    SHOW_MAIN_PAGE,
-    SHOW_CHANGE_THEME_PAGE,
-    HIDE_MAIN_PAGE,
-    LOG_OUT
+    exit,
+    showMainPage,
+    showChnageThemePage,
+    showAboutPage,
+    ShowProfilePage,
+    logout
 };
 
 
