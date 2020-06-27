@@ -38,7 +38,6 @@ void Center::start() {
     login_page_->show();
 }
 
-
 void Center::requestLogin(QString account, QString password) {
     //qDebug() << "requstlogin : " << account << " " << password;
     keep_connect_request_.setRawHeader("Origin", "http://lyxf.xyz");
@@ -214,13 +213,18 @@ void Center::handleGetUserInfoReply(const QJsonObject &json_obj) {
     user_.account = content.value("account").toString();
     user_.email = content.value("email").toString();
     user_.nickname = content.value("nickname").toString();
-    user_.head_image_url = content.value("head_image_url").toString();
     user_.name = content.value("name").toString();
     user_.phone_number = content.value("phone_number").toString();
     user_.address = content.value("address").toString();
-    user_.creation_time = content.value("creation_time").toString();
-    user_.network_state = content.value("network_state").toString();
+    user_.creation_time = content.value("created_time").toString();
     user_.ocupation = content.value("occupation").toString();
+    user_.network_state = content.value("network_state").toString();
+    user_.last_login = content.value("last_login").toString();
+    user_.head_image = content.value("head_image").toString();
+    user_.profile_image_1 = content.value("profile_image_1").toString();
+    user_.profile_image_2 = content.value("profile_image_2").toString();
+    user_.profile_image_3 = content.value("profile_image_3").toString();
+    user_.profile_image_4 = content.value("profile_image_4").toString();
     // 设置信息
     main_page_->setUserInfo(user_);
     profile_page_->setUserInfo(user_);

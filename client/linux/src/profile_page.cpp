@@ -85,6 +85,7 @@ void ProfilePage::modifyImage(ImageType image) {
         is_modifying_image_ = false;
 
 }
+
 void ProfilePage::on_toolButton_min_clicked() {
     showMinimized();
 }
@@ -107,12 +108,27 @@ void ProfilePage::dealWithCroped(QString saved_file_name) {
     }else if(crop_image_type_ == ImageType::profileImage_4) {
         ui->label_profile_image_4->setStyleSheet(style);
     }
-
-    uploadImage(crop_image_type_);
+    uploadImage(crop_image_type_, saved_file_name);
 }
 
-void ProfilePage::uploadImage(ImageType image) {
-
+void ProfilePage::uploadImage(ImageType image, QString saved_file_name) {
+    QByteArray image_data;
+    QFile image_file;
+    image_file.setFileName(saved_file_name);
+    image_file.open(QIODevice::ReadOnly);
+    image_data = image_file.readAll();
+    qDebug() << "post image data";
+    request_.setRawHeader("Origin", "http://ltalk.co");
+    request_.setRawHeader("Accept", "*/*");
+    request_.setRawHeader("Content-Type", "obj");
+    request_.setRawHeader("Accept", "application/json");
+    request_.setRawHeader("Date", Util::getTime().toUtf8().data());
+    QString request_url = SERVER_REQUEST_URL;
+    request_url += "/?request=upload_profile_image&platform=linux&name=head_image&account=";
+    request_url += user_info_.account + "&uid=" + user_info_.uid + "&token=";
+    request_url += user_info_.token;
+    request_.setUrl(request_url);
+    network_mannager_->post(request_, image_data);
     is_modifying_image_ = false;
 }
 

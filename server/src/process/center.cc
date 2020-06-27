@@ -119,20 +119,23 @@ void Process::Center::HandleGet() {
 }
 
 void Process::Center::HandlePost() {
-    do {
-        if(request_ == "register" && platform_ == "web") {
+    RequestType request_type = Request::toEnum(request_);
+    //std::cout << "post: " << request_ << '\n';
+    switch (request_type) {
+    case RequestType::register_: {
+        if(platform_ == "web")
             DealWithRegisterUser();
-        }else if(request_ == "login" && !platform_.empty()) {
-            DealWithLogin();
-        }else if(request_ == "upload_profile_image" && !platform_.empty()) {
-            DealWithUploadProfileImage();
-        }
-        else {
-            Response(ResponseCode::NO_ACCESS);
-            return;
-        }
-    } while(false);
-
+    } break;
+    case RequestType::login: {
+        DealWithLogin();
+    } break;
+    case RequestType::upload_profile_image: {
+        DealWithUploadProfileImage();
+    } break;
+    default: {
+        Response(ResponseCode::NO_ACCESS);
+    } break;
+    }
 }
 
 bool Process::Center::ParseUrl() {
@@ -376,7 +379,7 @@ void Process::Center::DealWithRegisterUser() {
     std::string encode_password = Crypto::MD5(json_password).toString();
 
     // Insert into database
-    std::string key_sql = "uid, account, email, name, phone_number, address, occupation, password";
+    std::string key_sql = "uid, account, email, name, phone_number, address, occupation, created_time, password";
     std::string value_sql = '\'' + uid + "',"; // set uid
     value_sql += '\'' + json_email + "',";     // init account as email
     value_sql += '\'' + json_email + "',";
@@ -384,6 +387,7 @@ void Process::Center::DealWithRegisterUser() {
     value_sql += '\'' + json_phone_number + "',";
     value_sql += '\'' + json_address + "',";
     value_sql += '\'' + json_occupation + "',";
+    value_sql += '\'' + GetDateTime() + "',";
     value_sql += '\'' + encode_password + "'";
     if (!sql_query.Insert("user_", key_sql, value_sql)) {
         Response(ResponseCode::FAILURE);
@@ -506,7 +510,7 @@ void Process::Center::DealWithLogin() {
         Response(ResponseCode::FAILURE);
         return;
     }
-
+    sql_query.Update("user_", "last_login, ok", "'a', 'b'", "uid='" + db_uid + '\'');
     Json send_json = {
         { "server", SERVER_NAME },
         { "code", ResponseCode::SUCCESS },
@@ -557,7 +561,7 @@ bool Process::Center::UpdateUserInfo(const std::string &uid, const std::string &
     user.android_fd = -1;
     user.web_fd = -1;
     user.uid = uid;
-    std::cout << "update uid[" << uid << "]\n";
+    //std::cout << "update uid[" << uid << "]\n";
     if(Data::map_user.find(uid) != Data::map_user.end()) {
         user = Data::map_user[uid];
     }
@@ -604,34 +608,34 @@ void Process::Center::DealWithGetUserInfo() {
     Database::MysqlQuery query;
     Database::MysqlQuery::Escape(account);
     query.Select("user_",
-                 "account, email, nickname, head_image_url, name, phone_number, address, occupation, creation_time, network_state",
-                 "uid = '" + uid + '\'');
+                 "account, email, nickname, name, phone_number, address, occupation, created_time, "
+                 "network_state, last_login, head_image, profile_image_1, profile_image_2, profile_image_3, "
+                 "profile_image_4"
+                 ,"uid = '" + uid + '\'');
     if(!query.Next()) {
         Response(ResponseCode::FAILURE);
         return;
     }
+    std::string db_account, db_email, db_nickname, db_name, db_phone_number
+            , db_address, db_occupation, db_created_time, db_network_state, db_last_login,
+            db_head_image, db_profile_image_1, db_profile_image_2, db_profile_image_3, db_profile_image_4;
 
-    std::string db_account;
-    std::string db_email;
-    std::string db_nickname;
-    std::string db_head_image_url;
-    std::string db_name;
-    std::string db_phone_number;
-    std::string db_address;
-    std::string db_occupation;
-    std::string db_creation_time;
-    std::string db_network_state;
     try {
         db_account = query.Value(0);
         db_email = query.Value(1);
         db_nickname = query.Value(2);
-        db_head_image_url = query.Value(3);
-        db_name = query.Value(4);
-        db_phone_number = query.Value(5);
-        db_address = query.Value(6);
-        db_occupation = query.Value(7);
-        db_creation_time = query.Value(8);
-        db_network_state = query.Value(9);
+        db_name = query.Value(3);
+        db_phone_number = query.Value(4);
+        db_address = query.Value(5);
+        db_occupation = query.Value(6);
+        db_created_time = query.Value(7);
+        db_network_state = query.Value(8);
+        db_last_login = query.Value(9);
+        db_head_image = query.Value(10);
+        db_profile_image_1 = query.Value(11);
+        db_profile_image_2 = query.Value(12);
+        db_profile_image_3 = query.Value(13);
+        db_profile_image_4 = query.Value(14);
     }  catch (Database::out_of_range e) {
         std::cout << e.what();
         Response(ResponseCode::FAILURE);
@@ -644,19 +648,24 @@ void Process::Center::DealWithGetUserInfo() {
         { "request", request_},
         { "datetime" , GetDateTime() },
         { "platform", platform_ },
-        {"content-type", "user_info"},
-        {"content", {
-             {"account", db_account},
-             {"email", db_email},
-             {"nickname", db_nickname},
-             {"head_image_url", db_head_image_url},
-             {"name", db_name},
-             {"phone_number", db_phone_number},
-             {"address", db_address},
-             {"occupation", db_occupation},
-             {"creation_time", db_creation_time},
-             {"network_state", db_network_state}
-         }}
+        { "content-type", "user_info"},
+        { "content", {
+              {"account", db_account},
+              {"email", db_email},
+              {"nickname", db_nickname},
+              {"name", db_name},
+              {"phone_number", db_phone_number},
+              {"address", db_address},
+              {"occupation", db_occupation},
+              {"created_time", db_created_time},
+              {"network_state", db_network_state},
+              {"last_login", db_last_login},
+              {"head_image", db_head_image},
+              {"profile_image_1", db_profile_image_1},
+              {"profile_image_2", db_profile_image_2},
+              {"profile_image_3", db_profile_image_3},
+              {"profile_image_4", db_profile_image_4},
+          }}
     };
     //std::cout << "[" << send_json << "]";
     SendJson(send_json);
@@ -709,12 +718,13 @@ void Process::Center::DealWithGetGetChatFile() {
 }
 
 void Process::Center::DealWithUploadProfileImage() {
-    std::string type;
+    std::cout << "upload_profile_image\n";
+    std::string name;
     std::string account;
     std::string uid;
     std::string token;
     try {
-        type = map_url_value_info_.at("type");
+        name = map_url_value_info_.at("name");
         account = map_url_value_info_.at("account");
         uid = map_url_value_info_.at("uid");
         token = map_url_value_info_.at("token");
@@ -728,23 +738,32 @@ void Process::Center::DealWithUploadProfileImage() {
         return;
     }
 
-    std::string image_name;
-    if(type == "head_image")
-        image_name = "head_image";
-    else if(type == "profile_image_1")
-        image_name = "profile_image_1";
-    else if(type == "profile_image_2")
-        image_name = "profile_image_2";
-    else if(type == "profile_image_3")
-        image_name = "profile_image_3";
-    else if(type == "profile_image_4")
-        image_name = "profile_image_4";
+    std::string save_image_path = "data/user/" + uid + "/public/profile/";
+    //std::cout << "path: " << save_image_path << '\n';
+    if(name == "head_image")
+        save_image_path += "head_image";
+    else if(name == "profile_image_1")
+        save_image_path += "profile_image_1";
+    else if(name == "profile_image_2")
+        save_image_path += "profile_image_2";
+    else if(name == "profile_image_3")
+        save_image_path += "profile_image_3";
+    else if(name == "profile_image_4")
+        save_image_path = "profile_image_4";
     else {
         Response(ResponseCode::FAILURE);
         return;
     }
+    int fd = open(save_image_path.c_str(), O_CREAT | O_WRONLY | O_TRUNC, 0644);
+    if(fd == -1) {
+        Response(ResponseCode::FAILURE);
+        return;
+    }
+    write(fd, content_.data(), content_.size());
+    close(fd);
 
+    Database::MysqlQuery query;
+   // query.Update("user_", "head_image", )
 
-
-
+    Response(ResponseCode::SUCCESS);
 }

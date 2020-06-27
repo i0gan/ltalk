@@ -61,15 +61,19 @@ uid varchar(256),
 account varchar(256),
 email varchar(256),
 nickname varchar(256),
-head_image_url varchar(512),
 name varchar(256),
 phone_number varchar(256),
 address varchar(256),
 occupation varchar(256),
-creation_time  varchar(256),
-network_state varchar(256), 
-password varchar(256),
-last_login varchar(256)
+created_time  varchar(256),
+network_state varchar(256),
+last_login varchar(256),
+head_image varchar(512),
+profile_image_1 varchar(512),
+profile_image_2 varchar(512),
+profile_image_3 varchar(512),
+profile_image_4 varchar(512),
+password varchar(256)
 );
 
 create table group_(
@@ -77,11 +81,18 @@ id int primary key auto_increment,
 gid varchar(256),
 account varchar(256),
 name varchar(256),
-head_image_url varchar(512),
+head_image varchar(512),
+profile_image_1 varchar(512),
+profile_image_2 varchar(512),
+profile_image_3 varchar(512),
+profile_image_4 varchar(512),
 announcement varchar(1024),
-host_uid int,
+host_uid varchar(256),
+admin_uid_1 varchar(256),
+admin_uid_2 varchar(256),
+admin_uid_3 varchar(256),
 total int,
-creation_time varchar(256)
+created_time varchar(256)
 );
 
 create table user_friend_(
@@ -104,7 +115,7 @@ uid varchar(256),
 tid varchar(256),
 gid varchar(256),
 message varchar(1024),
-creation_time  varchar(256)
+created_time  varchar(256)
 );
 
 ```

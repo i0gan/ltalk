@@ -13,7 +13,8 @@
 #include <sys/stat.h>
 #include <unordered_map>
 #include <pthread.h>
-
+#include <unistd.h>
+#include <sys/fcntl.h>
 #include "../crypto/md5.hh"
 #include "util.hh"
 

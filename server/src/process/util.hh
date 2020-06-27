@@ -10,7 +10,8 @@ enum class Process::RequestType {
     keep_connect,
     get_user_info,
     get_public_file,
-    get_private_file
+    get_private_file,
+    upload_profile_image,
 };
 
 enum class Process::Platform {

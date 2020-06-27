@@ -20,7 +20,6 @@ Net::EventLoop *Net::EventLoopThreadPool::get_next_eventloop() {
         eventloop = v_eventloops_[next_thread_indx_];
         next_thread_indx_ = (next_thread_indx_ + 1) % (number_of_thread_);
     }
-
     return eventloop;
 }
 

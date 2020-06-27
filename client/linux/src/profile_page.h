@@ -13,6 +13,8 @@
 
 #include "ltalk.h"
 #include "image_cropper_page.h"
+#include "util.h"
+
 namespace Ui {
 class ProfilePage;
 }
@@ -48,6 +50,7 @@ private:
     bool pressed_;
     QPoint mouse_pos_;
     QNetworkAccessManager *network_mannager_;
+    QNetworkRequest request_;
     void requestGetImage(RequestStep request_step, QString url);
     void requestReply(QNetworkReply *reply);
     RequestStep request_step_;
@@ -55,7 +58,7 @@ private:
     ImageCropperPage *image_cropper_page_;
     bool is_modifying_image_;
     void modifyImage(ImageType image);
-    void uploadImage(ImageType image);
+    void uploadImage(ImageType image, QString saved_file_name);
     ImageType crop_image_type_;
 
 protected:

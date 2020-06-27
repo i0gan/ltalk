@@ -18,25 +18,26 @@ struct UserInfo {
     QString account;
     QString email;
     QString nickname;
-    QString head_image_url;
     QString name;
     QString phone_number;
     QString address;
     QString ocupation;
     QString creation_time;
     QString network_state;
+    QString last_login;
     QString grade;
-    QString profile_image_url_1;
-    QString profile_image_url_2;
-    QString profile_image_url_3;
-    QString profile_image_url_4;
+    QString head_image;
+    QString profile_image_1;
+    QString profile_image_2;
+    QString profile_image_3;
+    QString profile_image_4;
 };
 
 struct GroupInfo {
     QString account;
     QString gid;
     QString name;
-    QString head_image_url;
+    QString head_image;
 };
 
 // Local cmd
