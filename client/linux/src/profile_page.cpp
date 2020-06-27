@@ -68,7 +68,24 @@ void ProfilePage::requestReply(QNetworkReply *reply) {
 }
 
 void ProfilePage::requestGetImage(RequestStep request_step, QString url) {
+    if(url == "none") {
+        setNextRequestStep();
+        return;
+    }
+}
 
+
+void ProfilePage::setNextRequestStep() {
+    if(request_step_ == RequestStep::getHeadImage)
+        request_step_ = RequestStep::getProfileImage_1;
+    else if(request_step_ == RequestStep::getProfileImage_1)
+        request_step_ = RequestStep::getProfileImage_2;
+    else if(request_step_ == RequestStep::getProfileImage_2)
+        request_step_ = RequestStep::getProfileImage_3;
+    else if(request_step_ == RequestStep::getProfileImage_3)
+        request_step_ = RequestStep::getProfileImage_4;
+    else
+        request_step_ = RequestStep::getHeadImage;
 }
 void ProfilePage::setUserInfo(const UserInfo &user_info) {
     user_info_ = user_info;

@@ -35,7 +35,7 @@ SOURCES += \
 
 HEADERS += \
     src/cut_image.h \
-    src/message_listi_tem.h \
+    src/message_list_item.h \
     src/profile_page.h \
     src/about_page.h \
     src/change_theme_page.h \

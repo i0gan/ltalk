@@ -33,7 +33,7 @@ public:
     void init();
     void setTheme(QString theme);
     void setUserInfo(const UserInfo &user_info);
-
+    void setNextRequestStep();
 private:
     Ui::ProfilePage *ui;
     bool pressed_;
