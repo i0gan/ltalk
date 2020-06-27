@@ -17,7 +17,7 @@ DEFINES += QT_DEPRECATED_WARNINGS
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
 SOURCES += \
-    src/cut_image.cpp \
+    src/image_cropper_page.cpp \
     src/message_list_item.cpp \
     src/profile_page.cpp \
     src/about_page.cpp \
@@ -31,10 +31,11 @@ SOURCES += \
     src/main.cpp \
     src/tray_icon.cpp \
     src/user_list_item.cpp \
-    src/util.cpp
+    src/util.cpp \
+    src/third/image_cropper_label.cpp
 
 HEADERS += \
-    src/cut_image.h \
+    src/image_cropper_page.h \
     src/message_list_item.h \
     src/profile_page.h \
     src/about_page.h \
@@ -47,10 +48,11 @@ HEADERS += \
     src/ltalk.h \
     src/tray_icon.h \
     src/user_list_item.h \
-    src/util.h
+    src/util.h \
+    src/third/image_cropper_label.h
 
 FORMS += \
-    src/form/cut_image.ui \
+    src/form/image_cropper_page.ui \
     src/form/message_list_item.ui \
     src/form/profile_page.ui \
     src/form/about_page.ui \

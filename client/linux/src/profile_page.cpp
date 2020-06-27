@@ -5,13 +5,18 @@ ProfilePage::ProfilePage(QWidget *parent) :
     QWidget(parent),
     ui(new Ui::ProfilePage),
     pressed_(false),
-    request_step_(RequestStep::getHeadImage)
+    request_step_(RequestStep::getHeadImage),
+    is_modifying_image_(false),
+    crop_image_type_(ImageType::none)
 {
     ui->setupUi(this);
+    image_cropper_page_ = new ImageCropperPage();
+    network_mannager_ = new QNetworkAccessManager();
 }
 
 ProfilePage::~ProfilePage()
 {
+    delete image_cropper_page_;
     delete ui;
 }
 void ProfilePage::init() {
@@ -23,9 +28,17 @@ void ProfilePage::init() {
     move(pos);
     setWindowFlag(Qt::FramelessWindowHint);
     setAttribute(Qt::WA_TranslucentBackground);
-    network_mannager_ = new QNetworkAccessManager();
+    ui->label_headImage->installEventFilter(this);
+    ui->label_profile_image_1->installEventFilter(this);
+    ui->label_profile_image_2->installEventFilter(this);
+    ui->label_profile_image_3->installEventFilter(this);
+    ui->label_profile_image_4->installEventFilter(this);
+
+    image_cropper_page_->init();
     connect(network_mannager_, &QNetworkAccessManager::finished, this, &ProfilePage::requestReply);
+    connect(image_cropper_page_, &ImageCropperPage::finshed, this, &ProfilePage::dealWithCroped);
 }
+
 void ProfilePage::mousePressEvent(QMouseEvent *event) {
     pressed_ = true;
     mouse_pos_ = event->pos();
@@ -41,12 +54,66 @@ void ProfilePage::mouseMoveEvent(QMouseEvent *event) {
     }
 }
 
+bool ProfilePage::eventFilter(QObject *object, QEvent *e) {
+    bool ret = true;
+    if(object == ui->label_headImage && e->type() == QEvent::MouseButtonDblClick) {
+        modifyImage(ImageType::headImage);
+    }else if(object == ui->label_profile_image_1 && e->type() == QEvent::MouseButtonDblClick) {
+        modifyImage(ImageType::profileImage_1);
+    }else if(object == ui->label_profile_image_2 && e->type() == QEvent::MouseButtonDblClick) {
+        modifyImage(ImageType::profileImage_2);
+    }else if(object == ui->label_profile_image_3 && e->type() == QEvent::MouseButtonDblClick) {
+        modifyImage(ImageType::profileImage_3);
+    }else if(object == ui->label_profile_image_4 && e->type() == QEvent::MouseButtonDblClick) {
+        modifyImage(ImageType::profileImage_4);
+    }else
+        ret = false;
+    return ret;
+}
+void ProfilePage::modifyImage(ImageType image) {
+    if(is_modifying_image_ == true)
+        return;
+    crop_image_type_ = image;
+    is_modifying_image_ = true;
+    QString file_name = QFileDialog::getOpenFileName(nullptr, "选择图片", "../", "image (*.png *.jpg)");
+    if(file_name.isEmpty()) {
+        is_modifying_image_ = false;
+    }
+    if(image_cropper_page_->crop(QPixmap(file_name), CropperShape::RECT, QSize(10, 10)))
+        image_cropper_page_->show();
+    else
+        is_modifying_image_ = false;
+
+}
 void ProfilePage::on_toolButton_min_clicked() {
     showMinimized();
 }
 
 void ProfilePage::on_toolButton_close_clicked() {
     hide();
+}
+
+void ProfilePage::dealWithCroped(QString saved_file_name) {
+    QString style = "QLabel{ border-image:";
+    style += QString("url(%1)} QLabel:hover{ border:4px;}").arg(saved_file_name);
+    if(crop_image_type_ == ImageType::headImage) {
+        ui->label_headImage->setStyleSheet(style);
+    }else if(crop_image_type_ == ImageType::profileImage_1) {
+        ui->label_profile_image_1->setStyleSheet(style);
+    }else if(crop_image_type_ == ImageType::profileImage_2) {
+        ui->label_profile_image_2->setStyleSheet(style);
+    }else if(crop_image_type_ == ImageType::profileImage_3) {
+        ui->label_profile_image_3->setStyleSheet(style);
+    }else if(crop_image_type_ == ImageType::profileImage_4) {
+        ui->label_profile_image_4->setStyleSheet(style);
+    }
+
+    uploadImage(crop_image_type_);
+}
+
+void ProfilePage::uploadImage(ImageType image) {
+
+    is_modifying_image_ = false;
 }
 
 void ProfilePage::setTheme(QString theme) {

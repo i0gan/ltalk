@@ -50,9 +50,7 @@ private:
     QPoint mouse_pos_;
 
     FloatingSettingsWindow *floating_settings_window_;
-    bool opened_floating_settings_window_;
     TrayIcon *tray_icon_;
-    bool opened_tray_icon_;
     QNetworkAccessManager *net_mannager_;
     GetWhat get_what_;
     QString save_file_path_;

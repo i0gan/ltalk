@@ -31,6 +31,7 @@ void Center::init() {
     connect(keep_connect_timer_, &QTimer::timeout, this, &Center::keepConnect);
     network_access_mannager = new QNetworkAccessManager(this);
     connect(network_access_mannager, &QNetworkAccessManager::finished, this, &Center::requestReply);
+
 }
 
 void Center::start() {

@@ -6,17 +6,17 @@ MainPage::MainPage(QWidget *parent) :
     QWidget(parent),
     ui(new Ui::MainPage),
     pressed_(false),
-    opened_floating_settings_window_(false),
-    opened_tray_icon_(false),
     get_what_(GetWhat::none){
     ui->setupUi(this);
+
+    floating_settings_window_ = new FloatingSettingsWindow();
+    net_mannager_ = new QNetworkAccessManager(this);
+    tray_icon_ = new TrayIcon();
 }
 
 MainPage::~MainPage() {
-    if(opened_floating_settings_window_)
-        delete floating_settings_window_;
-    if(opened_tray_icon_)
-        delete tray_icon_;
+    delete floating_settings_window_;
+    delete tray_icon_;
     delete ui;
 }
 
@@ -30,15 +30,11 @@ void MainPage::init() {
     move(pos);
     setWindowFlag(Qt::FramelessWindowHint);
     setAttribute(Qt::WA_TranslucentBackground);
-    floating_settings_window_ = new FloatingSettingsWindow();
+
     connect(floating_settings_window_, &FloatingSettingsWindow::localCmd, this, &MainPage::dealWithLocalCmd);
     floating_settings_window_->init();
-    opened_floating_settings_window_ = true;
-    opened_tray_icon_ = true;
-    tray_icon_ = new TrayIcon();
     connect(tray_icon_, &TrayIcon::localCmd, this, &MainPage::dealWithLocalCmd);
     tray_icon_->init();
-    net_mannager_ = new QNetworkAccessManager(this);
     connect(net_mannager_, &QNetworkAccessManager::finished, this, &MainPage::requestGetFileReply);
 }
 

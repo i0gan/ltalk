@@ -9,9 +9,10 @@
 #include <QNetworkReply>
 #include <QNetworkRequest>
 #include <QDir>
+#include <QFileDialog>
 
 #include "ltalk.h"
-
+#include "image_cropper_page.h"
 namespace Ui {
 class ProfilePage;
 }
@@ -25,6 +26,14 @@ class ProfilePage : public QWidget
         getProfileImage_2,
         getProfileImage_3,
         getProfileImage_4,
+    };
+    enum class ImageType {
+        none,
+        headImage,
+        profileImage_1,
+        profileImage_2,
+        profileImage_3,
+        profileImage_4,
     };
 
 public:
@@ -43,13 +52,21 @@ private:
     void requestReply(QNetworkReply *reply);
     RequestStep request_step_;
     UserInfo user_info_;
+    ImageCropperPage *image_cropper_page_;
+    bool is_modifying_image_;
+    void modifyImage(ImageType image);
+    void uploadImage(ImageType image);
+    ImageType crop_image_type_;
+
 protected:
     void mouseMoveEvent(QMouseEvent *event) override;
     void mousePressEvent(QMouseEvent *event) override;
     void mouseReleaseEvent(QMouseEvent *) override;
+    bool eventFilter(QObject *object, QEvent *e) override;
 private slots:
     void on_toolButton_min_clicked();
     void on_toolButton_close_clicked();
+    void dealWithCroped(QString saved_file_name);
 };
 
 #endif // PROFILE_PAGE_H

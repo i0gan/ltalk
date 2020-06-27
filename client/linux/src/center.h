@@ -21,6 +21,7 @@
 #include "change_theme_page.h"
 #include "about_page.h"
 #include "profile_page.h"
+#include "image_cropper_page.h"
 
 class Center : public QObject
 {
@@ -62,6 +63,7 @@ private:
     ChangeThemePage *change_theme_page_;
     AboutPage *about_page_;
     ProfilePage *profile_page_;
+    ImageCropperPage *image_cropper_page_;
     QNetworkAccessManager *network_access_mannager;
     QNetworkRequest keep_connect_request_;
     QNetworkRequest resource_request_;
