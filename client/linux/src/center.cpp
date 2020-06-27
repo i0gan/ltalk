@@ -15,8 +15,7 @@ void Center::init() {
     connect(login_page_, &LoginPage::login, this, &Center::requestLogin);
     connect(login_page_, &LoginPage::logined, this, &Center::dealWithLogined);
     connect(login_page_, &LoginPage::localCmd, this, &Center::dealWithLocalCmd);
-    network_access_mannager = new QNetworkAccessManager(this);
-    connect(network_access_mannager, &QNetworkAccessManager::finished, this, &Center::requestReply);
+
     connect(main_page_, &MainPage::localCmd, this, &Center::dealWithLocalCmd);
     change_theme_page_ = new ChangeThemePage();
     change_theme_page_->init();
@@ -27,6 +26,11 @@ void Center::init() {
 
     profile_page_ = new ProfilePage();
     profile_page_->init();
+
+    keep_connect_timer_ = new QTimer(this);
+    connect(keep_connect_timer_, &QTimer::timeout, this, &Center::keepConnect);
+    network_access_mannager = new QNetworkAccessManager(this);
+    connect(network_access_mannager, &QNetworkAccessManager::finished, this, &Center::requestReply);
 }
 
 void Center::start() {
@@ -36,12 +40,11 @@ void Center::start() {
 
 void Center::requestLogin(QString account, QString password) {
     //qDebug() << "requstlogin : " << account << " " << password;
-    QNetworkRequest request;
-    request.setRawHeader("Origin", "http://lyxf.xyz");
-    request.setRawHeader("Accept", "*/*");
-    request.setRawHeader("Content-Type", "application/json");
-    request.setRawHeader("Accept", "application/json");
-    request.setRawHeader("Date", Util::getTime().toUtf8().data());
+    keep_connect_request_.setRawHeader("Origin", "http://lyxf.xyz");
+    keep_connect_request_.setRawHeader("Accept", "*/*");
+    keep_connect_request_.setRawHeader("Content-Type", "application/json");
+    keep_connect_request_.setRawHeader("Accept", "application/json");
+    keep_connect_request_.setRawHeader("Date", Util::getTime().toUtf8().data());
 
     //mannager->post()
     QJsonDocument json_document;
@@ -61,8 +64,8 @@ void Center::requestLogin(QString account, QString password) {
     //qDebug() << byte_array;
     QUrl url;
     url = SERVER_REQUEST_URL + QString("/?request=login&platform=linux");
-    request.setUrl(url);
-    network_access_mannager->post(request, byte_array);
+    keep_connect_request_.setUrl(url);
+    network_access_mannager->post(keep_connect_request_, byte_array);
 }
 
 void Center::requestReply(QNetworkReply *reply) {
@@ -70,6 +73,10 @@ void Center::requestReply(QNetworkReply *reply) {
     QJsonObject json_object;
     QJsonParseError json_error;
     do {
+        if(reply->error() == QNetworkReply::NetworkError::ConnectionRefusedError) {
+            qDebug() << "无法连接服务器";
+            break;
+        }
         if(reply->rawHeader(QString("Content-Type").toUtf8()) == QString("application/json").toUtf8()) {
             recved_data_ = reply->readAll();
             //qDebug() << recv_data;
@@ -90,20 +97,24 @@ void Center::requestReply(QNetworkReply *reply) {
             break;
         }
         QString request = json_value_request.toString();
-        if(request == "login") {
+        if(request == "keep_connect") {
+            dealWithKeepConnectReply();
+        } else if(request == "login") {
             login_page_->dealWithRecv(json_object);
             break;
-        }else if(request == "get_user_info") {
+        } else if(request == "get_user_info") {
             qDebug() << "get_user_info: " << recved_data_;
             handleGetUserInfoReply(json_object);
             break;
-        }else {
-            qDebug() << "收到数据出错";
+        } else {
+            qDebug() << "收到数据出错: " << recved_data_;
             break;
         }
     } while(false);
 }
-
+void Center::dealWithKeepConnectReply() {
+    qDebug() << "keep";
+}
 void Center::dealWithLogined(QString account, QString uid, QString token) {
     user_.account = account;
     user_.uid = uid;
@@ -114,6 +125,8 @@ void Center::dealWithLogined(QString account, QString uid, QString token) {
     main_page_->show();
     generateUserPath(); //目录生成
     requestGetUserInfo();
+    keep_connect_timer_->start(1000 * 10);
+
 }
 
 void Center::dealWithLocalCmd(LocalCmd cmd) {
@@ -158,7 +171,14 @@ void Center::exit() {
 }
 
 void Center::keepConnect() {
-
+    keep_connect_request_.setRawHeader("Origin", "http://lyxf.xyz");
+    keep_connect_request_.setRawHeader("Accept", "*/*");
+    keep_connect_request_.setRawHeader("Content-Type", "application/json");
+    keep_connect_request_.setRawHeader("Accept", "application/json");
+    keep_connect_request_.setRawHeader("Date", Util::getTime().toUtf8().data());
+    QString url = SERVER_REQUEST_URL + QString("/?request=keep_connect&platform=linux");
+    keep_connect_request_.setUrl(url);
+    network_access_mannager->get(keep_connect_request_);
 }
 
 void Center::requestGetUserInfo() {
@@ -200,7 +220,9 @@ void Center::handleGetUserInfoReply(const QJsonObject &json_obj) {
     user_.creation_time = content.value("creation_time").toString();
     user_.network_state = content.value("network_state").toString();
     user_.ocupation = content.value("occupation").toString();
+    // 设置信息
     main_page_->setUserInfo(user_);
+    profile_page_->setUserInfo(user_);
     //qDebug() << "email" << user_.creation_time ;//json_obj;
 }
 

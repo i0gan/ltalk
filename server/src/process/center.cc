@@ -84,6 +84,8 @@ void Process::Center::HandleGet() {
             break;
         } else if(platform_ == "web"){
             HandleWebRequest();
+        }else if (request_ == "keep_connect" && !platform_.empty()) {
+            DealWithKeepConnect();
         } else if(request_ == "get_user_info" && !platform_.empty()){
             DealWithGetUserInfo();
         } else if(request_ == "get_public_file" && !platform_.empty()) {
@@ -250,7 +252,9 @@ bool Process::Center::CheckJsonContentType(Json &recv_json_obj, const std::strin
 
 }
 
-
+void Process::Center::DealWithKeepConnect() {
+    Response(ResponseCode::SUCCESS);
+}
 void Process::Center::DealWithRegisterUser() {
     std::string content_type;
     try {

@@ -3,7 +3,9 @@
 
 ProfilePage::ProfilePage(QWidget *parent) :
     QWidget(parent),
-    ui(new Ui::ProfilePage)
+    ui(new Ui::ProfilePage),
+    pressed_(false),
+    request_step_(RequestStep::getHeadImage)
 {
     ui->setupUi(this);
 }
@@ -13,7 +15,6 @@ ProfilePage::~ProfilePage()
     delete ui;
 }
 void ProfilePage::init() {
-    pressed_ =  false;
     setWindowTitle("Profile");
     setWindowIcon(QIcon(":/ui/logo.ico"));
     QPoint pos;
@@ -22,6 +23,8 @@ void ProfilePage::init() {
     move(pos);
     setWindowFlag(Qt::FramelessWindowHint);
     setAttribute(Qt::WA_TranslucentBackground);
+    network_mannager_ = new QNetworkAccessManager();
+    connect(network_mannager_, &QNetworkAccessManager::finished, this, &ProfilePage::requestReply);
 }
 void ProfilePage::mousePressEvent(QMouseEvent *event) {
     pressed_ = true;
@@ -52,4 +55,35 @@ void ProfilePage::setTheme(QString theme) {
     }else if(theme == "love") {
         ui->label_frame->setStyleSheet("QLabel{ border-image : url(':/ui/themes/love/dialog_page.png')}");
     }
+}
+
+void ProfilePage::requestReply(QNetworkReply *reply) {
+    do {
+        if(!(reply->error() == QNetworkReply::NetworkError::NoError))
+            break;
+        if(request_step_ == RequestStep::getHeadImage) {
+            request_step_ = RequestStep::getProfileImage_1;
+        }
+    } while(false);
+}
+
+void ProfilePage::requestGetImage(RequestStep request_step, QString url) {
+
+}
+void ProfilePage::setUserInfo(const UserInfo &user_info) {
+    user_info_ = user_info;
+    QDir dir;
+    QString user_images_dir = dir.homePath() + '/' +  DATA_PATH + ('/' + user_info_.account) + "/images";
+    QString head_image_path = user_images_dir + "/head_image";
+    if(!dir.exists(user_images_dir))
+        dir.mkpath(user_images_dir);
+    // 设置头像
+    QString style = "QLabel{ border-image:";
+    style += QString("url(%1)} QLabel:hover{ border:4px;}").arg(head_image_path);
+
+    ui->label_headImage->setStyleSheet(style);
+    ui->label_profile_image_1->setStyleSheet(style);
+    ui->label_profile_image_2->setStyleSheet(style);
+    ui->label_profile_image_3->setStyleSheet(style);
+    ui->label_profile_image_4->setStyleSheet(style);
 }

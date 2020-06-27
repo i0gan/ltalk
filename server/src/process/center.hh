@@ -76,6 +76,7 @@ private:
     void DealWithGetPublicFile();
     void DealWithGetPrivateFile();
     void DealWithGetGetChatFile();
+    void DealWithKeepConnect();
     bool UpdateUserInfo(const std::string &uid, const std::string &token); // Update memory infomation
     bool CheckToken(const std::string &uid, const std::string &token);
 

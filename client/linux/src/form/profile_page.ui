@@ -72,13 +72,13 @@ QToolButton:hover{
     <string/>
    </property>
   </widget>
-  <widget class="QLabel" name="label_background">
+  <widget class="QLabel" name="label_profile_image_1">
    <property name="geometry">
     <rect>
-     <x>70</x>
-     <y>160</y>
-     <width>300</width>
-     <height>300</height>
+     <x>80</x>
+     <y>280</y>
+     <width>180</width>
+     <height>180</height>
     </rect>
    </property>
    <property name="styleSheet">
@@ -96,7 +96,7 @@ QLabel:hover{
   <widget class="QLabel" name="label_headImage">
    <property name="geometry">
     <rect>
-     <x>380</x>
+     <x>480</x>
      <y>160</y>
      <width>100</width>
      <height>100</height>
@@ -117,98 +117,98 @@ QLabel:hover{
   <widget class="QLabel" name="label_account">
    <property name="geometry">
     <rect>
-     <x>380</x>
+     <x>390</x>
      <y>270</y>
      <width>300</width>
      <height>25</height>
     </rect>
    </property>
    <property name="text">
-    <string>帐号</string>
+    <string>帐号:418894113@qq.com</string>
    </property>
   </widget>
   <widget class="QLabel" name="label_email">
    <property name="geometry">
     <rect>
-     <x>380</x>
+     <x>390</x>
      <y>300</y>
      <width>300</width>
      <height>25</height>
     </rect>
    </property>
    <property name="text">
-    <string>邮箱</string>
+    <string>邮箱:418894113@qq.com</string>
    </property>
   </widget>
   <widget class="QLabel" name="label_QQ">
    <property name="geometry">
     <rect>
-     <x>380</x>
-     <y>330</y>
-     <width>300</width>
+     <x>390</x>
+     <y>360</y>
+     <width>40</width>
      <height>25</height>
     </rect>
    </property>
    <property name="text">
-    <string>QQ</string>
+    <string>QQ:</string>
    </property>
   </widget>
-  <widget class="QLabel" name="label_address">
+  <widget class="QLabel" name="label_nickname">
    <property name="geometry">
     <rect>
-     <x>380</x>
-     <y>360</y>
-     <width>300</width>
+     <x>390</x>
+     <y>330</y>
+     <width>40</width>
      <height>25</height>
     </rect>
    </property>
    <property name="text">
-    <string>地点</string>
+    <string>昵称:</string>
    </property>
   </widget>
   <widget class="QLabel" name="label_occupation">
    <property name="geometry">
     <rect>
-     <x>380</x>
+     <x>390</x>
      <y>390</y>
-     <width>300</width>
+     <width>40</width>
      <height>25</height>
     </rect>
    </property>
    <property name="text">
-    <string>职业</string>
+    <string>职业:</string>
    </property>
   </widget>
-  <widget class="QLabel" name="label_name">
+  <widget class="QLabel" name="label_address">
    <property name="geometry">
     <rect>
-     <x>380</x>
+     <x>390</x>
      <y>420</y>
-     <width>300</width>
+     <width>40</width>
      <height>25</height>
     </rect>
    </property>
    <property name="text">
-    <string>姓名</string>
+    <string>地点:</string>
    </property>
   </widget>
   <widget class="QLabel" name="label_grade">
    <property name="geometry">
     <rect>
-     <x>380</x>
+     <x>390</x>
      <y>450</y>
      <width>300</width>
      <height>25</height>
     </rect>
    </property>
    <property name="text">
-    <string>等级</string>
+    <string>等级: 1</string>
    </property>
   </widget>
   <widget class="QLabel" name="label_8">
    <property name="geometry">
     <rect>
-     <x>210</x>
+     <x>220</x>
      <y>110</y>
      <width>400</width>
      <height>30</height>
@@ -225,7 +225,7 @@ QLabel:hover{
     <string>Nickname</string>
    </property>
   </widget>
-  <widget class="QPushButton" name="pushButton_modifyInfo">
+  <widget class="QPushButton" name="pushButton_saveModifiedInfo">
    <property name="geometry">
     <rect>
      <x>580</x>
@@ -245,23 +245,201 @@ QPushButton:hover{
 }</string>
    </property>
    <property name="text">
-    <string>修改信息</string>
+    <string>保存</string>
+   </property>
+  </widget>
+  <widget class="QLineEdit" name="lineEdit_QQ">
+   <property name="geometry">
+    <rect>
+     <x>430</x>
+     <y>360</y>
+     <width>261</width>
+     <height>25</height>
+    </rect>
+   </property>
+   <property name="styleSheet">
+    <string notr="true">QLineEdit {
+	background-color: transparent
+}</string>
+   </property>
+   <property name="text">
+    <string>418894113</string>
+   </property>
+   <property name="readOnly">
+    <bool>true</bool>
+   </property>
+  </widget>
+  <widget class="QLineEdit" name="lineEdit_nickname">
+   <property name="geometry">
+    <rect>
+     <x>430</x>
+     <y>330</y>
+     <width>261</width>
+     <height>25</height>
+    </rect>
+   </property>
+   <property name="styleSheet">
+    <string notr="true">QLineEdit {
+	background-color: transparent
+}</string>
+   </property>
+   <property name="text">
+    <string>I0gan</string>
+   </property>
+   <property name="readOnly">
+    <bool>true</bool>
+   </property>
+  </widget>
+  <widget class="QLineEdit" name="lineEdit_occupation">
+   <property name="geometry">
+    <rect>
+     <x>430</x>
+     <y>390</y>
+     <width>261</width>
+     <height>25</height>
+    </rect>
+   </property>
+   <property name="styleSheet">
+    <string notr="true">QLineEdit {
+	background-color: transparent
+}</string>
+   </property>
+   <property name="text">
+    <string>Student</string>
+   </property>
+   <property name="readOnly">
+    <bool>true</bool>
+   </property>
+  </widget>
+  <widget class="QLineEdit" name="lineEdit_address">
+   <property name="geometry">
+    <rect>
+     <x>430</x>
+     <y>420</y>
+     <width>261</width>
+     <height>25</height>
+    </rect>
+   </property>
+   <property name="styleSheet">
+    <string notr="true">QLineEdit {
+	background-color: transparent
+}</string>
+   </property>
+   <property name="text">
+    <string>GuiZhou</string>
+   </property>
+   <property name="readOnly">
+    <bool>true</bool>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="pushButton_moreInfo">
+   <property name="geometry">
+    <rect>
+     <x>70</x>
+     <y>510</y>
+     <width>100</width>
+     <height>30</height>
+    </rect>
+   </property>
+   <property name="styleSheet">
+    <string notr="true">QPushButton{
+background-color:rgb(0, 209, 209);
+color:white;
+border-radius:4px;
+}
+QPushButton:hover{
+  background-color: rgb(0, 255, 204);
+}</string>
+   </property>
+   <property name="text">
+    <string>更多信息</string>
+   </property>
+  </widget>
+  <widget class="QLabel" name="label_profile_image_3">
+   <property name="geometry">
+    <rect>
+     <x>270</x>
+     <y>170</y>
+     <width>100</width>
+     <height>140</height>
+    </rect>
+   </property>
+   <property name="styleSheet">
+    <string notr="true">QLabel{
+ background: rgb(0, 255, 255);
+}
+QLabel:hover{
+	border:2px solid;
+}</string>
+   </property>
+   <property name="text">
+    <string/>
+   </property>
+  </widget>
+  <widget class="QLabel" name="label_profile_image_4">
+   <property name="geometry">
+    <rect>
+     <x>270</x>
+     <y>320</y>
+     <width>100</width>
+     <height>140</height>
+    </rect>
+   </property>
+   <property name="styleSheet">
+    <string notr="true">QLabel{
+ background: rgb(0, 255, 255);
+}
+QLabel:hover{
+	border:2px solid;
+}</string>
+   </property>
+   <property name="text">
+    <string/>
+   </property>
+  </widget>
+  <widget class="QLabel" name="label_profile_image_2">
+   <property name="geometry">
+    <rect>
+     <x>80</x>
+     <y>170</y>
+     <width>180</width>
+     <height>100</height>
+    </rect>
+   </property>
+   <property name="styleSheet">
+    <string notr="true">QLabel{
+ background: rgb(0, 255, 255);
+}
+QLabel:hover{
+	border:2px solid;
+}</string>
+   </property>
+   <property name="text">
+    <string/>
    </property>
   </widget>
   <zorder>label_frame</zorder>
   <zorder>toolButton_min</zorder>
   <zorder>toolButton_close</zorder>
-  <zorder>label_background</zorder>
+  <zorder>label_profile_image_1</zorder>
   <zorder>label_headImage</zorder>
   <zorder>label_account</zorder>
   <zorder>label_email</zorder>
   <zorder>label_QQ</zorder>
-  <zorder>label_address</zorder>
+  <zorder>label_nickname</zorder>
   <zorder>label_occupation</zorder>
-  <zorder>label_name</zorder>
+  <zorder>label_address</zorder>
   <zorder>label_grade</zorder>
   <zorder>label_8</zorder>
-  <zorder>pushButton_modifyInfo</zorder>
+  <zorder>pushButton_saveModifiedInfo</zorder>
+  <zorder>lineEdit_QQ</zorder>
+  <zorder>lineEdit_nickname</zorder>
+  <zorder>lineEdit_occupation</zorder>
+  <zorder>lineEdit_address</zorder>
+  <zorder>pushButton_moreInfo</zorder>
+  <zorder>label_profile_image_3</zorder>
+  <zorder>label_profile_image_4</zorder>
+  <zorder>label_profile_image_2</zorder>
  </widget>
  <resources/>
  <connections/>

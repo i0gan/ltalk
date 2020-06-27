@@ -12,6 +12,8 @@
 #include <QFile>
 #include <QDateTime>
 #include <QDir>
+#include <QTimer>
+
 #include "ltalk.h"
 #include "login_page.h"
 #include "main_page.h"
@@ -22,6 +24,15 @@
 
 class Center : public QObject
 {
+    enum class RequestStep {
+        unlogin,
+        login,
+        getUserInfo,
+        getFriendList,
+        getGroupList,
+        getChatMessage,
+        wait
+    };
     Q_OBJECT
 public:
     explicit Center(QObject *parent = nullptr);
@@ -33,6 +44,7 @@ public:
     void dealWithLogined(QString account, QString uid, QString token);
     void exit();
     void keepConnect();
+    void dealWithKeepConnectReply();
     void requestGetUserInfo();
     void requestGetFriendList();
     void requestGetGroupList();
@@ -51,6 +63,10 @@ private:
     AboutPage *about_page_;
     ProfilePage *profile_page_;
     QNetworkAccessManager *network_access_mannager;
+    QNetworkRequest keep_connect_request_;
+    QNetworkRequest resource_request_;
+    QTimer *keep_connect_timer_;
+
     UserInfo user_;
     QVector<UserInfo> friend_list_;
     QVector<GroupInfo> group_list_;

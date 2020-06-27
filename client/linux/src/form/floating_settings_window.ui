@@ -163,7 +163,7 @@ QPushButton:hover{
     <string>添加群组</string>
    </property>
   </widget>
-  <widget class="QPushButton" name="pushButton_changeTheme">
+  <widget class="QPushButton" name="pushButton_accountSecurity">
    <property name="geometry">
     <rect>
      <x>0</x>
@@ -190,7 +190,7 @@ QPushButton:hover{
 }</string>
    </property>
    <property name="text">
-    <string>跟换主题</string>
+    <string>帐号安全</string>
    </property>
   </widget>
   <widget class="QPushButton" name="pushButton_exit">

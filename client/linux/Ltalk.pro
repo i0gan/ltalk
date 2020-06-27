@@ -17,6 +17,8 @@ DEFINES += QT_DEPRECATED_WARNINGS
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
 SOURCES += \
+    src/cut_image.cpp \
+    src/message_list_item.cpp \
     src/profile_page.cpp \
     src/about_page.cpp \
     src/change_theme_page.cpp \
@@ -32,6 +34,8 @@ SOURCES += \
     src/util.cpp
 
 HEADERS += \
+    src/cut_image.h \
+    src/message_listi_tem.h \
     src/profile_page.h \
     src/about_page.h \
     src/change_theme_page.h \
@@ -46,6 +50,8 @@ HEADERS += \
     src/util.h
 
 FORMS += \
+    src/form/cut_image.ui \
+    src/form/message_list_item.ui \
     src/form/profile_page.ui \
     src/form/about_page.ui \
     src/form/change_theme_page.ui \
@@ -53,7 +59,7 @@ FORMS += \
     src/form/main_page.ui \
     src/form/login_page.ui \
     src/form/group_list_item.ui \
-    src/form/user_list_item.ui
+    src/form/user_list_item.ui \
 
 
 # Default rules for deployment.

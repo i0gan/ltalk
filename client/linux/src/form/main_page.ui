@@ -68,7 +68,7 @@
 }</string>
      </property>
      <property name="currentIndex">
-      <number>0</number>
+      <number>1</number>
      </property>
      <widget class="QWidget" name="page_messageList">
       <property name="styleSheet">
@@ -129,95 +129,6 @@
          <property name="bottomMargin">
           <number>0</number>
          </property>
-         <item>
-          <widget class="QTextBrowser" name="textBrowser_messages">
-           <property name="enabled">
-            <bool>true</bool>
-           </property>
-           <property name="minimumSize">
-            <size>
-             <width>261</width>
-             <height>411</height>
-            </size>
-           </property>
-           <property name="font">
-            <font>
-             <family>楷体</family>
-             <pointsize>10</pointsize>
-            </font>
-           </property>
-           <property name="styleSheet">
-            <string notr="true">QTextBrowser {
-background-color: transparent;
-color:rgb(255, 255, 255)
-}
-QScrollArea{
-border:0px solid;
-border-radius: 5px;
-}
-
-QScrollBar:vertical{
-width: 10px;
-border:0px solid;
-border-radius: 5px;
-margin: 0px,0px,0px,0px;
-background: rgb(103, 103, 153);
-}
-
-QScrollBar:vertical:hover{
-width: 10px;
-border:0px solid;
-margin: 0px,0px,0px,0px;
-}
-QScrollBar::handle:vertical{
-width:10px;
-background:#c0ddee;
-border-radius: 5px;
-height: 50px;
-}
-
-QScrollBar::handle:vertical:hover{
-background:#c0ddee;
-border-radius: 5px;
-}
-
-QScrollBar::add-line:vertical{
-height:20px;
-transparent;
-subcontrol-position:bottom;
-border:0px solid;
-border-radius: 5px;
-}
-QScrollBar::sub-line:vertical{
-height:20px;
-transparent;subcontrol-position:top;
-border:0px solid;
-border-radius: 5px;
-}
-QScrollBar::add-page:vertical{
- #e1f0fa;
-border:0px solid;border-radius: 5px;
-}
-
-QScrollBar::sub-page:vertical{
-border:0px solid
-;border-radius: 5px;
-}
-QScrollBar::up-arrow:vertical{
-border:0px solid;
-border-radius: 3px;
-}
-
-QScrollBar::down-arrow:vertical {
-border:0px solid;
-border-radius: 3px;
-}</string>
-           </property>
-           <property name="frameShape">
-            <enum>QFrame::NoFrame</enum>
-           </property>
-          </widget>
-         </item>
         </layout>
        </widget>
       </widget>

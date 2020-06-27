@@ -75,7 +75,6 @@ int Net::Net::Listen() {
         perror("listen: ");
         return -1;
     }
-
     return listen_fd;
 }
 
@@ -85,7 +84,7 @@ void Net::Net::HandleNewConnection() {
     socklen_t client_sockaddr_len = sizeof (client_sockaddr);
     int accept_fd = 0;
     while((accept_fd = accept(listen_fd, (struct sockaddr *)&client_sockaddr, &client_sockaddr_len)) > 0) {
-        //d_cout << "new connection: " << inet_ntoa(client_sockaddr.sin_addr) << " : " << ntohs(client_sockaddr.sin_port)
+        d_cout << "new connection: " << inet_ntoa(client_sockaddr.sin_addr) << " : " << ntohs(client_sockaddr.sin_port);
          //      << '\n';
         // If the number of accept fd is greater than MAX_CONNECTED_FDS_NUM wiil be closed
         if(accept_fd_sum > MAX_CONNECTED_FDS_NUM) {

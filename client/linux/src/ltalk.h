@@ -26,6 +26,10 @@ struct UserInfo {
     QString creation_time;
     QString network_state;
     QString grade;
+    QString profile_image_url_1;
+    QString profile_image_url_2;
+    QString profile_image_url_3;
+    QString profile_image_url_4;
 };
 
 struct GroupInfo {
