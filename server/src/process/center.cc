@@ -60,23 +60,30 @@ void Process::Center::Process() {
 
 void Process::Center::HandleWebRequest() {
     std::string path = Data::web_root;
-    if(request_ == "register") {
+    RequestType request_type = Request::toEnum(request_);
+    switch (request_type) {
+    case RequestType::register_: {
         path += "/register/index.html";
         SendFile(path);
-    }else if(request_ == "register_success") {
+    } break;
+    case RequestType::register_success: {
         path += "/register/success/index.html";
         SendFile(path);
-    }else if(request_ == "download") {
+    } break;
+    case RequestType::download: {
         path += "/download/index.html";
         SendFile(path);
-    }else {
+    } break;
+    default: {
         HandleNotFound();
+    } break;
     }
 }
 
 void Process::Center::HandleGet() {
     bool error = false;
     std::string path = map_url_info_["path"];
+    RequestType request_type = Request::toEnum(request_);
     do {
         if(path == "/" && platform_.empty()) {
             path = Data::web_root + "/" + Data::web_page;
@@ -84,17 +91,24 @@ void Process::Center::HandleGet() {
             break;
         } else if(platform_ == "web"){
             HandleWebRequest();
-        }else if (request_ == "keep_connect" && !platform_.empty()) {
+        }
+        switch (request_type) {
+        case RequestType::keep_connect: {
             DealWithKeepConnect();
-        } else if(request_ == "get_user_info" && !platform_.empty()){
+        }break;
+        case RequestType::get_user_info: {
             DealWithGetUserInfo();
-        } else if(request_ == "get_public_file" && !platform_.empty()) {
-            DealWithGetPublicFile();
-        } else if(request_ == "get_private_file" && !platform_.empty()) {
-            DealWithGetPrivateFile();
-        } else {
+        } break;
+        case RequestType::get_public_file: {
+            DealWithGetUserPublicFile();
+        } break;
+        case RequestType::get_private_file: {
+            DealWithGetUserPrivateFile();
+        } break;
+        default: {
             path = Data::web_root + path;
             SendFile(path);
+        } break;
         }
     } while(false);
     // Send get file
@@ -110,6 +124,8 @@ void Process::Center::HandlePost() {
             DealWithRegisterUser();
         }else if(request_ == "login" && !platform_.empty()) {
             DealWithLogin();
+        }else if(request_ == "upload_profile_image" && !platform_.empty()) {
+            DealWithUploadProfileImage();
         }
         else {
             Response(ResponseCode::NO_ACCESS);
@@ -255,6 +271,17 @@ bool Process::Center::CheckJsonContentType(Json &recv_json_obj, const std::strin
 void Process::Center::DealWithKeepConnect() {
     Response(ResponseCode::SUCCESS);
 }
+
+void Process::Center::GenerateUserPath(const std::string &uid) {
+    std::string base_path = "data/user/" + uid;
+    mkdir(base_path.c_str(), S_IRWXU);
+    mkdir((base_path + "/public").c_str(), S_IRWXU);
+    mkdir((base_path + "/public/profile").c_str(), S_IRWXU);
+    mkdir((base_path + "/public/files").c_str(), S_IRWXU);
+    mkdir((base_path + "/private").c_str(), S_IRWXU);
+    mkdir((base_path + "/private/chat").c_str(), S_IRWXU);
+}
+
 void Process::Center::DealWithRegisterUser() {
     std::string content_type;
     try {
@@ -362,7 +389,6 @@ void Process::Center::DealWithRegisterUser() {
         Response(ResponseCode::FAILURE);
         return;
     }
-
     Json send_json = {
         { "server", SERVER_NAME },
         { "code", ResponseCode::SUCCESS },
@@ -372,6 +398,7 @@ void Process::Center::DealWithRegisterUser() {
         { "token", MakeToken(uid) }
     };
 
+    GenerateUserPath(uid);
     SendJson(send_json);
 }
 
@@ -381,6 +408,8 @@ std::string Process::Center::MakeToken(std::string uid) {
 }
 
 std::string Process::Center::MakeUid(std::string str) {
+    //::Database::MysqlQuery query;
+    //query.Select("user_", "uid", "uid=" )
     return Crypto::MD5(str).toString();
 }
 
@@ -617,17 +646,17 @@ void Process::Center::DealWithGetUserInfo() {
         { "platform", platform_ },
         {"content-type", "user_info"},
         {"content", {
-            {"account", db_account},
-            {"email", db_email},
-            {"nickname", db_nickname},
-            {"head_image_url", db_head_image_url},
-            {"name", db_name},
-            {"phone_number", db_phone_number},
-            {"address", db_address},
-            {"occupation", db_occupation},
-            {"creation_time", db_creation_time},
-            {"network_state", db_network_state}
-        }}
+             {"account", db_account},
+             {"email", db_email},
+             {"nickname", db_nickname},
+             {"head_image_url", db_head_image_url},
+             {"name", db_name},
+             {"phone_number", db_phone_number},
+             {"address", db_address},
+             {"occupation", db_occupation},
+             {"creation_time", db_creation_time},
+             {"network_state", db_network_state}
+         }}
     };
     //std::cout << "[" << send_json << "]";
     SendJson(send_json);
@@ -655,23 +684,67 @@ bool Process::Center::CheckToken(const std::string &uid, const std::string &toke
     return ret_value;
 }
 
-void Process::Center::DealWithGetPublicFile() {
-    std::string file_path;
+void Process::Center::DealWithGetUserPublicFile() {
+    std::string uid;
+    std::string file_name;
     try {
-        file_path = map_url_info_.at("path");
+        uid = map_url_value_info_.at("uid");
+        file_name = map_url_value_info_.at("file_name");
+
     }  catch (std::out_of_range e) {
         Response(ResponseCode::FAILURE);
         return;
     }
-    file_path = "data" + file_path;
+    std::string file_path = "data/user/" + uid + "/public/files/" + file_name;
     std::cout << "get public file [" << file_path << "]\n";
     SendFile(file_path);
 }
 
-void Process::Center::DealWithGetPrivateFile() {
+void Process::Center::DealWithGetUserPrivateFile() {
 
 }
 
 void Process::Center::DealWithGetGetChatFile() {
+
+}
+
+void Process::Center::DealWithUploadProfileImage() {
+    std::string type;
+    std::string account;
+    std::string uid;
+    std::string token;
+    try {
+        type = map_url_value_info_.at("type");
+        account = map_url_value_info_.at("account");
+        uid = map_url_value_info_.at("uid");
+        token = map_url_value_info_.at("token");
+    } catch (std::out_of_range e) {
+        Response(ResponseCode::FAILURE);
+        return;
+    }
+
+    if(!CheckToken(uid, token)) {
+        Response(ResponseCode::NO_ACCESS);
+        return;
+    }
+
+    std::string image_name;
+    if(type == "head_image")
+        image_name = "head_image";
+    else if(type == "profile_image_1")
+        image_name = "profile_image_1";
+    else if(type == "profile_image_2")
+        image_name = "profile_image_2";
+    else if(type == "profile_image_3")
+        image_name = "profile_image_3";
+    else if(type == "profile_image_4")
+        image_name = "profile_image_4";
+    else {
+        Response(ResponseCode::FAILURE);
+        return;
+    }
+
+
+
 
 }

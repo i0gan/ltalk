@@ -9,7 +9,7 @@
 #include "json/json.hpp"
 
 
-#define DEFAULT_CONFIG_FILE "./data/config.json"
+#define DEFAULT_CONFIG_FILE "./etc/config.json"
 
 #define d_cout std::cout << "[" << __FILE__ << " line: " << __LINE__ << " thread id: " << std::hex <<  pthread_self() << std::oct << "] "
 #define MAX_CONNECTED_FDS_NUM 100000
@@ -20,12 +20,10 @@
 #define SERVER_NAME "Ltalk Server Debian Linux x64"
 
 namespace Thread {
-
 class Thread;
 class MutexLock;
 class CountDownLatch;
 class Condition;
-
 }
 
 namespace Net {
@@ -58,7 +56,8 @@ using SPChannel = std::shared_ptr<Net::Channel>;
 namespace Process {
 class Center;
 enum class ResponseCode;
-
+enum class RequestType;
+enum class Platform;
 }
 
 namespace Crypto {

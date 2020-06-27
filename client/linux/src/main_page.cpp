@@ -120,8 +120,8 @@ void MainPage::requestGetFile(QString url, GetWhat what, QString save_file_path,
     request.setRawHeader("Accept", "application/json");
     request.setRawHeader("Date", Util::getTime().toUtf8().data());
     QString request_url;
-    url = "http://192.168.100.8/user/418894113@qq.com/public/test.png";
-    request_url = url + QString("/?request=get_public_file&platform=linux");
+    url = "http://192.168.100.8";
+    request_url = url + QString("/?request=get_public_file&platform=linux") + "&uid=" + user_info_.uid + "&file_name=test.png";
     if(private_file)
         request_url += ("&uid=" + user_info_.uid + "&token" + user_info_.token);
     request.setUrl(request_url);

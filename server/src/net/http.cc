@@ -13,6 +13,7 @@ const int DEFAULT_EXPIRED_TIME = 2000;              //ms
 const int DEFAULT_KEEP_ALIVE_TIME = 5 * 60 * 1000;  //ms
 
 void Net::HttpContentType::Init() {
+    std::cout << "ptrhead_init";
     //init http content type
     HttpContentType::umap_type_[".html"] = "text/html";
     HttpContentType::umap_type_[".css"] = "text/css";
@@ -109,7 +110,7 @@ void Net::Http::HandleRead() {
     __uint32_t &event = sp_channel_->get_event();
     do {
         int read_len = Util::Read(fd_, in_buffer_);
-        std::cout << "http_content:__[" << in_buffer_ << "]__";
+        //std::cout << "http_content:__[" << in_buffer_ << "]__";
         //if state as disconnecting will clean th in buffer
         if(http_connection_state_ == HttpConnectionState::DISCONNECTING) {
             std::cout << "DISCONNECTING\n";

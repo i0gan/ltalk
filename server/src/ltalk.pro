@@ -11,6 +11,7 @@ HEADERS += \
     \
     json/json.hpp\
     process/center.hh \
+    process/util.hh \
     \
     net/http.hh \
     net/epoll.hh \
@@ -41,6 +42,7 @@ SOURCES += \
     database/mongo/mongo.cc \
     \
     process/center.cc \
+    process/util.cc \
     \
     net/http.cc \
     net/epoll.cc \

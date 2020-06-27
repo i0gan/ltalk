@@ -9,8 +9,13 @@
 #include <sstream>
 #include <time.h>
 #include <sys/time.h>
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <unordered_map>
+#include <pthread.h>
 
 #include "../crypto/md5.hh"
+#include "util.hh"
 
 using Json = nlohmann::json;
 
@@ -67,14 +72,16 @@ private:
     void Response(Process::ResponseCode error_code);
     /* */
     void DealWithRegisterUser();
+    void GenerateUserPath(const std::string &uid);
     bool CheckJsonContentType(Json &recv_json_obj, const std::string &type);
+    void DealWithUploadProfileImage();
     void DealWithRegisterGroup();
     void DealWithLogin();
     bool CheckIsLogined(const std::string &uid);
     void DealWithGetUserInfo(); // GET method to get user info
     bool CheckJsonBaseContent(Json &json_obj);
-    void DealWithGetPublicFile();
-    void DealWithGetPrivateFile();
+    void DealWithGetUserPublicFile();
+    void DealWithGetUserPrivateFile();
     void DealWithGetGetChatFile();
     void DealWithKeepConnect();
     bool UpdateUserInfo(const std::string &uid, const std::string &token); // Update memory infomation
