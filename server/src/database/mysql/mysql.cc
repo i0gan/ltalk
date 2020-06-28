@@ -68,7 +68,7 @@ void Database::MysqlQuery::Clean() {
 bool Database::MysqlQuery::Exec(std::string sql) {
     int ret = true;
     if(mysql_real_query(mysql_, sql.data(), sql.size())) {
-        std::cout << "mysql_real_query : " << mysql_error(mysql_) << std::endl;
+        std::cout << "mysql_real_query Exec : " << mysql_error(mysql_) << " [" << sql << "] " << std::endl;
         ret = false;
     }
     return ret;
@@ -81,9 +81,9 @@ bool Database::MysqlQuery::Select(const std::string &table_name, const std::stri
     if(condition != "none")
         sql += " WHERE " + condition;
     sql += " ;";
-    //std::cout << "sql: " << sql << '\n';
+    //std::cout << " " << sql << '\n';
     if(mysql_real_query(mysql_, sql.data(), sql.size())) {
-        std::cout << "mysql_real_query : " << mysql_error(mysql_) << std::endl;
+        std::cout << "mysql_real_query Select: " << mysql_error(mysql_) << " [" << sql << "] " << std::endl;
         return false;
     }
     if(res_) mysql_free_result(res_);

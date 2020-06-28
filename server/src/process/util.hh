@@ -12,6 +12,7 @@ enum class Process::RequestType {
     get_public_file,
     get_private_file,
     upload_profile_image,
+    get_profile_image
 };
 
 enum class Process::Platform {

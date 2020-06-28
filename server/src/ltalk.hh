@@ -17,7 +17,8 @@
 #define EPOLL_WAIT_TIME 10000
 #define MAX_BUF_SIZE 4096
 
-#define SERVER_NAME "Ltalk Server Debian Linux x64"
+#define SERVER_NAME    "Ltalk Server Debian Linux x64"
+#define SERVER_DOMAIN  "http://192.168.100.8"
 
 namespace Thread {
 class Thread;

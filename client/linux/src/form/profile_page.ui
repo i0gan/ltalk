@@ -418,6 +418,19 @@ QLabel:hover{
     <string/>
    </property>
   </widget>
+  <widget class="QProgressBar" name="progressBar_upload">
+   <property name="geometry">
+    <rect>
+     <x>330</x>
+     <y>510</y>
+     <width>118</width>
+     <height>25</height>
+    </rect>
+   </property>
+   <property name="value">
+    <number>24</number>
+   </property>
+  </widget>
   <zorder>label_frame</zorder>
   <zorder>toolButton_min</zorder>
   <zorder>toolButton_close</zorder>
@@ -440,6 +453,7 @@ QLabel:hover{
   <zorder>label_profile_image_3</zorder>
   <zorder>label_profile_image_4</zorder>
   <zorder>label_profile_image_2</zorder>
+  <zorder>progressBar_upload</zorder>
  </widget>
  <resources/>
  <connections/>

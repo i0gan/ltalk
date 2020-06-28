@@ -10,6 +10,12 @@
 #include <QNetworkRequest>
 #include <QDir>
 #include <QFileDialog>
+#include <QJsonArray>
+#include <QJsonDocument>
+#include <QJsonObject>
+#include <QJsonParseError>
+#include <QJsonValue>
+
 
 #include "ltalk.h"
 #include "image_cropper_page.h"
@@ -22,15 +28,8 @@ class ProfilePage;
 class ProfilePage : public QWidget
 {
     Q_OBJECT
-    enum class RequestStep {
-        getHeadImage,
-        getProfileImage_1,
-        getProfileImage_2,
-        getProfileImage_3,
-        getProfileImage_4,
-    };
     enum class ImageType {
-        none,
+        none = 0,
         headImage,
         profileImage_1,
         profileImage_2,
@@ -45,21 +44,26 @@ public:
     void setTheme(QString theme);
     void setUserInfo(const UserInfo &user_info);
     void setNextRequestStep();
+signals:
+    void localCmd(LocalCmd cmd);
 private:
     Ui::ProfilePage *ui;
     bool pressed_;
     QPoint mouse_pos_;
     QNetworkAccessManager *network_mannager_;
     QNetworkRequest request_;
-    void requestGetImage(RequestStep request_step, QString url);
+    QNetworkReply *reply_;
+    void requestGetImage(ImageType request_step);
     void requestReply(QNetworkReply *reply);
-    RequestStep request_step_;
+    ImageType request_step_;
     UserInfo user_info_;
     ImageCropperPage *image_cropper_page_;
     bool is_modifying_image_;
     void modifyImage(ImageType image);
     void uploadImage(ImageType image, QString saved_file_name);
     ImageType crop_image_type_;
+    void uploadProgress(qint64 bytesSent, qint64 bytesTotal);
+    void dealWithServerResponse(const QJsonObject &json_obj);
 
 protected:
     void mouseMoveEvent(QMouseEvent *event) override;

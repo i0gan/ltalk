@@ -47,7 +47,11 @@ enum class LocalCmd {
     showChnageThemePage,
     showAboutPage,
     ShowProfilePage,
-    logout
+    logout,
+    mainPageGetHeadImage,
+    mainPageGetFriendList,
+    mainPageGetGroupList,
+    getUserInfo,
 };
 
 

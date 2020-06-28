@@ -103,25 +103,26 @@ void MainPage::setUserInfo(const UserInfo &user_info) {
     ui->label_nickname->setText(user_info.nickname);
     account_ = user_info.account;
     get_what_ = GetWhat::myHeadImage;
-    requestGetFile("test", GetWhat::myHeadImage, "./");
+    //获取头像
+    requestGetFile(user_info_.head_image, GetWhat::myHeadImage, "./");
 }
 
 void MainPage::requestGetFile(QString url, GetWhat what, QString save_file_path,  bool private_file) {
     get_what_ = what;
     save_file_path_ = save_file_path;
-    QNetworkRequest request;
-    request.setRawHeader("Origin", "http://ltalk.co");
-    request.setRawHeader("Accept", "*/*");
-    request.setRawHeader("Content-Type", "application/json");
-    request.setRawHeader("Accept", "application/json");
-    request.setRawHeader("Date", Util::getTime().toUtf8().data());
+    request_.setRawHeader("Origin", "http://ltalk.co");
+    request_.setRawHeader("Accept", "*/*");
+    request_.setRawHeader("Content-Type", "application/json");
+    request_.setRawHeader("Accept", "application/json");
+    request_.setRawHeader("Date", Util::getTime().toUtf8().data());
     QString request_url;
-    url = "http://192.168.100.8";
-    request_url = url + QString("/?request=get_public_file&platform=linux") + "&uid=" + user_info_.uid + "&file_name=test.png";
+    if(what == GetWhat::myHeadImage) {
+        request_url = url + "&platform=linux";
+    }
     if(private_file)
-        request_url += ("&uid=" + user_info_.uid + "&token" + user_info_.token);
-    request.setUrl(request_url);
-    net_mannager_->get(request);
+        request_url += "&token" + user_info_.token;
+    request_.setUrl(request_url);
+    net_mannager_->get(request_);
 }
 
 void MainPage::requestGetFileReply(QNetworkReply *reply) {

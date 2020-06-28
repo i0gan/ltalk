@@ -105,6 +105,9 @@ void Process::Center::HandleGet() {
         case RequestType::get_private_file: {
             DealWithGetUserPrivateFile();
         } break;
+        case  RequestType::get_profile_image: {
+            DealWithGetProfileImage();
+        } break;
         default: {
             path = Data::web_root + path;
             SendFile(path);
@@ -510,7 +513,7 @@ void Process::Center::DealWithLogin() {
         Response(ResponseCode::FAILURE);
         return;
     }
-    sql_query.Update("user_", "last_login, ok", "'a', 'b'", "uid='" + db_uid + '\'');
+    sql_query.Update("user_", "last_login", GetDateTime(), "uid='" + db_uid + '\'');
     Json send_json = {
         { "server", SERVER_NAME },
         { "code", ResponseCode::SUCCESS },
@@ -720,6 +723,7 @@ void Process::Center::DealWithGetGetChatFile() {
 void Process::Center::DealWithUploadProfileImage() {
     std::cout << "upload_profile_image\n";
     std::string name;
+    std::string type;
     std::string account;
     std::string uid;
     std::string token;
@@ -728,32 +732,38 @@ void Process::Center::DealWithUploadProfileImage() {
         account = map_url_value_info_.at("account");
         uid = map_url_value_info_.at("uid");
         token = map_url_value_info_.at("token");
+        type = map_url_value_info_.at("type");
     } catch (std::out_of_range e) {
         Response(ResponseCode::FAILURE);
+        std::cout << "lack var\n";
         return;
     }
 
     if(!CheckToken(uid, token)) {
         Response(ResponseCode::NO_ACCESS);
+        std::cout << "check token error\n";
+        return;
+    }
+
+    if(type == "head_image" || type == "profile_image_1" || type == "profile_image_2"
+            || type == "profile_image_3" || type == "profile_image_4") {
+    }else {
+        Response(ResponseCode::FAILURE);
+        std::cout << "file type error\n";
         return;
     }
 
     std::string save_image_path = "data/user/" + uid + "/public/profile/";
-    //std::cout << "path: " << save_image_path << '\n';
-    if(name == "head_image")
-        save_image_path += "head_image";
-    else if(name == "profile_image_1")
-        save_image_path += "profile_image_1";
-    else if(name == "profile_image_2")
-        save_image_path += "profile_image_2";
-    else if(name == "profile_image_3")
-        save_image_path += "profile_image_3";
-    else if(name == "profile_image_4")
-        save_image_path = "profile_image_4";
-    else {
+
+    if(!name.empty()) {
+        save_image_path += name;
+    } else {
         Response(ResponseCode::FAILURE);
+        std::cout << "path: name empty\n";
         return;
     }
+    std::cout << "path: " << save_image_path << '\n';
+
     int fd = open(save_image_path.c_str(), O_CREAT | O_WRONLY | O_TRUNC, 0644);
     if(fd == -1) {
         Response(ResponseCode::FAILURE);
@@ -761,9 +771,43 @@ void Process::Center::DealWithUploadProfileImage() {
     }
     write(fd, content_.data(), content_.size());
     close(fd);
-
+    std::string store_url = SERVER_DOMAIN;
+                store_url += "/?request=get_profile_image&uid=" + uid + "&name=" + name;
+    std::cout << "store_url: " << store_url << '\n';
     Database::MysqlQuery query;
-   // query.Update("user_", "head_image", )
-
+    query.Update("user_", type, store_url, "uid='" + uid + '\'');
     Response(ResponseCode::SUCCESS);
 }
+
+void Process::Center::DealWithGetProfileImage() {
+    std::string name;
+    std::string uid;
+    try {
+        name = map_url_value_info_.at("name");
+        uid = map_url_value_info_.at("uid");
+    } catch (std::out_of_range e) {
+        Response(ResponseCode::FAILURE);
+        return;
+    }
+    std::string file_path = "data/user/" + uid + "/public/profile/" + name;
+    SendFile(file_path);
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -75,7 +75,8 @@ private:
     void DealWithRegisterUser();
     void GenerateUserPath(const std::string &uid);
     bool CheckJsonContentType(Json &recv_json_obj, const std::string &type);
-    void DealWithUploadProfileImage();
+    void DealWithUploadProfileImage(); //上传profile图片
+    void DealWithGetProfileImage();    //获取profile图片
     void DealWithRegisterGroup();
     void DealWithLogin();
     bool CheckIsLogined(const std::string &uid);
