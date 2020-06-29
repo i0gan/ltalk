@@ -32,7 +32,8 @@ SOURCES += \
     src/tray_icon.cpp \
     src/user_list_item.cpp \
     src/util.cpp \
-    src/third/image_cropper_label.cpp
+    src/third/image_cropper_label.cpp \
+    src/chat_message.cpp \
 
 HEADERS += \
     src/image_cropper_page.h \
@@ -49,7 +50,8 @@ HEADERS += \
     src/tray_icon.h \
     src/user_list_item.h \
     src/util.h \
-    src/third/image_cropper_label.h
+    src/third/image_cropper_label.h \
+    src/chat_message.h \
 
 FORMS += \
     src/form/image_cropper_page.ui \
