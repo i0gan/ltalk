@@ -133,7 +133,7 @@
        </widget>
       </widget>
      </widget>
-     <widget class="QWidget" name="page_friendList">
+     <widget class="QWidget" name="page_userList">
       <property name="styleSheet">
        <string notr="true">QScrollArea{
 border:0px solid;
@@ -197,7 +197,7 @@ border:0px solid;
 border-radius: 3px;
 }</string>
       </property>
-      <widget class="QScrollArea" name="scrollArea_friends">
+      <widget class="QScrollArea" name="scrollArea_users">
        <property name="geometry">
         <rect>
          <x>0</x>
@@ -218,7 +218,7 @@ border-radius: 3px;
        <property name="widgetResizable">
         <bool>true</bool>
        </property>
-       <widget class="QWidget" name="Widget_friendList">
+       <widget class="QWidget" name="Widget_userList">
         <property name="geometry">
          <rect>
           <x>0</x>

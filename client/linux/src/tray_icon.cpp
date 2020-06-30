@@ -27,7 +27,7 @@ void TrayIcon::init() {
 }
 
 void TrayIcon::clickAction_1() {
-    emit localCmd(LocalCmd::showMainPage);
+    emit localCmd(LocalCmd::show_main_page);
 }
 void TrayIcon::clickAction_2() {
     emit localCmd(LocalCmd::logout);
@@ -42,7 +42,7 @@ void TrayIcon::dealWithTrayIconActivated(QSystemTrayIcon::ActivationReason reaso
     case QSystemTrayIcon::DoubleClick:
         break;
     case QSystemTrayIcon::Trigger: {
-        emit localCmd(LocalCmd::showMainPage);
+        emit localCmd(LocalCmd::show_main_page);
     } break;
     case QSystemTrayIcon::MiddleClick: {
 

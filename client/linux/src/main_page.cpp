@@ -36,6 +36,10 @@ void MainPage::init() {
     connect(tray_icon_, &TrayIcon::localCmd, this, &MainPage::dealWithLocalCmd);
     tray_icon_->init();
     connect(net_mannager_, &QNetworkAccessManager::finished, this, &MainPage::requestGetFileReply);
+
+
+    //test
+    addUserListItem(user_info_);
 }
 
 void MainPage::mousePressEvent(QMouseEvent *event) {
@@ -56,7 +60,7 @@ void MainPage::mouseMoveEvent(QMouseEvent *event) {
 bool MainPage::eventFilter(QObject *object, QEvent *e) {
     bool ret = true;
     if(e->type() == QEvent::MouseButtonPress && object == ui->label_headImage) {
-        emit localCmd(LocalCmd::ShowProfilePage);
+        emit localCmd(LocalCmd::show_profile_page);
     }else
         ret = false;
     return ret;
@@ -78,7 +82,7 @@ void MainPage::on_pushButton_groups_clicked()
 
 void MainPage::on_pushButton_friends_clicked()
 {
-    ui->stackedWidget_list->setCurrentWidget(ui->page_friendList);
+    ui->stackedWidget_list->setCurrentWidget(ui->page_userList);
 }
 
 
@@ -152,5 +156,10 @@ void MainPage::setTheme(QString theme) {
 }
 
 void MainPage::on_pushButton_changeTheme_clicked() {
-    emit localCmd(LocalCmd::showChnageThemePage);
+    emit localCmd(LocalCmd::show_chnage_theme_page);
+}
+
+void MainPage::addUserListItem(const UserInfo &user_info) {
+    UserListItem *item = new UserListItem();
+    ui->Widget_userList->layout()->addWidget(item);
 }

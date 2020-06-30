@@ -30,11 +30,11 @@ class ProfilePage : public QWidget
     Q_OBJECT
     enum class ImageType {
         none = 0,
-        headImage,
-        profileImage_1,
-        profileImage_2,
-        profileImage_3,
-        profileImage_4,
+        head_image,
+        profile_image_1,
+        profile_image_2,
+        profile_image_3,
+        profile_image_4,
     };
 
 public:

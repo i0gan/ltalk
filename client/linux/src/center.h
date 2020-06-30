@@ -22,6 +22,7 @@
 #include "about_page.h"
 #include "profile_page.h"
 #include "image_cropper_page.h"
+#include "add_user_page.h"
 
 class Center : public QObject
 {
@@ -64,6 +65,7 @@ private:
     AboutPage *about_page_;
     ProfilePage *profile_page_;
     ImageCropperPage *image_cropper_page_;
+    AddUserPage *add_user_page_;
     QNetworkAccessManager *network_access_mannager;
     QNetworkRequest keep_connect_request_;
     QNetworkRequest resource_request_;

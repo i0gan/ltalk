@@ -118,7 +118,7 @@ void LoginPage::dealWithRecv(QJsonObject &json_obj) {
 }
 
 void LoginPage::on_toolButton_changeTheme_clicked() {
-    localCmd(LocalCmd::showChnageThemePage);
+    localCmd(LocalCmd::show_chnage_theme_page);
 }
 
 void LoginPage::setTheme(QString theme) {

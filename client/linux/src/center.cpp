@@ -32,6 +32,8 @@ void Center::init() {
     network_access_mannager = new QNetworkAccessManager(this);
     connect(network_access_mannager, &QNetworkAccessManager::finished, this, &Center::requestReply);
 
+    add_user_page_ = new AddUserPage();
+
 }
 
 void Center::start() {
@@ -137,17 +139,17 @@ void Center::dealWithLocalCmd(LocalCmd cmd) {
     case LocalCmd::logout: {
 
     } break;
-    case LocalCmd::showChnageThemePage: {
+    case LocalCmd::show_chnage_theme_page: {
         change_theme_page_->show();
     } break;
-    case LocalCmd::showMainPage: {
+    case LocalCmd::show_main_page: {
         main_page_->showNormal();
         main_page_->show();
     } break;
-    case LocalCmd::showAboutPage: {
+    case LocalCmd::show_about_page: {
         about_page_->show();
     } break;
-    case LocalCmd::ShowProfilePage : {
+    case LocalCmd::show_profile_page : {
         profile_page_->showNormal();
         profile_page_->show();
     } break;

@@ -37,10 +37,10 @@ void FloatingSettingsWindow::on_pushButton_exit_clicked() {
 }
 
 void FloatingSettingsWindow::on_pushButton_changeTheme_clicked() {
-    emit localCmd(LocalCmd::showChnageThemePage);
+    emit localCmd(LocalCmd::show_chnage_theme_page);
 }
 
 void FloatingSettingsWindow::on_pushButton_about_clicked()
 {
-    emit localCmd(LocalCmd::showAboutPage);
+    emit localCmd(LocalCmd::show_about_page);
 }

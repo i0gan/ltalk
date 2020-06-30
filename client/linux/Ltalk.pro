@@ -17,6 +17,7 @@ DEFINES += QT_DEPRECATED_WARNINGS
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
 SOURCES += \
+    src/add_user_page.cpp \
     src/image_cropper_page.cpp \
     src/message_list_item.cpp \
     src/profile_page.cpp \
@@ -37,6 +38,7 @@ SOURCES += \
     src/chat_message.cpp \
 
 HEADERS += \
+    src/add_user_page.h \
     src/image_cropper_page.h \
     src/message_list_item.h \
     src/profile_page.h \
@@ -56,6 +58,7 @@ HEADERS += \
     src/chat_message.h \
 
 FORMS += \
+    src/form/add_user_page.ui \
     src/form/image_cropper_page.ui \
     src/form/message_list_item.ui \
     src/form/profile_page.ui \

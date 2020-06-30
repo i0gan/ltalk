@@ -5,7 +5,7 @@ ProfilePage::ProfilePage(QWidget *parent) :
     QWidget(parent),
     ui(new Ui::ProfilePage),
     pressed_(false),
-    request_step_(ImageType::headImage),
+    request_step_(ImageType::head_image),
     is_modifying_image_(false),
     crop_image_type_(ImageType::none)
 {
@@ -64,15 +64,15 @@ void ProfilePage::mouseMoveEvent(QMouseEvent *event) {
 bool ProfilePage::eventFilter(QObject *object, QEvent *e) {
     bool ret = true;
     if(object == ui->label_headImage && e->type() == QEvent::MouseButtonDblClick) {
-        modifyImage(ImageType::headImage);
+        modifyImage(ImageType::head_image);
     }else if(object == ui->label_profile_image_1 && e->type() == QEvent::MouseButtonDblClick) {
-        modifyImage(ImageType::profileImage_1);
+        modifyImage(ImageType::profile_image_1);
     }else if(object == ui->label_profile_image_2 && e->type() == QEvent::MouseButtonDblClick) {
-        modifyImage(ImageType::profileImage_2);
+        modifyImage(ImageType::profile_image_2);
     }else if(object == ui->label_profile_image_3 && e->type() == QEvent::MouseButtonDblClick) {
-        modifyImage(ImageType::profileImage_3);
+        modifyImage(ImageType::profile_image_3);
     }else if(object == ui->label_profile_image_4 && e->type() == QEvent::MouseButtonDblClick) {
-        modifyImage(ImageType::profileImage_4);
+        modifyImage(ImageType::profile_image_4);
     }else if(object == ui->lineEdit_QQ && e->type() == QEvent::MouseButtonDblClick) {
         ui->lineEdit_QQ->setReadOnly(false);
         ui->pushButton_saveModifiedInfo->show();
@@ -115,23 +115,23 @@ void ProfilePage::on_toolButton_close_clicked() {
 void ProfilePage::dealWithCroped(QString saved_file_name) {
     QPixmap image = QPixmap(saved_file_name);
     switch (crop_image_type_) {
-    case ImageType::headImage: {
+    case ImageType::head_image: {
         ui->label_headImage->setPixmap(image);
         ui->label_headImage->setScaledContents(true);
     } break;
-    case ImageType::profileImage_1: {
+    case ImageType::profile_image_1: {
         ui->label_profile_image_1->setPixmap(image);
         ui->label_profile_image_1->setScaledContents(true);
     } break;
-    case ImageType::profileImage_2: {
+    case ImageType::profile_image_2: {
         ui->label_profile_image_2->setPixmap(image);
         ui->label_profile_image_2->setScaledContents(true);
     } break;
-    case ImageType::profileImage_3: {
+    case ImageType::profile_image_3: {
         ui->label_profile_image_3->setPixmap(image);
         ui->label_profile_image_3->setScaledContents(true);
     } break;
-    case ImageType::profileImage_4: {
+    case ImageType::profile_image_4: {
         ui->label_profile_image_4->setPixmap(image);
         ui->label_profile_image_4->setScaledContents(true);
     } break;
@@ -157,19 +157,19 @@ void ProfilePage::uploadImage(ImageType image, QString saved_file_name) {
     request_url += user_info_.account + "&uid=" + user_info_.uid + "&token=";
     request_url += user_info_.token;
     switch (image) {
-    case ImageType::headImage: {
+    case ImageType::head_image: {
         request_url += "&type=head_image&name=head_image.jpg";
     } break;
-    case ImageType::profileImage_1: {
+    case ImageType::profile_image_1: {
         request_url += "&type=profile_image_1&name=profile_image_1.jpg";
     } break;
-    case ImageType::profileImage_2: {
+    case ImageType::profile_image_2: {
         request_url += "&type=profile_image_2&name=profile_image_2.jpg";
     } break;
-    case ImageType::profileImage_3: {
+    case ImageType::profile_image_3: {
         request_url += "&type=profile_image_3&name=profile_image_3.jpg";
     } break;
-    case ImageType::profileImage_4: {
+    case ImageType::profile_image_4: {
         request_url += "&type=profile_image_4&name=profile_image_4.jpg";
     } break;
     default:
@@ -233,27 +233,27 @@ void ProfilePage::requestReply(QNetworkReply *reply) {
         QPixmap image;
         image.loadFromData(data);
         switch (request_step_) {
-        case ImageType::headImage: {
+        case ImageType::head_image: {
             ui->label_headImage->setPixmap(image);
             ui->label_headImage->setScaledContents(true);
-            requestGetImage(ImageType::profileImage_1);
+            requestGetImage(ImageType::profile_image_1);
         } break;
-        case ImageType::profileImage_1: {
+        case ImageType::profile_image_1: {
             ui->label_profile_image_1->setPixmap(image);
             ui->label_profile_image_1->setScaledContents(true);
-            requestGetImage(ImageType::profileImage_2);
+            requestGetImage(ImageType::profile_image_2);
         } break;
-        case ImageType::profileImage_2: {
+        case ImageType::profile_image_2: {
             ui->label_profile_image_2->setPixmap(image);
             ui->label_profile_image_2->setScaledContents(true);
-            requestGetImage(ImageType::profileImage_3);
+            requestGetImage(ImageType::profile_image_3);
         } break;
-        case ImageType::profileImage_3: {
+        case ImageType::profile_image_3: {
             ui->label_profile_image_3->setPixmap(image);
             ui->label_profile_image_3->setScaledContents(true);
-            requestGetImage(ImageType::profileImage_4);
+            requestGetImage(ImageType::profile_image_4);
         } break;
-        case ImageType::profileImage_4: {
+        case ImageType::profile_image_4: {
             ui->label_profile_image_4->setPixmap(image);
             ui->label_profile_image_4->setScaledContents(true);
             request_step_ = ImageType::none;
@@ -280,19 +280,19 @@ void ProfilePage::requestGetImage(ImageType request_step) {
     QString url;
     request_step_ = request_step;
     switch (request_step) {
-    case ImageType::headImage: {
+    case ImageType::head_image: {
         url = user_info_.head_image;
     } break;
-    case ImageType::profileImage_1: {
+    case ImageType::profile_image_1: {
         url = user_info_.profile_image_1;
     } break;
-    case ImageType::profileImage_2: {
+    case ImageType::profile_image_2: {
         url = user_info_.profile_image_2;
     } break;
-    case ImageType::profileImage_3: {
+    case ImageType::profile_image_3: {
         url = user_info_.profile_image_3;
     } break;
-    case ImageType::profileImage_4: {
+    case ImageType::profile_image_4: {
         url = user_info_.profile_image_4;
     } break;
     default:
@@ -311,21 +311,21 @@ void ProfilePage::requestGetImage(ImageType request_step) {
 }
 
 void ProfilePage::setNextRequestStep() {
-    if(request_step_ == ImageType::headImage)
-        request_step_ = ImageType::profileImage_1;
-    else if(request_step_ == ImageType::profileImage_1)
-        request_step_ = ImageType::profileImage_2;
-    else if(request_step_ == ImageType::profileImage_2)
-        request_step_ = ImageType::profileImage_3;
-    else if(request_step_ == ImageType::profileImage_3)
-        request_step_ = ImageType::profileImage_4;
+    if(request_step_ == ImageType::head_image)
+        request_step_ = ImageType::profile_image_1;
+    else if(request_step_ == ImageType::profile_image_1)
+        request_step_ = ImageType::profile_image_2;
+    else if(request_step_ == ImageType::profile_image_2)
+        request_step_ = ImageType::profile_image_3;
+    else if(request_step_ == ImageType::profile_image_3)
+        request_step_ = ImageType::profile_image_4;
     else
-        request_step_ = ImageType::headImage;
+        request_step_ = ImageType::head_image;
 }
 
 void ProfilePage::setUserInfo(const UserInfo &user_info) {
     user_info_ = user_info;
-    requestGetImage(ImageType::headImage);
+    requestGetImage(ImageType::head_image);
 }
 
 void ProfilePage::on_pushButton_saveModifiedInfo_clicked()
@@ -335,4 +335,9 @@ void ProfilePage::on_pushButton_saveModifiedInfo_clicked()
     ui->lineEdit_nickname->setReadOnly(true);
     ui->lineEdit_occupation->setReadOnly(true);
     ui->pushButton_saveModifiedInfo->hide();
+
+    QJsonDocument json_document;
+    QJsonObject json_main_obj;
+    QJsonObject json_content_obj;
+
 }

@@ -88,43 +88,6 @@ border-radius:15px</string>
     <string>username</string>
    </property>
   </widget>
-  <widget class="QLabel" name="label_bg">
-   <property name="enabled">
-    <bool>true</bool>
-   </property>
-   <property name="geometry">
-    <rect>
-     <x>0</x>
-     <y>0</y>
-     <width>260</width>
-     <height>51</height>
-    </rect>
-   </property>
-   <property name="minimumSize">
-    <size>
-     <width>260</width>
-     <height>51</height>
-    </size>
-   </property>
-   <property name="maximumSize">
-    <size>
-     <width>260</width>
-     <height>51</height>
-    </size>
-   </property>
-   <property name="styleSheet">
-    <string notr="true">QLabel{
-	background-color : rgb(255, 255, 255, 1%);
-   
-}
-:hover{
- border:2px solid rgb(12, 255, 235);
-}</string>
-   </property>
-   <property name="text">
-    <string/>
-   </property>
-  </widget>
  </widget>
  <resources/>
  <connections/>

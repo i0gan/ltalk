@@ -9,9 +9,6 @@
 
 #define DATA_PATH "Documents/Ltalk"
 
-
-
-
 struct UserInfo {
     QString uid;
     QString token;
@@ -43,15 +40,16 @@ struct GroupInfo {
 // Local cmd
 enum class LocalCmd {
     exit,
-    showMainPage,
-    showChnageThemePage,
-    showAboutPage,
-    ShowProfilePage,
+    show_main_page,
+    show_chnage_theme_page,
+    show_about_page,
+    show_profile_page,
+    show_add_user_page,
     logout,
-    mainPageGetHeadImage,
-    mainPageGetFriendList,
-    mainPageGetGroupList,
-    getUserInfo,
+    main_page_get_head_image,
+    main_page_get_friend_list,
+    main_page_get_group_list,
+    get_user_info,
 };
 
 

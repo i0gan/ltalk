@@ -20,7 +20,7 @@
 #include "tray_icon.h"
 #include "ltalk.h"
 #include "util.h"
-
+#include "user_list_item.h"
 namespace Ui {
 class MainPage;
 }
@@ -40,6 +40,9 @@ public:
     void init();
     void setUserInfo(const UserInfo &user_info);
     void setTheme(QString theme);
+    void addUserListItem(const UserInfo &user_info);
+    void addGroupListItem();
+    void addMessageListItem();
 signals:
     void localCmd(LocalCmd cmd);
 
