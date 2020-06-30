@@ -10,7 +10,7 @@ fi
 
 git add .
 git reset HEAD $cancel
-git commit -m "$commit"
+git commit -m "$comment"
 git status
 git push
 
