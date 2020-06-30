@@ -3,10 +3,11 @@
 
 enum class Process::RequestType {
     error = 0,
-    download,
+    main_page,
+    register_page,
+    register_success_page,
     login,
     register_,
-    register_success,
     keep_connect,
     get_user_info,
     get_public_file,

@@ -50,7 +50,6 @@ public:
     void HandleGet();
     void HandlePost();
     void HandlePut();
-    void HandleWebRequest();
     void Offline();
 private:
     const std::map<std::string, std::string> &map_header_info_;

@@ -4,10 +4,11 @@
 std::unordered_map<std::string, Process::RequestType> Process::Request::umap_type_;
 pthread_once_t Process::Request::once_control_;
 void Process::Request::Init() {
+    Request::umap_type_["main_page"] = RequestType::main_page;
+    Request::umap_type_["register_page"] = RequestType::register_page;
+    Request::umap_type_["register_success_page"] = RequestType::register_success_page;
     Request::umap_type_["login"] = RequestType::login;
-    Request::umap_type_["download"] = RequestType::download;
     Request::umap_type_["register"] = RequestType::register_;
-    Request::umap_type_["register_success"] = RequestType::register_success;
     Request::umap_type_["keep_connect"] = RequestType::keep_connect;
     Request::umap_type_["get_user_info"] = RequestType::get_user_info;
     Request::umap_type_["get_public_file"] = RequestType::get_public_file;

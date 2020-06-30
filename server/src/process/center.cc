@@ -58,41 +58,33 @@ void Process::Center::Process() {
     }
 }
 
-void Process::Center::HandleWebRequest() {
-    std::string path = Data::web_root;
-    RequestType request_type = Request::toEnum(request_);
-    switch (request_type) {
-    case RequestType::register_: {
-        path += "/register/index.html";
-        SendFile(path);
-    } break;
-    case RequestType::register_success: {
-        path += "/register/success/index.html";
-        SendFile(path);
-    } break;
-    case RequestType::download: {
-        path += "/download/index.html";
-        SendFile(path);
-    } break;
-    default: {
-        HandleNotFound();
-    } break;
-    }
-}
+
 
 void Process::Center::HandleGet() {
     bool error = false;
     std::string path = map_url_info_["path"];
+    std::string web_path = Data::web_root;
     RequestType request_type = Request::toEnum(request_);
     do {
         if(path == "/" && platform_.empty()) {
             path = Data::web_root + "/" + Data::web_page;
             SendFile(path);
             break;
-        } else if(platform_ == "web"){
-            HandleWebRequest();
         }
         switch (request_type) {
+        case RequestType::register_page: {
+            web_path += "/register/index.html";
+            std::cout << "------------->: " << web_path << "\n";
+            SendFile(web_path);
+        } break;
+        case RequestType::register_success_page: {
+            web_path += "/register/success/index.html";
+            SendFile(web_path);
+        } break;
+        case RequestType::main_page: {
+            web_path += "/main/index.html";
+            SendFile(web_path);
+        } break;
         case RequestType::keep_connect: {
             DealWithKeepConnect();
         }break;
@@ -125,7 +117,7 @@ void Process::Center::HandlePost() {
     RequestType request_type = Request::toEnum(request_);
     //std::cout << "post: " << request_ << '\n';
     switch (request_type) {
-    case RequestType::register_: {
+    case RequestType::register_page: {
         if(platform_ == "web")
             DealWithRegisterUser();
     } break;
@@ -400,7 +392,7 @@ void Process::Center::DealWithRegisterUser() {
         { "server", SERVER_NAME },
         { "code", ResponseCode::SUCCESS },
         { "datetime" , GetDateTime() },
-        { "access_url", "/?request=register_success&platform=web"},
+        { "access_url", "/?request=register_success_page&platform=web"},
         { "uid" , uid},
         { "token", MakeToken(uid) }
     };
