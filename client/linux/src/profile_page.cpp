@@ -33,10 +33,17 @@ void ProfilePage::init() {
     ui->label_profile_image_2->installEventFilter(this);
     ui->label_profile_image_3->installEventFilter(this);
     ui->label_profile_image_4->installEventFilter(this);
+    ui->lineEdit_QQ->installEventFilter(this);
+    ui->lineEdit_address->installEventFilter(this);
+    ui->lineEdit_nickname->installEventFilter(this);
+    ui->lineEdit_occupation->installEventFilter(this);
+
     ui->progressBar_upload->hide();
+    ui->pushButton_saveModifiedInfo->hide();
     image_cropper_page_->init();
     connect(network_mannager_, &QNetworkAccessManager::finished, this, &ProfilePage::requestReply);
     connect(image_cropper_page_, &ImageCropperPage::finshed, this, &ProfilePage::dealWithCroped);
+
 }
 
 void ProfilePage::mousePressEvent(QMouseEvent *event) {
@@ -66,6 +73,18 @@ bool ProfilePage::eventFilter(QObject *object, QEvent *e) {
         modifyImage(ImageType::profileImage_3);
     }else if(object == ui->label_profile_image_4 && e->type() == QEvent::MouseButtonDblClick) {
         modifyImage(ImageType::profileImage_4);
+    }else if(object == ui->lineEdit_QQ && e->type() == QEvent::MouseButtonDblClick) {
+        ui->lineEdit_QQ->setReadOnly(false);
+        ui->pushButton_saveModifiedInfo->show();
+    }else if(object == ui->lineEdit_address && e->type() == QEvent::MouseButtonDblClick) {
+        ui->lineEdit_address->setReadOnly(false);
+        ui->pushButton_saveModifiedInfo->show();
+    }else if(object == ui->lineEdit_nickname && e->type() == QEvent::MouseButtonDblClick) {
+        ui->lineEdit_nickname->setReadOnly(false);
+        ui->pushButton_saveModifiedInfo->show();
+    }else if(object == ui->lineEdit_occupation && e->type() == QEvent::MouseButtonDblClick) {
+        ui->lineEdit_occupation->setReadOnly(false);
+        ui->pushButton_saveModifiedInfo->show();
     }else
         ret = false;
     return ret;
@@ -94,18 +113,29 @@ void ProfilePage::on_toolButton_close_clicked() {
 }
 
 void ProfilePage::dealWithCroped(QString saved_file_name) {
-    QString style = "QLabel{ border-image:";
-    style += QString("url(%1)} QLabel:hover{ border:4px;}").arg(saved_file_name);
-    if(crop_image_type_ == ImageType::headImage) {
-        ui->label_headImage->setStyleSheet(style);
-    }else if(crop_image_type_ == ImageType::profileImage_1) {
-        ui->label_profile_image_1->setStyleSheet(style);
-    }else if(crop_image_type_ == ImageType::profileImage_2) {
-        ui->label_profile_image_2->setStyleSheet(style);
-    }else if(crop_image_type_ == ImageType::profileImage_3) {
-        ui->label_profile_image_3->setStyleSheet(style);
-    }else if(crop_image_type_ == ImageType::profileImage_4) {
-        ui->label_profile_image_4->setStyleSheet(style);
+    QPixmap image = QPixmap(saved_file_name);
+    switch (crop_image_type_) {
+    case ImageType::headImage: {
+        ui->label_headImage->setPixmap(image);
+        ui->label_headImage->setScaledContents(true);
+    } break;
+    case ImageType::profileImage_1: {
+        ui->label_profile_image_1->setPixmap(image);
+        ui->label_profile_image_1->setScaledContents(true);
+    } break;
+    case ImageType::profileImage_2: {
+        ui->label_profile_image_2->setPixmap(image);
+        ui->label_profile_image_2->setScaledContents(true);
+    } break;
+    case ImageType::profileImage_3: {
+        ui->label_profile_image_3->setPixmap(image);
+        ui->label_profile_image_3->setScaledContents(true);
+    } break;
+    case ImageType::profileImage_4: {
+        ui->label_profile_image_4->setPixmap(image);
+        ui->label_profile_image_4->setScaledContents(true);
+    } break;
+    default: break;
     }
     uploadImage(crop_image_type_, saved_file_name);
 }
@@ -169,6 +199,7 @@ void ProfilePage::setTheme(QString theme) {
     }else if(theme == "love") {
         ui->label_frame->setStyleSheet("QLabel{ border-image : url(':/ui/themes/love/dialog_page.png')}");
     }
+    image_cropper_page_->setTheme(theme);
 }
 
 void ProfilePage::requestReply(QNetworkReply *reply) {
@@ -190,6 +221,7 @@ void ProfilePage::requestReply(QNetworkReply *reply) {
             }
             json_obj = json_document.object();
             dealWithServerResponse(json_obj);
+            return;
         }
 
         QDir dir;
@@ -204,31 +236,27 @@ void ProfilePage::requestReply(QNetworkReply *reply) {
         case ImageType::headImage: {
             ui->label_headImage->setPixmap(image);
             ui->label_headImage->setScaledContents(true);
-            store_path += "/head_image.jpg";
             requestGetImage(ImageType::profileImage_1);
         } break;
         case ImageType::profileImage_1: {
             ui->label_profile_image_1->setPixmap(image);
             ui->label_profile_image_1->setScaledContents(true);
-            store_path += "/head_image.jpg";
             requestGetImage(ImageType::profileImage_2);
         } break;
         case ImageType::profileImage_2: {
             ui->label_profile_image_2->setPixmap(image);
             ui->label_profile_image_2->setScaledContents(true);
-            store_path += "/profile_image_2.jpg";
             requestGetImage(ImageType::profileImage_3);
         } break;
         case ImageType::profileImage_3: {
             ui->label_profile_image_3->setPixmap(image);
             ui->label_profile_image_3->setScaledContents(true);
-            store_path += "/profile_image_3.jpg";
             requestGetImage(ImageType::profileImage_4);
         } break;
         case ImageType::profileImage_4: {
             ui->label_profile_image_4->setPixmap(image);
             ui->label_profile_image_4->setScaledContents(true);
-            store_path += "/profile_image_4.jpg";
+            request_step_ = ImageType::none;
         } break;
         default:
             break;
@@ -240,6 +268,8 @@ void ProfilePage::dealWithServerResponse(const QJsonObject &json_obj) {
     int code = json_obj.value("code").toInt();
     if(code == 0 && json_obj.value("request").toString() == "upload_profile_image") {
         qDebug() << "上传成功";
+
+
     }else {
         qDebug() << "上传失败!";
     }
@@ -295,16 +325,14 @@ void ProfilePage::setNextRequestStep() {
 
 void ProfilePage::setUserInfo(const UserInfo &user_info) {
     user_info_ = user_info;
-    QDir dir;
-    qDebug() << "gettttt";
     requestGetImage(ImageType::headImage);
-    // 设置头像
-    //QString style = "QLabel{ border-image:";
-    //style += QString("url(%1)} QLabel:hover{ border:4px;}").arg(head_image_path);
+}
 
-//    ui->label_headImage->setStyleSheet(style);
-//    //ui->label_profile_image_1->setStyleSheet(style);
-//    ui->label_profile_image_2->setStyleSheet(style);
-//    ui->label_profile_image_3->setStyleSheet(style);
-//    ui->label_profile_image_4->setStyleSheet(style);
+void ProfilePage::on_pushButton_saveModifiedInfo_clicked()
+{
+    ui->lineEdit_QQ->setReadOnly(true);
+    ui->lineEdit_address->setReadOnly(true);
+    ui->lineEdit_nickname->setReadOnly(true);
+    ui->lineEdit_occupation->setReadOnly(true);
+    ui->pushButton_saveModifiedInfo->hide();
 }

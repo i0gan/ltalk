@@ -22,11 +22,10 @@ public:
     ~ImageCropperPage();
     void init();
     bool crop(const QPixmap &pixmap, CropperShape shape, QSize size);
-    void setSize(QPoint size);
-    void setScale(int width, int hight);
     void setPixmap(const QPixmap &pixmap);
     void setPixmap(const QString &file_name);
     bool isOpen();
+    void setTheme(QString theme);
 signals:
     void finshed(QString saved_file_name);
     void failed();

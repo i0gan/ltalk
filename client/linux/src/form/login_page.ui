@@ -229,6 +229,19 @@ QToolButton:hover{
     <string/>
    </property>
   </widget>
+  <widget class="QLabel" name="label_additonal_image">
+   <property name="geometry">
+    <rect>
+     <x>200</x>
+     <y>100</y>
+     <width>200</width>
+     <height>100</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string/>
+   </property>
+  </widget>
   <zorder>label_frame</zorder>
   <zorder>label_title</zorder>
   <zorder>lineEdit_account</zorder>
@@ -240,6 +253,7 @@ QToolButton:hover{
   <zorder>label_forgot</zorder>
   <zorder>label_process_text</zorder>
   <zorder>toolButton_changeTheme</zorder>
+  <zorder>label_additonal_image</zorder>
  </widget>
  <resources/>
  <connections/>

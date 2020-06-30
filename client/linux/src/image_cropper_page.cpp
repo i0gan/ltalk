@@ -55,12 +55,12 @@ void ImageCropperPage::mouseMoveEvent(QMouseEvent *event) {
     }
 }
 
-void ImageCropperPage::setSize(QPoint size) {
-
-}
-
-void ImageCropperPage::setScale(int width, int hight) {
-
+void ImageCropperPage::setTheme(QString theme) {
+    if(theme == "default") {
+        ui->label_frame->setStyleSheet("QLabel{ border-image : url(':/ui/themes/default/dialog_page.png')}");
+    }else if(theme == "love") {
+        ui->label_frame->setStyleSheet("QLabel{ border-image : url(':/ui/themes/love/dialog_page.png')}");
+    }
 }
 
 void ImageCropperPage::setPixmap(const QPixmap &pixmap) {

@@ -59,6 +59,7 @@ private:
     UserInfo user_info_;
     ImageCropperPage *image_cropper_page_;
     bool is_modifying_image_;
+    QString temp_image_path_;
     void modifyImage(ImageType image);
     void uploadImage(ImageType image, QString saved_file_name);
     ImageType crop_image_type_;
@@ -74,6 +75,7 @@ private slots:
     void on_toolButton_min_clicked();
     void on_toolButton_close_clicked();
     void dealWithCroped(QString saved_file_name);
+    void on_pushButton_saveModifiedInfo_clicked();
 };
 
 #endif // PROFILE_PAGE_H

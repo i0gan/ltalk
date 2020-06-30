@@ -26,5 +26,6 @@
         <file>ui/themes/default.jpg</file>
         <file>ui/themes/love.jpg</file>
         <file>ui/theme.png</file>
+        <file>image/login_additional_image.png</file>
     </qresource>
 </RCC>

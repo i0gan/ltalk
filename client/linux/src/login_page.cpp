@@ -43,6 +43,8 @@ void LoginPage::init() {
 
     ui->label_register->setOpenExternalLinks(true);
     ui->label_forgot->setOpenExternalLinks(true);
+    ui->label_additonal_image->setPixmap(QPixmap(":/image/login_additional_image.png"));
+    ui->label_additonal_image->setScaledContents(true);
 }
 void LoginPage::on_pushButton_login_clicked()
 {

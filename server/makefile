@@ -10,7 +10,7 @@ RM := rm -f
 CP := cp -r
 MKDIR := mkdir
 
-BUILD_PATH := ./bin
+BUILD_PATH := ./build
 
 # install path
 INSTALL_PATH := /usr/share/ltalks

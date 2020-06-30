@@ -500,7 +500,7 @@ void Process::Center::DealWithLogin() {
 
     std::string db_uid = sql_query.Value(0);
     std::string token = MakeToken(db_uid);
-    http_uid_ = db_uid;
+
     http_platform_ = platform_;
 
 
@@ -558,6 +558,7 @@ bool Process::Center::CheckIsLogined(const std::string &uid) {
 }
 
 bool Process::Center::UpdateUserInfo(const std::string &uid, const std::string &token) {
+    http_uid_ = uid;
     Data::User user;
     user.linux_fd = -1;
     user.windows_fd = -1;
@@ -582,6 +583,7 @@ bool Process::Center::UpdateUserInfo(const std::string &uid, const std::string &
         user.web_fd = fd_;
         user.web_token = token;
     }else {
+        http_uid_ = "";
         return false;
     }
     Data::map_user[uid] = user;

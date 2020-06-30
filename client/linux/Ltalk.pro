@@ -30,6 +30,7 @@ SOURCES += \
     src/center.cpp \
     src/main.cpp \
     src/tray_icon.cpp \
+    src/user_chat_page.cpp \
     src/user_list_item.cpp \
     src/util.cpp \
     src/third/image_cropper_label.cpp \
@@ -48,6 +49,7 @@ HEADERS += \
     src/center.h \ \
     src/ltalk.h \
     src/tray_icon.h \
+    src/user_chat_page.h \
     src/user_list_item.h \
     src/util.h \
     src/third/image_cropper_label.h \
@@ -64,6 +66,7 @@ FORMS += \
     src/form/login_page.ui \
     src/form/group_list_item.ui \
     src/form/user_list_item.ui \
+    src/form/user_chat_page.ui \
 
 
 # Default rules for deployment.
@@ -73,3 +76,5 @@ else: unix:!android: target.path = /opt/$${TARGET}/bin
 
 RESOURCES += \
     res/ui.qrc
+
+DISTFILES +=
