@@ -8,6 +8,7 @@ if [[ $1 ]]; then
 	comment=$1
 fi
 
+make clean
 git add .
 git reset HEAD $cancel
 git commit -m "$comment"
