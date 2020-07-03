@@ -3,7 +3,7 @@
 
 LoginPage::LoginPage(QWidget *parent) :
     QWidget(parent),
-    ui(new Ui::LoginPage)
+    ui(new Ui::LoginPage), pressed_(false)
 {
     ui->setupUi(this);
 }
@@ -14,7 +14,6 @@ LoginPage::~LoginPage()
 }
 
 void LoginPage::init() {
-    pressed_ = false;
     setWindowTitle("Ltalk login");
     setWindowIcon(QIcon(":/ui/logo.ico"));
     ui->pushButton_login->setShortcut(Qt::Key_Return);

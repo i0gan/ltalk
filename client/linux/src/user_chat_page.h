@@ -2,6 +2,11 @@
 #define USER_CHAT_PAGE_H
 
 #include <QWidget>
+#include <QDesktopWidget>
+#include <QDebug>
+#include <QMouseEvent>
+
+#include "chat_message.h"
 
 namespace Ui {
 class UserChatPage;
@@ -14,9 +19,20 @@ class UserChatPage : public QWidget
 public:
     explicit UserChatPage(QWidget *parent = nullptr);
     ~UserChatPage();
-
+    void init();
+    //QPoint
 private:
     Ui::UserChatPage *ui;
+    bool pressed_;
+    QPoint mouse_pos_;
+protected:
+    void mouseMoveEvent(QMouseEvent *event) override;
+    void mousePressEvent(QMouseEvent *event) override;
+    void mouseReleaseEvent(QMouseEvent *) override;
+private slots:
+    void on_toolButton_close_clicked();
+    void on_toolButton_min_clicked();
+    void on_pushButton_send_clicked();
 };
 
 #endif // USER_CHAT_PAGE_H

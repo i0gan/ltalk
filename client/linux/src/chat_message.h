@@ -20,8 +20,8 @@ public:
     };
 
     explicit ChatMessage(QWidget *parent = nullptr);
-    void setText(QString text, ChatMessage::MessageType message_type);
-    void setHeadImage(QPixmap head_image);
+    void setText(const QString &text, ChatMessage::MessageType message_type);
+    void setHeadImage(const QPixmap &head_image);
     void playSending();
     void stopSending();
     QSize getSize(QString str);

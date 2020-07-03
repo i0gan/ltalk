@@ -16,7 +16,7 @@ ChatMessage::ChatMessage(QWidget *parent) : QWidget(parent),
     send_stat_->setAutoFillBackground(false);
 }
 
-void ChatMessage::setText(QString text, ChatMessage::MessageType message_type) {
+void ChatMessage::setText(const QString &text, ChatMessage::MessageType message_type) {
     message_type_ = message_type;
     text_ = text;
     if(message_type_ == MessageType::myself) {
@@ -203,7 +203,7 @@ void ChatMessage::paintEvent(QPaintEvent *event) {
     }
 }
 
-void ChatMessage::setHeadImage(QPixmap head_image) {
+void ChatMessage::setHeadImage(const QPixmap &head_image) {
     head_image_ = head_image;
 }
 

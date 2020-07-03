@@ -21,6 +21,7 @@
 #include "ltalk.h"
 #include "util.h"
 #include "user_list_item.h"
+
 namespace Ui {
 class MainPage;
 }

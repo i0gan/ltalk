@@ -3,8 +3,14 @@
 #include <QString>
 #include <QVector>
 #include <QDateTime>
+#define DEBUG
 
+#ifdef DEBUG
 #define SERVER_REQUEST_URL "http://192.168.100.8"
+#else
+#define SERVER_REQUEST_URL "http://ltalk.co"
+#endif
+
 #define SERVER_BASE_URL_VALUE "/?platform=linux"
 
 #define DATA_PATH "Documents/Ltalk"

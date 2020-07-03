@@ -13,6 +13,7 @@ int main(int argc, char *argv[]) {
 //    center.changeTheme("default");
 //    center.start();
     UserChatPage c;
+    c.init();
     c.show();
     return app.exec();
 }

@@ -42,7 +42,7 @@ void Center::start() {
 
 void Center::requestLogin(QString account, QString password) {
     //qDebug() << "requstlogin : " << account << " " << password;
-    keep_connect_request_.setRawHeader("Origin", "http://lyxf.xyz");
+    keep_connect_request_.setRawHeader("Origin", "http://ltalk.co");
     keep_connect_request_.setRawHeader("Accept", "*/*");
     keep_connect_request_.setRawHeader("Content-Type", "application/json");
     keep_connect_request_.setRawHeader("Accept", "application/json");
