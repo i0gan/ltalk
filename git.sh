@@ -18,7 +18,8 @@ git add .
 git reset HEAD $cancel
 git commit -m "$comment"
 git status
-git push
+echo 'I0gan' | git push
+
 
 #echo $cancel
 #echo $comment
