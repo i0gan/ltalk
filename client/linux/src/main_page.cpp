@@ -112,6 +112,8 @@ void MainPage::setUserInfo(const UserInfo &user_info) {
 }
 
 void MainPage::requestGetFile(QString url, GetWhat what, QString save_file_path,  bool private_file) {
+    if(url == "none")
+        return;
     get_what_ = what;
     save_file_path_ = save_file_path;
     request_.setRawHeader("Origin", "http://ltalk.co");
