@@ -88,8 +88,8 @@ void Center::requestReply(QNetworkReply *reply) {
                 break;
             }
         }else {
-            qDebug() << "接收类型不对" << reply->rawHeader(QString("content-type").toUtf8());
-            //qDebug() << reply->readAll();
+            qDebug() << "接收类型不对";
+            qDebug() << reply->readAll();
             break;
         }
         json_object = json_document.object();

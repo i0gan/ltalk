@@ -32,6 +32,9 @@ private:
     QPoint mouse_pos_;
     QNetworkRequest request_;
     QNetworkAccessManager *network_access_mannager;
+    UserInfo searched_user_info_;
+    void dealWithSearchReply(const QJsonObject &json_obj);
+    void dealWithNotExist();
 
 protected:
     void mouseMoveEvent(QMouseEvent *event) override;
@@ -41,6 +44,7 @@ private slots:
     void on_toolButton_close_clicked();
     void on_pushButton_search_clicked();
     void dealWithRecv(QNetworkReply *reply);
+
 };
 
 #endif // ADD_USER_PAGE_H

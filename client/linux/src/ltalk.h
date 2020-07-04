@@ -24,6 +24,7 @@ struct UserInfo {
     QString name;
     QString phone_number;
     QString address;
+    QString qq;
     QString ocupation;
     QString creation_time;
     QString network_state;

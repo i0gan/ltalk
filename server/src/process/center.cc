@@ -72,7 +72,6 @@ void Process::Center::HandleGet() {
         switch (request_type) {
         case RequestType::register_page: {
             web_path += "/register/index.html";
-            std::cout << "------------->: " << web_path << "\n";
             SendFile(web_path);
         } break;
         case RequestType::register_success_page: {

@@ -64,7 +64,41 @@ void AddUserPage::on_pushButton_search_clicked() {
 }
 
 void AddUserPage::dealWithRecv(QNetworkReply *reply) {
+    QByteArray recv_data;
+    recv_data = reply->readAll();
     if(reply->rawHeader("Content-Type") == "application/json") {
-        qDebug() << reply->readAll();
+        QJsonDocument json_document;
+        QJsonObject json_obj;
+        QJsonParseError json_parse_error;
+
+        json_document = QJsonDocument::fromJson(recv_data, &json_parse_error);
+        if(json_parse_error.error != QJsonParseError::NoError) {
+            qDebug() << "json 解析失败";
+            return;
+        }
+
+        json_obj = json_document.object();
+        if(json_obj.value("content-type").toString() == "user_info" && json_obj.value("code").toInt() == int(ResponseCode::SUCCESS)) {
+            dealWithSearchReply(json_obj.value("content").toObject());
+        }else if(json_obj.value("code").toInt() == int(ResponseCode::NOT_EXIST)){
+            dealWithNotExist();
+        }
+
     }
+}
+
+void AddUserPage::dealWithSearchReply(const QJsonObject &json_obj) {
+    searched_user_info_.account = json_obj.value("account").toString();
+    searched_user_info_.uid = json_obj.value("uid").toString();
+    searched_user_info_.head_image = json_obj.value("head_image").toString();
+    searched_user_info_.address = json_obj.value("address").toString();
+    searched_user_info_.nickname = json_obj.value("nickname").toString();
+    searched_user_info_.ocupation = json_obj.value("occupation").toString();
+    searched_user_info_.network_state = json_obj.value("network_state").toString();
+    qDebug() << "okkkk " << searched_user_info_.head_image;
+
+}
+
+void AddUserPage::dealWithNotExist() {
+    qDebug() << "找不到";
 }
