@@ -33,6 +33,7 @@ void Center::init() {
     connect(network_access_mannager, &QNetworkAccessManager::finished, this, &Center::requestReply);
 
     add_user_page_ = new AddUserPage();
+    add_user_page_->init();
 
 }
 
@@ -43,7 +44,6 @@ void Center::start() {
 void Center::requestLogin(QString account, QString password) {
     //qDebug() << "requstlogin : " << account << " " << password;
     keep_connect_request_.setRawHeader("Origin", "http://ltalk.co");
-    keep_connect_request_.setRawHeader("Accept", "*/*");
     keep_connect_request_.setRawHeader("Content-Type", "application/json");
     keep_connect_request_.setRawHeader("Accept", "application/json");
     keep_connect_request_.setRawHeader("Date", Util::getTime().toUtf8().data());
@@ -153,6 +153,10 @@ void Center::dealWithLocalCmd(LocalCmd cmd) {
         profile_page_->showNormal();
         profile_page_->show();
     } break;
+    case LocalCmd::show_add_user_page: {
+        add_user_page_->showNormal();
+        add_user_page_->show();
+    }
     default: {
 
     } break;
@@ -165,16 +169,18 @@ void Center::exit() {
     change_theme_page_->close();
     about_page_->close();
     profile_page_->close();
+    add_user_page_->close();
+
     delete main_page_;
     delete login_page_;
     delete change_theme_page_;
     delete about_page_;
     delete profile_page_;
+    delete add_user_page_;
 }
 
 void Center::keepConnect() {
-    keep_connect_request_.setRawHeader("Origin", "http://lyxf.xyz");
-    keep_connect_request_.setRawHeader("Accept", "*/*");
+    keep_connect_request_.setRawHeader("Origin", "http://ltalk.co");
     keep_connect_request_.setRawHeader("Content-Type", "application/json");
     keep_connect_request_.setRawHeader("Accept", "application/json");
     keep_connect_request_.setRawHeader("Date", Util::getTime().toUtf8().data());
@@ -186,8 +192,6 @@ void Center::keepConnect() {
 void Center::requestGetUserInfo() {
     QNetworkRequest request;
     request.setRawHeader("Origin", "http://ltalk.co");
-    request.setRawHeader("Accept", "*/*");
-    request.setRawHeader("Content-Type", "application/json");
     request.setRawHeader("Accept", "application/json");
     request.setRawHeader("Date", Util::getTime().toUtf8().data());
     QUrl url;

@@ -1,7 +1,7 @@
 #pragma once
 
 #include "../ltalk.hh"
-#include "../database/mysql/mysql.hh"
+#include "../database/mysql.hh"
 #include <map>
 #include <string>
 #include "../json/json.hpp"
@@ -19,23 +19,6 @@
 #include "util.hh"
 
 using Json = nlohmann::json;
-
-enum class Process::ResponseCode {
-    SUCCESS = 0,
-    FAILURE,
-    NOT_FOUND,
-    INTERNAL_ERROR,
-    NO_ACCESS,
-    NO_PERMISSSION = 5,
-    ERROR_PARSING_URL,
-    ERROR_PARSING_CONTENT,
-    ERROR_HTTP_CONTENT,
-    ERROR_JSON_CONTENT_TYPE,
-    ERROR_JSON_CONTENT = 10,
-    EXIST,
-    NOT_EXIST,
-    LOGINED,
-};
 
 class Process::Center {
 public:
@@ -85,6 +68,7 @@ private:
     void DealWithGetUserPrivateFile();
     void DealWithGetGetChatFile();
     void DealWithKeepConnect();
+    void DealWithSearchUser();
     bool UpdateUserInfo(const std::string &uid, const std::string &token); // Update memory infomation
     bool CheckToken(const std::string &uid, const std::string &token);
 

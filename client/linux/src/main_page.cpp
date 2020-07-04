@@ -165,3 +165,7 @@ void MainPage::addUserListItem(const UserInfo &user_info) {
     UserListItem *item = new UserListItem();
     ui->Widget_userList->layout()->addWidget(item);
 }
+
+void MainPage::on_pushButton_addUser_clicked() {
+    emit localCmd(LocalCmd::show_add_user_page);
+}

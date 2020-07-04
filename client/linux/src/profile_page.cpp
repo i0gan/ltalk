@@ -148,9 +148,7 @@ void ProfilePage::uploadImage(ImageType image, QString saved_file_name) {
     image_data = image_file.readAll();
     qDebug() << "post image data";
     request_.setRawHeader("Origin", "http://ltalk.co");
-    request_.setRawHeader("Accept", "*/*");
-    request_.setRawHeader("Content-Type", "obj");
-    request_.setRawHeader("Accept", "application/json");
+    request_.setRawHeader("Accept", "application/octet-stream");
     request_.setRawHeader("Date", Util::getTime().toUtf8().data());
     QString request_url = SERVER_REQUEST_URL;
     request_url += "/?request=upload_profile_image&platform=linux&account=";
@@ -207,7 +205,6 @@ void ProfilePage::requestReply(QNetworkReply *reply) {
         if(!(reply->error() == QNetworkReply::NetworkError::NoError))
             break;
         QByteArray data = reply->readAll();
-
 
         if(reply->rawHeader(QString("Content-Type").toUtf8()) == QString("application/json").toUtf8()) {
             //qDebug() << recv_data;
@@ -268,7 +265,6 @@ void ProfilePage::dealWithServerResponse(const QJsonObject &json_obj) {
     int code = json_obj.value("code").toInt();
     if(code == 0 && json_obj.value("request").toString() == "upload_profile_image") {
         qDebug() << "上传成功";
-
 
     }else {
         qDebug() << "上传失败!";

@@ -59,5 +59,21 @@ enum class LocalCmd {
 };
 
 
+enum class ResponseCode {
+    SUCCESS = 0,
+    FAILURE,
+    NOT_FOUND,
+    INTERNAL_ERROR,
+    NO_ACCESS,
+    NO_PERMISSSION = 5,
+    ERROR_PARSING_URL,
+    ERROR_PARSING_CONTENT,
+    ERROR_HTTP_CONTENT,
+    ERROR_JSON_CONTENT_TYPE,
+    ERROR_JSON_CONTENT = 10,
+    EXIST,
+    NOT_EXIST,
+    LOGINED,
+};
 
 #endif // LTALK_H

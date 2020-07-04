@@ -62,9 +62,14 @@ QToolButton:hover{
     </rect>
    </property>
    <property name="styleSheet">
-    <string notr="true">QLabel {
-	background-color: transparent;
-}</string>
+    <string notr="true">background-color: transparent;
+</string>
+   </property>
+   <property name="frameShape">
+    <enum>QFrame::NoFrame</enum>
+   </property>
+   <property name="frameShadow">
+    <enum>QFrame::Plain</enum>
    </property>
    <property name="html">
     <string>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;

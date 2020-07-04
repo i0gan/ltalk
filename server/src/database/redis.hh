@@ -1,4 +1,5 @@
-#include "../../ltalk.hh"
+#include "../ltalk.hh"
+#include "../thread/mutex_lock.hh"
 
 class Database::Redis {
 public:

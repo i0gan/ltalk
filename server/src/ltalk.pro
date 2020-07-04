@@ -5,9 +5,9 @@ HEADERS += \
     ltalk.hh \
     startup.hh \
     \
-    database/mysql/mysql.hh \
-    database/redis/redis.hh \
-    database/mongo/mongo.hh \
+    database/mysql.hh \
+    database/redis.hh \
+    database/mongo.hh \
     \
     json/json.hpp\
     process/center.hh \
@@ -37,9 +37,9 @@ SOURCES += \
     main.cc \
     startup.cc \
     \
-    database/mysql/mysql.cc \
-    database/redis/redis.cc \
-    database/mongo/mongo.cc \
+    database/mysql.cc \
+    database/redis.cc \
+    database/mongo.cc \
     \
     process/center.cc \
     process/util.cc \

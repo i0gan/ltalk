@@ -23,6 +23,9 @@ void UserChatPage::init() {
     move(pos);
     setWindowFlags(Qt::FramelessWindowHint);
     setAttribute(Qt::WA_TranslucentBackground);
+    QItemSelectionModel model;
+    ui->listWidget_chat->setSelectionMode(QAbstractItemView::NoSelection);
+    //ui->listWidget_chat->setAttribute(Qt::WA_TranslucentBackground);
 }
 
 void UserChatPage::mousePressEvent(QMouseEvent *event) {
@@ -50,14 +53,31 @@ void UserChatPage::on_toolButton_min_clicked() {
 
 void UserChatPage::on_pushButton_send_clicked()
 {
-    ChatMessage *m = new ChatMessage(ui->listWidget->parentWidget());
-    m->setText(ui->plainTextEdit->toPlainText(), ChatMessage::other_side);
+
+    QString msg = ui->plainTextEdit_input->toPlainText();
+    if(msg.isEmpty()) {
+        return;
+    }
+
+    ChatMessage *m = new ChatMessage(ui->listWidget_chat->parentWidget());
+    m->setText(msg, ChatMessage::myself);
     m->setHeadImage(QPixmap(":/ui/friends.png"));
-    m->setFixedSize(ui->listWidget->size());
-    QListWidgetItem *item = new QListWidgetItem(ui->listWidget);
+    m->setFixedSize(ui->listWidget_chat->size());
+    QListWidgetItem *item = new QListWidgetItem(ui->listWidget_chat);
     QSize size = m->fontSize();
     item->setSizeHint(size);
-    ui->listWidget->setItemWidget(item, m);
+    ui->listWidget_chat->setItemWidget(item, m);
+    newMessage("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa");
+    ui->plainTextEdit_input->clear();
+}
 
-    ui->plainTextEdit->clear();
+void UserChatPage::newMessage(QString message) {
+    ChatMessage *m = new ChatMessage(ui->listWidget_chat->parentWidget());
+    m->setText(message, ChatMessage::other_side);
+    m->setHeadImage(QPixmap(":/ui/friends.png"));
+    m->setFixedSize(ui->listWidget_chat->size());
+    QListWidgetItem *item = new QListWidgetItem(ui->listWidget_chat);
+    QSize size = m->fontSize();
+    item->setSizeHint(size);
+    ui->listWidget_chat->setItemWidget(item, m);
 }

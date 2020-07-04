@@ -28,10 +28,10 @@ void ChatMessage::setText(const QString &text, ChatMessage::MessageType message_
 
 QSize ChatMessage::fontSize() {
     int min_height = 40;
-    int head_image_wh = 50;          // 头像的宽高
-    int width_of_head_image_to_edge = 30; // 头像与边缘的间隔
-    int head_image_width = 10;        // 头像与消息框的间隔
-    int head_image_tmp_height = 10;
+    int head_image_wh = 40;          // 头像的宽高
+    int width_of_head_image_to_edge = 25; // 头像与边缘的间隔
+    int head_image_width = 5;        // 头像与消息框的间隔
+    int head_image_tmp_height = 5;
     int shape_width = 10;  // 尖角的宽度
     int text_space_width = 10; // 内容离边框的宽度
 

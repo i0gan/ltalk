@@ -1,6 +1,23 @@
 #pragma once
 #include "../ltalk.hh"
 
+enum class Process::ResponseCode {
+    SUCCESS = 0,
+    FAILURE,
+    NOT_FOUND,
+    INTERNAL_ERROR,
+    NO_ACCESS,
+    NO_PERMISSSION = 5,
+    ERROR_PARSING_URL,
+    ERROR_PARSING_CONTENT,
+    ERROR_HTTP_CONTENT,
+    ERROR_JSON_CONTENT_TYPE,
+    ERROR_JSON_CONTENT = 10,
+    EXIST,
+    NOT_EXIST,
+    LOGINED,
+};
+
 enum class Process::RequestType {
     error = 0,
     main_page,
@@ -13,7 +30,8 @@ enum class Process::RequestType {
     get_public_file,
     get_private_file,
     upload_profile_image,
-    get_profile_image
+    get_profile_image,
+    search_user,
 };
 
 enum class Process::Platform {

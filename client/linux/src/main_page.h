@@ -77,6 +77,7 @@ private slots:
     void on_pushButton_settings_clicked();
     void dealWithLocalCmd(LocalCmd cmd);
     void on_pushButton_changeTheme_clicked();
+    void on_pushButton_addUser_clicked();
 };
 
 #endif // MAIN_PAGE_H

@@ -54,6 +54,8 @@ use ltalk;
 
 #### 创建表
 
+用户表
+
 ```sql
 create table user_(
 id int primary key auto_increment,
@@ -62,8 +64,11 @@ account varchar(256),
 email varchar(256),
 nickname varchar(256),
 name varchar(256),
+signature varchar(512),
+qq varchar(256),
 phone_number varchar(256),
-address varchar(256),
+address varchar(512),
+hometown varchar(512),
 occupation varchar(256),
 created_time  varchar(256),
 network_state varchar(256),
@@ -75,38 +80,58 @@ profile_image_3 varchar(512),
 profile_image_4 varchar(512),
 password varchar(256)
 );
+```
+
+群组表
+
+```sql
 
 create table group_(
 id int primary key auto_increment,
 gid varchar(256),
 account varchar(256),
 name varchar(256),
-head_image varchar(512),
-profile_image_1 varchar(512),
-profile_image_2 varchar(512),
-profile_image_3 varchar(512),
-profile_image_4 varchar(512),
 announcement varchar(1024),
 host_uid varchar(256),
 admin_uid_1 varchar(256),
 admin_uid_2 varchar(256),
 admin_uid_3 varchar(256),
 total int,
+online int,
 created_time varchar(256)
+head_image varchar(512),
+profile_image_1 varchar(512),
+profile_image_2 varchar(512),
+profile_image_3 varchar(512),
+profile_image_4 varchar(512),
 );
+```
 
+好友关系表
+
+```sql
 create table user_friend_(
 id int primary key auto_increment,
 uid varchar(256),
-tid varchar(256)
+tid varchar(256),
+remark varchar(512)
 );
+```
 
+好友关系表
+
+```sql
 create table group_user_(
 id int primary key auto_increment,
 gid varchar(256),
-tid varchar(256)
+tid varchar(256),
+remark varchar(512)
 );
+```
 
+事件表
+
+```sql
 create table event_(
 id int primary key auto_increment,
 eid varchar(256),
@@ -128,13 +153,13 @@ created_time  varchar(256)
 make
 ```
 
-二进制文会编译在./bin目录下
+二进制文会编译在./build目录下
 
 
 
 ## 运行
 
-在运行之前，确保配置文件正确， 配置文件为当前目录下的config.json文件中。默认配置如下，注意，不能有注释
+在运行之前，确保配置文件正确， 配置文件为当前目录下的etc/config.json文件中。默认配置如下，注意，不能有注释
 
 ```json
 {
@@ -145,22 +170,24 @@ make
         "data_path" : "data",
         "log_path" : "data/log",
         "web_root" : "data/web",
-        "web_page" : "download/index.html",
+        "web_page" : "main/index.html",
         "web_404_page" : "data/web/404.html"
     },
     "database" : {
         "host" : "127.0.0.1",
         "port" : 3306,
         "user" : "ltalk",
-        "password" : "123456",
-        "name" : "ltalk"
+        "name" : "ltalk",
+        "password" : "123456"
     }
 }
 ```
 
-确保配置文件正确后即可编译
+
+
+运行
 
 ```
-./dev # 或则 sudo cd ./bin && ./ltalks
+./start
 ```
 

@@ -1,6 +1,8 @@
 #include "mysql.hh"
 
 MYSQL Database::global_mysql;
+Thread::MutexLock Database::mysql_mutex_lock_;
+
 bool Database::Mysql::Connect(std::string host,
                            std::string user,
                            std::string password,
@@ -95,6 +97,7 @@ bool Database::MysqlQuery::Select(const std::string &table_name, const std::stri
 }
 
 bool Database::MysqlQuery::Insert(const std::string &table_name, const std::string &key_sql, const std::string &value_sql) {
+    Thread::MutexLockGuard mutex_lock_guard(mysql_mutex_lock_);
     std::string sql;
     sql = "INSERT INTO " + table_name;
     sql += " (" + key_sql + ") ";
@@ -103,6 +106,7 @@ bool Database::MysqlQuery::Insert(const std::string &table_name, const std::stri
 }
 
 bool Database::MysqlQuery::Update(const std::string &table_name, const std::string &key_sql, const std::string &value_sql, const std::string &condition) {
+    Thread::MutexLockGuard mutex_lock_guard(mysql_mutex_lock_);
     std::string sql;
     std::string keys = key_sql + ',';
     std::string values = value_sql + ',';
@@ -125,6 +129,7 @@ bool Database::MysqlQuery::Update(const std::string &table_name, const std::stri
 }
 
 bool Database::MysqlQuery::Delete(const std::string &table_name, const std::string &condition) {
+    Thread::MutexLockGuard mutex_lock_guard(mysql_mutex_lock_);
     std::string sql;
     sql = "DELETE FROM " + table_name;
     sql += " WHERE " + condition + ';';
@@ -132,6 +137,7 @@ bool Database::MysqlQuery::Delete(const std::string &table_name, const std::stri
 }
 
 bool Database::MysqlQuery::Next() {
+    Thread::MutexLockGuard mutex_lock_guard(mysql_mutex_lock_);
     bool result = false;
     do {
         if(!res_) {
@@ -149,7 +155,7 @@ bool Database::MysqlQuery::Next() {
 const char* Database::MysqlQuery::Value(int index) {
     if((number_of_fields_ < index + 1 ) && !row_) {
         std::cout << "out_of_range: " << index << " / " << number_of_fields_ << std::endl;
-        throw out_of_range();
+        throw mysql_out_of_range();
         return nullptr;
     }
     if(!row_[index]) {

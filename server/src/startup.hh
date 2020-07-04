@@ -13,7 +13,7 @@
 #include "net/net.hh"
 #include "net/eventloop.hh"
 #include "ltalk.hh"
-#include "database/mysql/mysql.hh"
+#include "database/mysql.hh"
 
 class Ltalk::StartUp final{
 public:

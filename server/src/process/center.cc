@@ -58,8 +58,6 @@ void Process::Center::Process() {
     }
 }
 
-
-
 void Process::Center::HandleGet() {
     bool error = false;
     std::string path = map_url_info_["path"];
@@ -99,6 +97,9 @@ void Process::Center::HandleGet() {
         } break;
         case  RequestType::get_profile_image: {
             DealWithGetProfileImage();
+        } break;
+        case  RequestType::search_user: {
+            DealWithSearchUser();
         } break;
         default: {
             path = Data::web_root + path;
@@ -633,7 +634,7 @@ void Process::Center::DealWithGetUserInfo() {
         db_profile_image_2 = query.Value(12);
         db_profile_image_3 = query.Value(13);
         db_profile_image_4 = query.Value(14);
-    }  catch (Database::out_of_range e) {
+    }  catch (Database::mysql_out_of_range e) {
         std::cout << e.what();
         Response(ResponseCode::FAILURE);
         return;
@@ -664,7 +665,6 @@ void Process::Center::DealWithGetUserInfo() {
               {"profile_image_4", db_profile_image_4},
           }}
     };
-    //std::cout << "[" << send_json << "]";
     SendJson(send_json);
 }
 
@@ -785,6 +785,75 @@ void Process::Center::DealWithGetProfileImage() {
     }
     std::string file_path = "data/user/" + uid + "/public/profile/" + name;
     SendFile(file_path);
+}
+
+void Process::Center::DealWithSearchUser() {
+    std::string search;
+    std::string type;
+
+    std::string db_uid, db_account, db_nickname, db_head_image,
+                db_address, db_network_state, db_email, db_occupation;
+
+    try {
+        search = map_url_value_info_.at("search");
+        type = map_url_value_info_.at("type");
+    } catch (std::out_of_range e) {
+        Response(ResponseCode::FAILURE);
+        return;
+    }
+    ::Database::MysqlQuery query;
+    ::Database::MysqlQuery::Escape(search);
+
+    if(type == "account") {
+        query.Select("user_", "uid", "account='" + search + '\'');
+        if(query.Next()) {
+            db_uid = query.Value(0);
+        }else {
+            Response(ResponseCode::NOT_EXIST);
+            return;
+        }
+
+        query.Select("user_", "account, email, nickname, occupation, head_image, address, network_state", "uid='" + db_uid + '\'');
+        if(query.Next()) {
+            try {
+                db_account = query.Value(0);
+                db_email = query.Value(1);
+                db_nickname = query.Value(2);
+                db_occupation = query.Value(3);
+                db_head_image = query.Value(4);
+                db_address = query.Value(5);
+                db_network_state = query.Value(6);
+            }  catch (::Database::mysql_out_of_range e) {
+                std::cout << e.what() << '\n';
+                Response(ResponseCode::FAILURE);
+                return;
+            }
+        }else {
+            Response(ResponseCode::FAILURE);
+            return;
+        }
+    }
+
+    //std::cout << "search " << search << " type " << type << "\n";
+    Json send_json = {
+        { "server", SERVER_NAME },
+        { "code", ResponseCode::SUCCESS },
+        { "request", request_},
+        { "datetime" , GetDateTime() },
+        { "platform", platform_ },
+        { "content-type", "user_info"},
+        { "content", {
+              {"uid", db_uid},
+              {"account", db_account},
+              {"email", db_email},
+              {"nickname", db_nickname},
+              {"address", db_address},
+              {"occupation", db_occupation},
+              {"network_state", db_network_state},
+              {"head_image", db_head_image},
+          }}
+    };
+    SendJson(send_json);
 }
 
 

@@ -20,11 +20,14 @@ public:
     explicit UserChatPage(QWidget *parent = nullptr);
     ~UserChatPage();
     void init();
-    //QPoint
+    void newMessage(QString message);
 private:
     Ui::UserChatPage *ui;
     bool pressed_;
     QPoint mouse_pos_;
+    QPixmap my_head_image_;
+    QPixmap otherside_head_image_;
+
 protected:
     void mouseMoveEvent(QMouseEvent *event) override;
     void mousePressEvent(QMouseEvent *event) override;

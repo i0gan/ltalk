@@ -4,14 +4,18 @@
 #include <iostream>
 #include <unistd.h>
 #include <exception>
+#include <semaphore.h>
 
-#include "../../ltalk.hh"
+#include "../ltalk.hh"
+#include "../thread/mutex_lock.hh"
 
 //#define DB_WAIT_TIMES 1000 // wait times
 //#define DB_WAIT_TIME  10   // will usleep(WAIT_TIME)
 
 namespace  Database{
 extern MYSQL  global_mysql;
+extern Thread::MutexLock mysql_mutex_lock_;
+
 #define MYSQL_DEFAULT_CONNECT_PORT 3306
 class Mysql {
 	public:
@@ -27,7 +31,7 @@ class Mysql {
         static void Disconnect();
 };
 
-class out_of_range : public std::exception {
+class mysql_out_of_range : public std::exception {
 public:
     const char *what() const throw() {
         return "Get value out of range";
@@ -58,6 +62,5 @@ private:
     MYSQL *mysql_;
     int get_fields();
     void Clean();
-
 };
 }

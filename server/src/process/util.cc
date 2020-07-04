@@ -15,6 +15,7 @@ void Process::Request::Init() {
     Request::umap_type_["get_private_file"] = RequestType::get_private_file;
     Request::umap_type_["upload_profile_image"] = RequestType::upload_profile_image;
     Request::umap_type_["get_profile_image"] = RequestType::get_profile_image;
+    Request::umap_type_["search_user"] = RequestType::search_user;
 }
 
 Process::RequestType Process::Request::toEnum(std::string request) {
