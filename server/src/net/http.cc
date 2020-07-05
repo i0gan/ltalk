@@ -58,6 +58,7 @@ Net::Http::Http(int fd,EventLoop *eventloop) :
     sp_channel_->set_connected_handler(std::bind(&Http::HandleConnect, this));
 }
 Net::Http::~Http() {
+    std::cout << "~http()\n";
     DealWithOffline();
     close(fd_);
 }
@@ -112,13 +113,14 @@ void Net::Http::HandleRead() {
         //std::cout << "http_content:__[" << in_buffer_ << "]__";
         //if state as disconnecting will clean th in buffer
         if(http_connection_state_ == HttpConnectionState::DISCONNECTING) {
-            std::cout << "DISCONNECTING\n";
+            //std::cout << "DISCONNECTING\n";
             in_buffer_.clear();
             break;
         }
+
         if(read_len == 0) {
             http_connection_state_ = HttpConnectionState::DISCONNECTING;
-            std::cout << "recv 0 DISCONNECTING\n";
+            //std::cout << "recv 0 DISCONNECTING\n";
             in_buffer_.clear();
             break;
         }else if(read_len < 0) { // Read data error
@@ -329,6 +331,7 @@ void Net::Http::HandleProcess() {
     center.set_fd(fd_);
     center.set_send_data_handler(std::bind(&Http::SendData, this, std::placeholders::_1, std::placeholders::_2));
     center.set_send_file_handler(std::bind(&Http::SendFile, this, std::placeholders::_1));
+    center.set_http(shared_from_this());
     center.Process();
 }
 
@@ -366,6 +369,7 @@ std::string Net::Http::GetSuffix(std::string file_name) {
 }
 
 void Net::Http::SendData(const std::string &type,const std::string &content) {
+
     out_buffer_.clear();
     out_buffer_ << "HTTP/1.1 200 OK\r\n";
     if (map_header_info_.find("connection") != map_header_info_.end() &&

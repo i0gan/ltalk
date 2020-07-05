@@ -33,6 +33,10 @@ void Work::Center::set_send_data_handler(Util::CallBack2 send_data_handler) {
     send_data_handler_ = send_data_handler;
 }
 
+void Work::Center::set_http(const ::Net::SPHttp &http) {
+    wp_http_ = http;
+}
+
 void Work::Center::Process() {
     std::string http_method;
     try {
@@ -126,6 +130,9 @@ void Work::Center::HandlePost() {
     } break;
     case RequestType::upload_profile_image: {
         DealWithUploadProfileImage();
+    } break;
+    case RequestType::add_user: {
+        DealWithAddUser();
     } break;
     default: {
         Response(ResponseCode::NO_ACCESS);
@@ -529,15 +536,19 @@ bool Work::Center::UpdateUserInfo(const std::string &uid, const std::string &tok
     if(platform_ == "linux") {
         user.linux_fd = fd_;
         user.linux_token = token;
+        user.linux_http = wp_http_;
     }else if(platform_ == "windows") {
         user.windows_fd = fd_;
         user.windows_token = token;
+        user.windows_http = wp_http_;
     }else if(platform_ == "android") {
         user.android_fd = fd_;
         user.android_token = token;
+        user.android_http = wp_http_;
     }else if(platform_ == "web") {
         user.web_fd = fd_;
         user.web_token = token;
+        user.web_http = wp_http_;
     }else {
         http_uid_ = "";
         return false;
@@ -818,6 +829,93 @@ void Work::Center::DealWithSearchUser() {
     };
     SendJson(send_json);
 }
+
+void Work::Center::DealWithAddUser() {
+    std::string content_type;
+    try {
+        content_type = map_header_info_.at("content-type");
+    } catch(std::out_of_range e) {
+        std::cout << "no a content-type\n";
+        Response(ResponseCode::ERROR_HTTP_CONTENT);
+        return;
+    }
+
+    if(content_type != "application/json") {
+        Response(ResponseCode::ERROR_HTTP_CONTENT);
+        return;
+    }
+
+    Json recv_json_obj;
+    try {
+        recv_json_obj = Json::parse(content_);
+    }  catch (Json::parse_error e) {
+        Response(ResponseCode::ERROR_PARSING_CONTENT);
+        return;
+    }
+
+    if(!CheckJsonContentType(recv_json_obj, "add_info")) {
+        Response(ResponseCode::ERROR_JSON_CONTENT_TYPE);
+        return;
+    }
+
+    std::string target_account, target_uid, account, uid, token, verify_message;
+    try {
+        target_uid = recv_json_obj["content"]["target_uid"];
+        target_account = recv_json_obj["content"]["target_account"];
+        account = recv_json_obj["content"]["account"];
+        verify_message = recv_json_obj["content"]["verify_message"];
+        uid = recv_json_obj["uid"];
+        token = recv_json_obj["token"];
+    } catch (Json::type_error) {
+        Response(ResponseCode::ERROR_JSON_CONTENT_TYPE);
+        return;
+    }
+
+    if(!CheckToken(uid, token)) {
+        Response(ResponseCode::NO_ACCESS);
+        return;
+    }
+
+    if(verify_message.size() >= 1023) {
+        Response(ResponseCode::FAILURE);
+        return;
+    }
+
+    // 检查是否是自己
+    if(target_uid == uid) {
+        Response(ResponseCode::FAILURE);
+        return;
+    }
+
+    ::Database::MysqlQuery::Escape(target_account);
+    ::Database::MysqlQuery::Escape(target_uid);
+    ::Database::MysqlQuery::Escape(account);
+    ::Database::MysqlQuery::Escape(uid);
+    ::Database::MysqlQuery::Escape(verify_message);
+
+    ::Database::MysqlQuery query;
+    // 检查对方帐号是否存在
+    query.Select("user_", "uid", "uid='" + target_uid + '\'');
+    if(!query.Next()) {
+        Response(ResponseCode::NOT_EXIST);
+        return;
+    }
+
+    // 检查对方帐号是否在自己的好友中
+    query.Select("user_friend_", "tid", "uid='" + target_uid + '\'');
+    if(query.Next()) {
+        Response(ResponseCode::EXIST);
+        return;
+    }
+
+
+
+
+    std::cout << "okkkk";
+    Response(ResponseCode::SUCCESS);
+}
+
+
 
 
 

@@ -34,7 +34,39 @@ void Center::init() {
 
     add_user_page_ = new AddUserPage();
     add_user_page_->init();
+    connect(add_user_page_, &AddUserPage::addUser, this, &Center::requestAddUser);
 
+}
+
+void Center::requestAddUser(QString target_account, QString target_uid, QString verify_message) {
+    //qDebug() << "requstlogin : " << account << " " << password;
+    keep_connect_request_.setRawHeader("Origin", "http://ltalk.co");
+    keep_connect_request_.setRawHeader("Content-Type", "application/json");
+    keep_connect_request_.setRawHeader("Accept", "application/json");
+    keep_connect_request_.setRawHeader("Date", Util::getTime().toUtf8().data());
+
+    //mannager->post()
+    QJsonDocument json_document;
+    QJsonObject json_object;
+    json_object.insert("platform", "linux");
+    json_object.insert("client_version", "linux 0.1");
+    json_object.insert("datetime", QDateTime::currentDateTime().toString("yy-MM-dd dd:mm:ss"));
+    json_object.insert("content_type", "add_info");
+    json_object.insert("token", user_.token.toUtf8().data());
+    json_object.insert("uid", user_.uid.toUtf8().data());
+    QJsonObject json_object_content;
+    json_object_content.insert("target_account", target_account.toUtf8().data());
+    json_object_content.insert("target_uid", target_uid.toUtf8().data());
+    json_object_content.insert("account", user_.account.toUtf8().data());
+    json_object_content.insert("verify_message", verify_message.toUtf8().data());
+    json_object.insert("content", json_object_content);
+    json_document.setObject(json_object);
+    QByteArray byte_array = json_document.toJson(QJsonDocument::Compact);
+    //qDebug() << byte_array;
+    QUrl url;
+    url = SERVER_DOMAIN + QString("/?request=add_user&platform=linux");
+    keep_connect_request_.setUrl(url);
+    network_access_mannager->post(keep_connect_request_, byte_array);
 }
 
 void Center::start() {

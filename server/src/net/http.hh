@@ -51,11 +51,6 @@ enum class Net::HttpParseHeaderResult {
 //    OPTIONS
 //};
 
-//enum class HttpVersion {
-//    V_1_0 = 0,
-//    V_1_1
-//};
-
 enum class Net::HttpResponseCode {
     OK = 200,
     CREATED,
@@ -123,7 +118,8 @@ public:
     EventLoop *get_eventloop();
     void HandleClose();
     void NewEvnet();
-
+    void SendData(const std::string &type,const std::string &content);
+    void SendFile(const std::string &file_name);
 private:
     int fd_;
     EventLoop *eventloop_;
@@ -150,8 +146,6 @@ private:
 
     void HandleProcess();
     std::string GetSuffix(std::string file_name);
-    void SendData(const std::string &type,const std::string &content);
-    void SendFile(const std::string &file_name);
     void StrLower(std::string &str);
     //Http
     void DealWithOffline();

@@ -15,7 +15,7 @@ AddUserPage::~AddUserPage()
 }
 
 void AddUserPage::init() {
-    setWindowTitle("Ltalk login");
+    setWindowTitle("Ltalk add user");
     setWindowIcon(QIcon(":/ui/logo.ico"));
     ui->pushButton_search->setShortcut(Qt::Key_Return);
     QPoint pos;
@@ -27,6 +27,7 @@ void AddUserPage::init() {
 
     connect(network_access_mannager, &QNetworkAccessManager::finished, this, &AddUserPage::dealWithRecv);
     ui->label_notice->clear();
+    ui->stackedWidget->setCurrentWidget(ui->search_page);
 
     ui->label_headImage->hide();
     ui->label_account->hide();
@@ -116,7 +117,6 @@ void AddUserPage::dealWithSearchReply(const QJsonObject &json_obj) {
     searched_user_info_.address = json_obj.value("address").toString();
     searched_user_info_.nickname = json_obj.value("nickname").toString();
     searched_user_info_.network_state = json_obj.value("network_state").toString();
-    qDebug() << "okkkk " << searched_user_info_.head_image;
 
 
     ui->label_account->setText("帐号: " + searched_user_info_.account);
@@ -162,4 +162,18 @@ void AddUserPage::setTheme(QString theme) {
     }else if(theme == "love") {
         ui->label_frame->setStyleSheet("QLabel{ border-image : url(':/ui/themes/love/dialog_page.png')}");
     }
+}
+
+void AddUserPage::on_pushButton_add_clicked() {
+    ui->stackedWidget->setCurrentWidget(ui->send_page);
+}
+
+void AddUserPage::on_pushButton_send_clicked() {
+    ui->stackedWidget->setCurrentWidget(ui->search_page);
+    QString show_text = "<html><head/><body><p align=\"center\"><span style=\" color:#FFFFFF;\">";
+    show_text += "验证消息发送成功";
+    show_text += "</span></p></body></html>";
+    ui->label_notice->setText(show_text);
+    QString send_msg = ui->plainTextEdit->toPlainText();
+    emit addUser(searched_user_info_.account, searched_user_info_.uid, send_msg);
 }

@@ -58,6 +58,7 @@ Net::TimerManager::TimerManager() {
 }
 
 Net::TimerManager::~TimerManager() {
+
 }
 
 void Net::TimerManager::AddTimer(std::shared_ptr<Net::Http> sp_http, int ms_timeout) {

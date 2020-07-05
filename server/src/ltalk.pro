@@ -17,6 +17,7 @@ HEADERS += \
     work/eventloop.hh \
     work/event.hh \
     work/timer.hh \
+    work/push_message.hh \
     \
     net/http.hh \
     net/epoll.hh \
@@ -52,6 +53,7 @@ SOURCES += \
     work/eventloop.cc \
     work/event.cc \
     work/timer.cc \
+    work/push_message.cc \
     \
     net/http.cc \
     net/epoll.cc \

@@ -32,6 +32,7 @@ enum class Work::RequestType {
     upload_profile_image,
     get_profile_image,
     search_user,
+    add_user,
 };
 
 enum class Work::Platform {
@@ -52,5 +53,4 @@ private:
     static pthread_once_t once_control_;
 };
 }
-
 

@@ -26,7 +26,8 @@ public:
     ~AddUserPage();
     void init();
     void setTheme(QString theme);
-
+signals:
+    void addUser(QString account, QString uid, QString send_msg);
 private:
     Ui::AddUserPage *ui;
     bool pressed_;
@@ -46,6 +47,8 @@ private slots:
     void on_pushButton_search_clicked();
     void dealWithRecv(QNetworkReply *reply);
 
+    void on_pushButton_add_clicked();
+    void on_pushButton_send_clicked();
 };
 
 #endif // ADD_USER_PAGE_H

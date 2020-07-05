@@ -42,6 +42,7 @@ public:
     void init();
     void start();
     void requestLogin(QString account, QString password);
+    void requestAddUser(QString target_account, QString target_uid, QString verify_message);
     void requestReply(QNetworkReply *reply);
     void dealWithLogined(QString account, QString uid, QString token);
     void exit();

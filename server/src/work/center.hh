@@ -4,7 +4,6 @@
 #include "../database/mysql.hh"
 #include <map>
 #include <string>
-#include "../json/json.hpp"
 #include <unistd.h>
 #include <sstream>
 #include <time.h>
@@ -18,7 +17,7 @@
 #include "../crypto/md5.hh"
 #include "util.hh"
 
-using Json = nlohmann::json;
+using Json = Third::Json;
 
 class Work::Center {
 public:
@@ -28,6 +27,7 @@ public:
     void set_send_data_handler(Util::CallBack2 send_data_handler);
     void set_error_handler(Util::CallBack2 error_handler);
     void set_send_file_handler(Util::CallBack1 send_file_handler);
+    void set_http(const ::Net::SPHttp &http);
     void set_fd(int fd) ;
 
     void HandleGet();
@@ -46,6 +46,7 @@ private:
     std::string platform_;
     std::string &http_uid_;
     std::string &http_platform_;
+    std::weak_ptr<::Net::Http> wp_http_;
     int fd_;
     void SendData(const std::string &suffix, const std::string &content);
     void SendJson(Json &json_obj);
@@ -68,6 +69,7 @@ private:
     void DealWithGetGetChatFile();
     void DealWithKeepConnect();
     void DealWithSearchUser();
+    void DealWithAddUser();
     bool UpdateUserInfo(const std::string &uid, const std::string &token); // Update memory infomation
     bool CheckToken(const std::string &uid, const std::string &token);
 

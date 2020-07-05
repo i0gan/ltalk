@@ -88,11 +88,10 @@ std::vector<Net::SPChannel> Net::Epoll::GetEventChannelsAfterGetEvents(int numbe
             sp_single_event_channel->set_revent(v_events_[idx].events);
             sp_single_event_channel->set_event(0);
             v_sp_event_channels.push_back(sp_single_event_channel);// 添加未处理事件
-        }else {
+        } else {
             d_cout << "sp_channel is invalid\n";
         }
     }
-
     return v_sp_event_channels;
 }
 
