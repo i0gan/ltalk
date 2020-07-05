@@ -20,7 +20,7 @@
 
 using Json = nlohmann::json;
 
-class Process::Center {
+class Work::Center {
 public:
     explicit Center(const std::map<std::string, std::string> &map_header_info, std::string &content, std::string &http_uid, std::string &http_platform); // uid for deal with offline
     ~Center();
@@ -52,7 +52,7 @@ private:
     void SendFile(std::string file_name);
     bool ParseUrl();
     void HandleNotFound();
-    void Response(Process::ResponseCode error_code);
+    void Response(Work::ResponseCode error_code);
     /* */
     void DealWithRegisterUser();
     void GenerateUserPath(const std::string &uid);
@@ -63,7 +63,6 @@ private:
     void DealWithLogin();
     bool CheckIsLogined(const std::string &uid);
     void DealWithGetUserInfo(); // GET method to get user info
-    bool CheckJsonBaseContent(Json &json_obj);
     void DealWithGetUserPublicFile();
     void DealWithGetUserPrivateFile();
     void DealWithGetGetChatFile();

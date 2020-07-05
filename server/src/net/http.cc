@@ -13,7 +13,6 @@ const int DEFAULT_EXPIRED_TIME = 2000;              //ms
 const int DEFAULT_KEEP_ALIVE_TIME = 5 * 60 * 1000;  //ms
 
 void Net::HttpContentType::Init() {
-    std::cout << "ptrhead_init";
     //init http content type
     HttpContentType::umap_type_[".html"] = "text/html";
     HttpContentType::umap_type_[".css"] = "text/css";
@@ -326,7 +325,7 @@ void Net::Http::DealWithOffline() {
 
 
 void Net::Http::HandleProcess() {
-    Process::Center center(map_header_info_, in_content_buffer_, uid_, platform_);
+    Work::Center center(map_header_info_, in_content_buffer_, uid_, platform_);
     center.set_fd(fd_);
     center.set_send_data_handler(std::bind(&Http::SendData, this, std::placeholders::_1, std::placeholders::_2));
     center.set_send_file_handler(std::bind(&Http::SendFile, this, std::placeholders::_1));
@@ -349,7 +348,7 @@ void Net::Http::HandleWrite() {
     }
 
     if (out_buffer_.size() > 0) {
-        std::cout << "left size: " << out_buffer_.size() << "] end\n";
+        //std::cout << "left size: " << out_buffer_.size() << "] end\n";
         event |= EPOLLOUT;
     }
 }

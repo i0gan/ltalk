@@ -37,7 +37,6 @@ void MainPage::init() {
     tray_icon_->init();
     connect(net_mannager_, &QNetworkAccessManager::finished, this, &MainPage::requestGetFileReply);
 
-
     //test
     addUserListItem(user_info_);
 }

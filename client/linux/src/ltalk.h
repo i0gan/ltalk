@@ -21,6 +21,7 @@ struct UserInfo {
     QString account;
     QString email;
     QString nickname;
+    QString signature;
     QString name;
     QString phone_number;
     QString address;

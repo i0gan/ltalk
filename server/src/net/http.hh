@@ -13,7 +13,7 @@
 #include "../ltalk.hh"
 #include "../net/eventloop.hh"
 #include "../net/timer.hh"
-#include "../process/center.hh"
+#include "../work/center.hh"
 #include "../util/vessel.hpp"
 
 

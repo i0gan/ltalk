@@ -29,6 +29,7 @@ class Mysql {
                 const char *unix_socket = nullptr,
                 std::size_t client_flag = 0);
         static void Disconnect();
+        static void Ping();
 };
 
 class mysql_out_of_range : public std::exception {

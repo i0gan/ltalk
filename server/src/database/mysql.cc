@@ -38,6 +38,10 @@ void Database::Mysql::Disconnect() {
     mysql_close(&global_mysql);
 }
 
+void Database::Mysql::Ping() {
+    mysql_ping(&global_mysql);
+}
+
 Database::MysqlQuery::MysqlQuery() :
     res_(nullptr),
     mysql_(&global_mysql) {

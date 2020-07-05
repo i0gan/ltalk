@@ -25,6 +25,7 @@ public:
     explicit AddUserPage(QWidget *parent = nullptr);
     ~AddUserPage();
     void init();
+    void setTheme(QString theme);
 
 private:
     Ui::AddUserPage *ui;

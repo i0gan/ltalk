@@ -24,9 +24,17 @@ void AddUserPage::init() {
     move(pos);
     setWindowFlags(Qt::FramelessWindowHint);
     setAttribute(Qt::WA_TranslucentBackground);
-    ui->label_headImage->hide();
-    ui->pushButton_add->hide();
+
     connect(network_access_mannager, &QNetworkAccessManager::finished, this, &AddUserPage::dealWithRecv);
+    ui->label_notice->clear();
+
+    ui->label_headImage->hide();
+    ui->label_account->hide();
+    ui->label_signature->hide();
+    ui->label_address->hide();
+    ui->label_network->hide();
+    ui->label_nickname->hide();
+    ui->pushButton_add->hide();
 }
 
 void AddUserPage::mousePressEvent(QMouseEvent *event) {
@@ -61,6 +69,14 @@ void AddUserPage::on_pushButton_search_clicked() {
     url = SERVER_REQUEST_URL + QString("/?request=search_user&platform=linux&search=") + account + "&type=account";
     request_.setUrl(url);
     network_access_mannager->get(request_);
+
+    ui->label_headImage->hide();
+    ui->label_account->hide();
+    ui->label_signature->hide();
+    ui->label_address->hide();
+    ui->label_network->hide();
+    ui->label_nickname->hide();
+    ui->pushButton_add->hide();
 }
 
 void AddUserPage::dealWithRecv(QNetworkReply *reply) {
@@ -84,6 +100,11 @@ void AddUserPage::dealWithRecv(QNetworkReply *reply) {
             dealWithNotExist();
         }
 
+    }else {
+        QPixmap head_image;
+        head_image.loadFromData(recv_data);
+        ui->label_headImage->setPixmap(head_image);
+        ui->label_headImage->setScaledContents(true);
     }
 }
 
@@ -91,14 +112,54 @@ void AddUserPage::dealWithSearchReply(const QJsonObject &json_obj) {
     searched_user_info_.account = json_obj.value("account").toString();
     searched_user_info_.uid = json_obj.value("uid").toString();
     searched_user_info_.head_image = json_obj.value("head_image").toString();
+    searched_user_info_.signature = json_obj.value("signature").toString();
     searched_user_info_.address = json_obj.value("address").toString();
     searched_user_info_.nickname = json_obj.value("nickname").toString();
-    searched_user_info_.ocupation = json_obj.value("occupation").toString();
     searched_user_info_.network_state = json_obj.value("network_state").toString();
     qDebug() << "okkkk " << searched_user_info_.head_image;
 
+
+    ui->label_account->setText("帐号: " + searched_user_info_.account);
+    ui->label_nickname->setText("昵称: " + searched_user_info_.nickname);
+    ui->label_signature->setText("签名: " + searched_user_info_.signature);
+    if(searched_user_info_.network_state == "offline") {
+        ui->label_network->setText("网络: 在线");
+    }else {
+        ui->label_network->setText("网络: " + searched_user_info_.network_state + "在线");
+    }
+    ui->label_address->setText("位置: " + searched_user_info_.address);
+
+    ui->label_headImage->show();
+    ui->label_account->show();
+    ui->label_signature->show();
+    ui->label_address->show();
+    ui->label_network->show();
+    ui->label_nickname->show();
+    ui->pushButton_add->show();
+
+    request_.setRawHeader("Origin", "http://ltalk.co");
+    request_.setRawHeader("Accept", "application/json");
+    request_.setRawHeader("Date", Util::getTime().toUtf8().data());
+
+    QUrl url;
+    url = searched_user_info_.head_image + "&platform=linux";
+    request_.setUrl(url);
+    network_access_mannager->get(request_);
+
+    ui->label_notice->clear();
 }
 
 void AddUserPage::dealWithNotExist() {
-    qDebug() << "找不到";
+    QString show_text = "<html><head/><body><p align=\"center\"><span style=\" color:#ff0000;\">";
+    show_text += "帐号不存在";
+    show_text += "</span></p></body></html>";
+    ui->label_notice->setText(show_text);
+}
+
+void AddUserPage::setTheme(QString theme) {
+    if(theme == "default") {
+        ui->label_frame->setStyleSheet("QLabel{ border-image : url(':/ui/themes/default/dialog_page.png')}");
+    }else if(theme == "love") {
+        ui->label_frame->setStyleSheet("QLabel{ border-image : url(':/ui/themes/love/dialog_page.png')}");
+    }
 }

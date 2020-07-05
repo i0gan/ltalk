@@ -25,6 +25,7 @@ public:
     bool RunDatabaseModule();
     bool RunLoggerModule();
     bool RunNetworkModule();
+    bool RunWorkModule();
 
 private:
     int number_of_thread_;

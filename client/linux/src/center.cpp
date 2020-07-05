@@ -51,9 +51,7 @@ void Center::requestLogin(QString account, QString password) {
     //mannager->post()
     QJsonDocument json_document;
     QJsonObject json_object;
-    json_object.insert("request", 1);
-    json_object.insert("token", "none");
-    json_object.insert("uid", "none");
+    json_object.insert("platform", "linux");
     json_object.insert("client_version", "linux 0.1");
     json_object.insert("datetime", QDateTime::currentDateTime().toString("yy-MM-dd dd:mm:ss"));
     json_object.insert("content_type", "login_info");
@@ -253,4 +251,5 @@ void Center::changeTheme(QString theme) {
     main_page_->setTheme(theme);
     profile_page_->setTheme(theme);
     about_page_->setTheme(theme);
+    add_user_page_->setTheme(theme);
 }

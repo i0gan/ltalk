@@ -1,7 +1,7 @@
 #pragma once
 #include "../ltalk.hh"
 
-enum class Process::ResponseCode {
+enum class Work::ResponseCode {
     SUCCESS = 0,
     FAILURE,
     NOT_FOUND,
@@ -18,7 +18,7 @@ enum class Process::ResponseCode {
     LOGINED,
 };
 
-enum class Process::RequestType {
+enum class Work::RequestType {
     error = 0,
     main_page,
     register_page,
@@ -34,14 +34,14 @@ enum class Process::RequestType {
     search_user,
 };
 
-enum class Process::Platform {
+enum class Work::Platform {
     unknown = 0,
     linux_,
     windows,
     android,
 };
 
-namespace Process {
+namespace Work {
 class Request {
 public:
     static RequestType toEnum(std::string request);

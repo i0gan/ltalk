@@ -1,9 +1,9 @@
 #include "util.hh"
 
 
-std::unordered_map<std::string, Process::RequestType> Process::Request::umap_type_;
-pthread_once_t Process::Request::once_control_;
-void Process::Request::Init() {
+std::unordered_map<std::string, Work::RequestType> Work::Request::umap_type_;
+pthread_once_t Work::Request::once_control_;
+void Work::Request::Init() {
     Request::umap_type_["main_page"] = RequestType::main_page;
     Request::umap_type_["register_page"] = RequestType::register_page;
     Request::umap_type_["register_success_page"] = RequestType::register_success_page;
@@ -18,7 +18,7 @@ void Process::Request::Init() {
     Request::umap_type_["search_user"] = RequestType::search_user;
 }
 
-Process::RequestType Process::Request::toEnum(std::string request) {
+Work::RequestType Work::Request::toEnum(std::string request) {
     pthread_once(&Request::once_control_, Request::Init);
     RequestType ret_type = RequestType::error;
     try {

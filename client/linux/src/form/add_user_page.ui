@@ -81,6 +81,22 @@ QToolButton:hover{
      <height>31</height>
     </rect>
    </property>
+   <property name="styleSheet">
+    <string notr="true">QLineEdit{
+ 	border:1px solid rgb(0, 204, 204);
+	background: transparent;
+  	border-radius:2px;
+	color: rgb(255, 255, 255);
+	font: 12pt &quot;Noto Sans&quot;;
+}
+QLineEdit:focus{
+	border:1px solid rgb(78, 125, 255);
+	border-radius:2px;
+}</string>
+   </property>
+   <property name="placeholderText">
+    <string>帐号/邮箱</string>
+   </property>
   </widget>
   <widget class="QPushButton" name="pushButton_search">
    <property name="geometry">
@@ -91,6 +107,14 @@ QToolButton:hover{
      <height>31</height>
     </rect>
    </property>
+   <property name="styleSheet">
+    <string notr="true">QPushButton{
+	border-image: url(':/ui/search.png')
+}
+QPushButton:hover{
+   border:2px solid;
+}</string>
+   </property>
    <property name="text">
     <string/>
    </property>
@@ -98,10 +122,10 @@ QToolButton:hover{
   <widget class="QLabel" name="label_headImage">
    <property name="geometry">
     <rect>
-     <x>190</x>
-     <y>200</y>
-     <width>71</width>
-     <height>61</height>
+     <x>110</x>
+     <y>180</y>
+     <width>70</width>
+     <height>70</height>
     </rect>
    </property>
    <property name="text">
@@ -117,8 +141,96 @@ QToolButton:hover{
      <height>31</height>
     </rect>
    </property>
+   <property name="styleSheet">
+    <string notr="true">QPushButton{
+background-color:rgb(0, 209, 209);
+color:white;
+border-radius:4px;
+}
+QPushButton:hover{
+  background-color: rgb(0, 255, 204);
+}</string>
+   </property>
    <property name="text">
     <string>添加</string>
+   </property>
+  </widget>
+  <widget class="QLabel" name="label_account">
+   <property name="geometry">
+    <rect>
+     <x>200</x>
+     <y>180</y>
+     <width>300</width>
+     <height>25</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>account</string>
+   </property>
+  </widget>
+  <widget class="QLabel" name="label_nickname">
+   <property name="geometry">
+    <rect>
+     <x>200</x>
+     <y>210</y>
+     <width>300</width>
+     <height>25</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>nickname</string>
+   </property>
+  </widget>
+  <widget class="QLabel" name="label_signature">
+   <property name="geometry">
+    <rect>
+     <x>200</x>
+     <y>240</y>
+     <width>300</width>
+     <height>25</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>signatrue</string>
+   </property>
+  </widget>
+  <widget class="QLabel" name="label_network">
+   <property name="geometry">
+    <rect>
+     <x>200</x>
+     <y>300</y>
+     <width>300</width>
+     <height>25</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>network</string>
+   </property>
+  </widget>
+  <widget class="QLabel" name="label_address">
+   <property name="geometry">
+    <rect>
+     <x>200</x>
+     <y>270</y>
+     <width>300</width>
+     <height>25</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>address</string>
+   </property>
+  </widget>
+  <widget class="QLabel" name="label_notice">
+   <property name="geometry">
+    <rect>
+     <x>150</x>
+     <y>100</y>
+     <width>300</width>
+     <height>25</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>notice</string>
    </property>
   </widget>
  </widget>

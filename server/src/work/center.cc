@@ -8,7 +8,7 @@ std::string Data::web_root;
 std::string Data::web_page;
 std::string Data::web_404_page;
 
-Process::Center::Center(const std::map<std::string, std::string> &map_header_info, std::string &content, std::string &http_uid, std::string &http_platform) :
+Work::Center::Center(const std::map<std::string, std::string> &map_header_info, std::string &content, std::string &http_uid, std::string &http_platform) :
     map_header_info_(map_header_info),
     content_(content),
     send_file_handler_(nullptr),
@@ -18,22 +18,22 @@ Process::Center::Center(const std::map<std::string, std::string> &map_header_inf
 
 }
 
-Process::Center::~Center() {
+Work::Center::~Center() {
 
 }
 
-void Process::Center::set_fd(int fd) {
+void Work::Center::set_fd(int fd) {
     fd_ = fd;
 }
-void Process::Center::set_send_file_handler(Util::CallBack1 send_file_handler) {
+void Work::Center::set_send_file_handler(Util::CallBack1 send_file_handler) {
     send_file_handler_ = send_file_handler;
 }
 
-void Process::Center::set_send_data_handler(Util::CallBack2 send_data_handler) {
+void Work::Center::set_send_data_handler(Util::CallBack2 send_data_handler) {
     send_data_handler_ = send_data_handler;
 }
 
-void Process::Center::Process() {
+void Work::Center::Process() {
     std::string http_method;
     try {
         http_method = map_header_info_.at("method");
@@ -58,7 +58,7 @@ void Process::Center::Process() {
     }
 }
 
-void Process::Center::HandleGet() {
+void Work::Center::HandleGet() {
     bool error = false;
     std::string path = map_url_info_["path"];
     std::string web_path = Data::web_root;
@@ -113,7 +113,7 @@ void Process::Center::HandleGet() {
     }
 }
 
-void Process::Center::HandlePost() {
+void Work::Center::HandlePost() {
     RequestType request_type = Request::toEnum(request_);
     //std::cout << "post: " << request_ << '\n';
     switch (request_type) {
@@ -133,7 +133,7 @@ void Process::Center::HandlePost() {
     }
 }
 
-bool Process::Center::ParseUrl() {
+bool Work::Center::ParseUrl() {
     std::string url;
     std::string value_url;
     std::string path;
@@ -179,21 +179,21 @@ bool Process::Center::ParseUrl() {
     return true;
 }
 
-void Process::Center::SendFile(std::string file_name) {
+void Work::Center::SendFile(std::string file_name) {
     if(send_file_handler_)
         send_file_handler_(file_name);
 }
 
-void Process::Center::SendData(const std::string &suffix, const std::string &content) {
+void Work::Center::SendData(const std::string &suffix, const std::string &content) {
     if(send_data_handler_)
         send_data_handler_(suffix, content);
 }
 
-void Process::Center::HandleNotFound() {
+void Work::Center::HandleNotFound() {
     SendFile(Data::web_404_page);
 }
 
-void Process::Center::Response(ResponseCode code) {
+void Work::Center::Response(ResponseCode code) {
     Json json_obj = {
         { "server", SERVER_NAME },
         { "request", request_ },
@@ -203,14 +203,14 @@ void Process::Center::Response(ResponseCode code) {
     SendJson(json_obj);
 }
 
-void Process::Center::SendJson(Json &json_obj) {
+void Work::Center::SendJson(Json &json_obj) {
     std::ostringstream json_sstream;
     json_sstream << json_obj;
     std::string data = json_sstream.str();
     SendData(".json", data);
 }
 
-std::string Process::Center::GetDateTime() {
+std::string Work::Center::GetDateTime() {
     char time_str[128] = {0};
     struct timeval tv;
     time_t time;
@@ -221,56 +221,25 @@ std::string Process::Center::GetDateTime() {
     return std::string(time_str);
 }
 
-bool Process::Center::CheckJsonBaseContent(Json &json_obj) {
-    bool ret = true;
-    do {
-        if(json_obj.find("token") == json_obj.end()) {
-            ret = false;
-            break;
-        }
-        if(json_obj.find("request") == json_obj.end()) {
-            ret = false;
-            break;
-        }
-        if(json_obj.find("datetime") == json_obj.end()) {
-            ret = false;
-            break;
-        }
-        if(json_obj.find("uid") == json_obj.end()) {
-            ret = false;
-            break;
-        }
-        if(json_obj.find("content") == json_obj.end()) {
-            ret = false;
-            break;
-        }
-        if(json_obj.find("content_type") == json_obj.end()) {
-            ret = false;
-            break;
-        }
-    } while(false);
-    return ret;
-}
-
-bool Process::Center::CheckJsonContentType(Json &recv_json_obj, const std::string &type) {
-    bool ret = true;
+bool Work::Center::CheckJsonContentType(Json &recv_json_obj, const std::string &type) {
+    bool ret = false;
     std::string recv_type;
     try {
         recv_type = recv_json_obj.at("content_type");
     } catch (std::out_of_range e) { }
 
-    if(recv_type != type) {
-        ret = false;
+    if(recv_type == type) {
+        ret = true;
     }
     return ret;
 
 }
 
-void Process::Center::DealWithKeepConnect() {
+void Work::Center::DealWithKeepConnect() {
     Response(ResponseCode::SUCCESS);
 }
 
-void Process::Center::GenerateUserPath(const std::string &uid) {
+void Work::Center::GenerateUserPath(const std::string &uid) {
     std::string base_path = "data/user/" + uid;
     mkdir(base_path.c_str(), S_IRWXU);
     mkdir((base_path + "/public").c_str(), S_IRWXU);
@@ -280,7 +249,7 @@ void Process::Center::GenerateUserPath(const std::string &uid) {
     mkdir((base_path + "/private/chat").c_str(), S_IRWXU);
 }
 
-void Process::Center::DealWithRegisterUser() {
+void Work::Center::DealWithRegisterUser() {
     std::string content_type;
     try {
         content_type = map_header_info_.at("content-type");
@@ -300,11 +269,6 @@ void Process::Center::DealWithRegisterUser() {
         recv_json_obj = Json::parse(content_);
     }  catch (Json::parse_error e) {
         Response(ResponseCode::ERROR_PARSING_CONTENT);
-        return;
-    }
-
-    if(!CheckJsonBaseContent(recv_json_obj)) {
-        Response(ResponseCode::NO_ACCESS);
         return;
     }
 
@@ -401,22 +365,22 @@ void Process::Center::DealWithRegisterUser() {
     SendJson(send_json);
 }
 
-std::string Process::Center::MakeToken(std::string uid) {
+std::string Work::Center::MakeToken(std::string uid) {
     time_t t = time(nullptr);
     return Crypto::MD5(std::to_string(t) + uid).toString();
 }
 
-std::string Process::Center::MakeUid(std::string str) {
+std::string Work::Center::MakeUid(std::string str) {
     //::Database::MysqlQuery query;
     //query.Select("user_", "uid", "uid=" )
     return Crypto::MD5(str).toString();
 }
 
-void Process::Center::DealWithRegisterGroup() {
+void Work::Center::DealWithRegisterGroup() {
 
 }
 
-void Process::Center::DealWithLogin() {
+void Work::Center::DealWithLogin() {
     std::string content_type;
     try {
         content_type = map_header_info_.at("content-type");
@@ -439,10 +403,6 @@ void Process::Center::DealWithLogin() {
         return;
     }
 
-    if(!CheckJsonBaseContent(recv_json_obj)) {
-        Response(ResponseCode::NO_ACCESS);
-        return;
-    }
 
     if(!CheckJsonContentType(recv_json_obj, "login_info")) {
         Response(ResponseCode::ERROR_JSON_CONTENT_TYPE);
@@ -451,9 +411,11 @@ void Process::Center::DealWithLogin() {
 
     std::string json_account;
     std::string json_password;
+    std::string json_platform;
     try {
         json_account = recv_json_obj["content"]["account"];
         json_password = recv_json_obj["content"]["password"];
+        json_platform = recv_json_obj["platform"];
     }  catch (Json::type_error) {
         Response(ResponseCode::ERROR_JSON_CONTENT_TYPE);
         return;
@@ -461,6 +423,7 @@ void Process::Center::DealWithLogin() {
 
     // filter
     Database::MysqlQuery::Escape(json_account);
+    Database::MysqlQuery::Escape(json_platform);
     Database::MysqlQuery sql_query;
 
     sql_query.Select("user_", "account", "account = '" + json_account + '\'');
@@ -493,8 +456,8 @@ void Process::Center::DealWithLogin() {
     std::string db_uid = sql_query.Value(0);
     std::string token = MakeToken(db_uid);
 
-    http_platform_ = platform_;
-
+    http_platform_ = json_platform;
+    platform_ = json_platform;
 
     if(CheckIsLogined(db_uid)) {
         Response(ResponseCode::LOGINED);
@@ -505,7 +468,8 @@ void Process::Center::DealWithLogin() {
         Response(ResponseCode::FAILURE);
         return;
     }
-    sql_query.Update("user_", "last_login", GetDateTime(), "uid='" + db_uid + '\'');
+    sql_query.Update("user_", "last_login, network_state", GetDateTime() + ',' + json_platform, "uid='" + db_uid + '\'');
+
     Json send_json = {
         { "server", SERVER_NAME },
         { "code", ResponseCode::SUCCESS },
@@ -518,7 +482,7 @@ void Process::Center::DealWithLogin() {
     SendJson(send_json);
 }
 
-bool Process::Center::CheckIsLogined(const std::string &uid) {
+bool Work::Center::CheckIsLogined(const std::string &uid) {
     Data::User user_info;
     bool ret_result = false;
     do {
@@ -549,7 +513,7 @@ bool Process::Center::CheckIsLogined(const std::string &uid) {
     return ret_result;
 }
 
-bool Process::Center::UpdateUserInfo(const std::string &uid, const std::string &token) {
+bool Work::Center::UpdateUserInfo(const std::string &uid, const std::string &token) {
     http_uid_ = uid;
     Data::User user;
     user.linux_fd = -1;
@@ -583,7 +547,7 @@ bool Process::Center::UpdateUserInfo(const std::string &uid, const std::string &
     return true;
 }
 
-void Process::Center::DealWithGetUserInfo() {
+void Work::Center::DealWithGetUserInfo() {
     std::string account;
     std::string uid;
     std::string token;
@@ -667,7 +631,7 @@ void Process::Center::DealWithGetUserInfo() {
     SendJson(send_json);
 }
 
-bool Process::Center::CheckToken(const std::string &uid, const std::string &token) {
+bool Work::Center::CheckToken(const std::string &uid, const std::string &token) {
     Data::User user;
     bool ret_value = false;
     if(Data::map_user.find(uid) != Data::map_user.end()) {
@@ -689,7 +653,7 @@ bool Process::Center::CheckToken(const std::string &uid, const std::string &toke
     return ret_value;
 }
 
-void Process::Center::DealWithGetUserPublicFile() {
+void Work::Center::DealWithGetUserPublicFile() {
     std::string uid;
     std::string file_name;
     try {
@@ -705,15 +669,15 @@ void Process::Center::DealWithGetUserPublicFile() {
     SendFile(file_path);
 }
 
-void Process::Center::DealWithGetUserPrivateFile() {
+void Work::Center::DealWithGetUserPrivateFile() {
 
 }
 
-void Process::Center::DealWithGetGetChatFile() {
+void Work::Center::DealWithGetGetChatFile() {
 
 }
 
-void Process::Center::DealWithUploadProfileImage() {
+void Work::Center::DealWithUploadProfileImage() {
     std::cout << "upload_profile_image\n";
     std::string name;
     std::string type;
@@ -772,7 +736,7 @@ void Process::Center::DealWithUploadProfileImage() {
     Response(ResponseCode::SUCCESS);
 }
 
-void Process::Center::DealWithGetProfileImage() {
+void Work::Center::DealWithGetProfileImage() {
     std::string name;
     std::string uid;
     try {
@@ -786,12 +750,12 @@ void Process::Center::DealWithGetProfileImage() {
     SendFile(file_path);
 }
 
-void Process::Center::DealWithSearchUser() {
+void Work::Center::DealWithSearchUser() {
     std::string search;
     std::string type;
 
     std::string db_uid, db_account, db_nickname, db_head_image,
-                db_address, db_network_state, db_email, db_occupation;
+                db_address, db_network_state, db_email, db_signature;
 
     try {
         search = map_url_value_info_.at("search");
@@ -812,13 +776,13 @@ void Process::Center::DealWithSearchUser() {
             return;
         }
 
-        query.Select("user_", "account, email, nickname, occupation, head_image, address, network_state", "uid='" + db_uid + '\'');
+        query.Select("user_", "account, email, nickname, signature, head_image, address, network_state", "uid='" + db_uid + '\'');
         if(query.Next()) {
             try {
                 db_account = query.Value(0);
                 db_email = query.Value(1);
                 db_nickname = query.Value(2);
-                db_occupation = query.Value(3);
+                db_signature = query.Value(3);
                 db_head_image = query.Value(4);
                 db_address = query.Value(5);
                 db_network_state = query.Value(6);
@@ -847,7 +811,7 @@ void Process::Center::DealWithSearchUser() {
               {"email", db_email},
               {"nickname", db_nickname},
               {"address", db_address},
-              {"occupation", db_occupation},
+              {"signature", db_signature},
               {"network_state", db_network_state},
               {"head_image", db_head_image},
           }}

@@ -8,16 +8,15 @@
 #include <unordered_map>
 #include "json/json.hpp"
 
-
 #define DEFAULT_CONFIG_FILE "./etc/config.json"
 
 #define d_cout std::cout << "[" << __FILE__ << " line: " << __LINE__ << " thread id: " << std::hex <<  pthread_self() << std::oct << "] "
-#define MAX_CONNECTED_FDS_NUM 100000
+#define MAX_CONNECTED_FDS_NUM 200000
 #define EPOLL_MAX_EVENT_NUM  4096
 #define EPOLL_WAIT_TIME 10000
 #define MAX_BUF_SIZE 4096
 
-#define SERVER_NAME    "Ltalk Server Debian Linux x64"
+#define SERVER_NAME    "LTALK SERVER DEBIAN LINUX x64"
 #define SERVER_DOMAIN  "http://192.168.100.8"
 
 namespace Thread {
@@ -54,11 +53,17 @@ using SPEventLoopThread = std::shared_ptr<Net::EventLoopThread>;
 using SPChannel = std::shared_ptr<Net::Channel>;
 }
 
-namespace Process {
+namespace Work {
 class Center;
 enum class ResponseCode;
 enum class RequestType;
 enum class Platform;
+class Event;
+class EventLoop;
+class EventLoopThread;
+class Timer;
+using SPEvent = std::shared_ptr<Work::Event>;
+using SPTimer = std::shared_ptr<Work::Timer>;
 }
 
 namespace Crypto {

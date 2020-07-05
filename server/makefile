@@ -18,7 +18,7 @@ INSTALL_PATH := /usr/share/ltalks
 # src path
 NET_PATH      :=  ./src/net
 THREAD_PATH   :=  ./src/thread
-PROCESS_PATH  := ./src/process
+WORK_PATH     := ./src/work
 DATABASE_PATH :=  ./src/database
 
 CRYPTO_PATH :=  ./src/crypto
@@ -46,10 +46,10 @@ DATABASE_SRC := $(wildcard $(DATABASE_PATH)/*.cc)
 DATABASE_OBJ := $(patsubst %.cc, %.o, $(DATABASE_SRC)) 
 OBJS += $(DATABASE_OBJ)
 
-# process src
-PROCESS_SRC := $(wildcard $(PROCESS_PATH)/*.cc)  
-PROCESS_OBJ := $(patsubst %.cc, %.o, $(PROCESS_SRC)) 
-OBJS += $(PROCESS_OBJ)
+# work src
+WORK_SRC := $(wildcard $(WORK_PATH)/*.cc)  
+WORK_OBJ := $(patsubst %.cc, %.o, $(WORK_SRC)) 
+OBJS += $(WORK_OBJ)
 
 # crypto src
 CRYPTO_SRC := $(wildcard $(CRYPTO_PATH)/*.cc)  
