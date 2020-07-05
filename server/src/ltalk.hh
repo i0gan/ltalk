@@ -17,7 +17,7 @@
 #define MAX_BUF_SIZE 4096
 
 #define SERVER_NAME    "LTALK SERVER DEBIAN LINUX x64"
-#define SERVER_DOMAIN  "http://192.168.100.8"
+//#define SERVER_DOMAIN  "http://ltalk.co"
 
 namespace Thread {
 class Thread;

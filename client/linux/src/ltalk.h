@@ -6,9 +6,9 @@
 #define DEBUG
 
 #ifdef DEBUG
-#define SERVER_REQUEST_URL "http://192.168.100.8"
+#define SERVER_DOMAIN "http://192.168.100.8"
 #else
-#define SERVER_REQUEST_URL "http://ltalk.co"
+#define SERVER_DOMAIN "http://ltalk.co"
 #endif
 
 #define SERVER_BASE_URL_VALUE "/?platform=linux"

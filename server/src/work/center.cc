@@ -728,8 +728,8 @@ void Work::Center::DealWithUploadProfileImage() {
     }
     write(fd, content_.data(), content_.size());
     close(fd);
-    std::string store_url = SERVER_DOMAIN;
-                store_url += "/?request=get_profile_image&uid=" + uid + "&name=" + name;
+
+    std::string store_url = "/?request=get_profile_image&uid=" + uid + "&name=" + name;
     std::cout << "store_url: " << store_url << '\n';
     Database::MysqlQuery query;
     query.Update("user_", type, store_url, "uid='" + uid + '\'');

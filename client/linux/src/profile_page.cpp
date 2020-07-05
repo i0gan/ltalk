@@ -150,7 +150,7 @@ void ProfilePage::uploadImage(ImageType image, QString saved_file_name) {
     request_.setRawHeader("Origin", "http://ltalk.co");
     request_.setRawHeader("Accept", "application/octet-stream");
     request_.setRawHeader("Date", Util::getTime().toUtf8().data());
-    QString request_url = SERVER_REQUEST_URL;
+    QString request_url = SERVER_DOMAIN;
     request_url += "/?request=upload_profile_image&platform=linux&account=";
     request_url += user_info_.account + "&uid=" + user_info_.uid + "&token=";
     request_url += user_info_.token;
@@ -273,35 +273,36 @@ void ProfilePage::dealWithServerResponse(const QJsonObject &json_obj) {
 
 
 void ProfilePage::requestGetImage(ImageType request_step) {
-    QString url;
+    QString url = SERVER_DOMAIN;
     request_step_ = request_step;
     switch (request_step) {
     case ImageType::head_image: {
-        url = user_info_.head_image;
+        url += user_info_.head_image;
     } break;
     case ImageType::profile_image_1: {
-        url = user_info_.profile_image_1;
+        url += user_info_.profile_image_1;
     } break;
     case ImageType::profile_image_2: {
-        url = user_info_.profile_image_2;
+        url += user_info_.profile_image_2;
     } break;
     case ImageType::profile_image_3: {
-        url = user_info_.profile_image_3;
+        url += user_info_.profile_image_3;
     } break;
     case ImageType::profile_image_4: {
-        url = user_info_.profile_image_4;
+        url += user_info_.profile_image_4;
     } break;
     default:
         break;
     }
     if(url == "none")
         return;
+    url += "&platform=linux";
     request_.setRawHeader("Origin", "http://ltalk.co");
     request_.setRawHeader("Accept", "*/*");
     request_.setRawHeader("Content-Type", "application/json");
     request_.setRawHeader("Accept", "application/json");
     request_.setRawHeader("Date", Util::getTime().toUtf8().data());
-    url += "&platform=linux";
+
     request_.setUrl(url);
     network_mannager_->get(request_);
 }

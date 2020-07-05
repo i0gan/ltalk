@@ -122,8 +122,10 @@ void MainPage::requestGetFile(QString url, GetWhat what, QString save_file_path,
     request_.setRawHeader("Date", Util::getTime().toUtf8().data());
     QString request_url;
     if(what == GetWhat::myHeadImage) {
-        request_url = url + "&platform=linux";
+        request_url = SERVER_DOMAIN;
+        request_url += url + "&platform=linux";
     }
+
     if(private_file)
         request_url += "&token" + user_info_.token;
     request_.setUrl(request_url);

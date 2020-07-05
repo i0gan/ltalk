@@ -26,14 +26,14 @@ void LoginPage::init() {
     // set open link
     QString html;
     html = "<html><head/><body><p><a href=\"";
-    html += SERVER_REQUEST_URL;
-    html += "/?request=register&platform=web\">";
+    html += SERVER_DOMAIN;
+    html += "/?request=register_page&platform=web\">";
     html += "<span style=\" text-decoration: underline; color:#00ffff;\">";
     html += "register";
     html += "</span></a></p></body></html>";
     ui->label_register->setText(html);
     html = "<html><head/><body><p><a href=\"";
-    html += SERVER_REQUEST_URL;
+    html += SERVER_DOMAIN;
     html += "\">";
     html += "<span style=\" text-decoration: underline; color:#00ffff;\">";
     html += "forgot";

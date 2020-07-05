@@ -66,7 +66,7 @@ void AddUserPage::on_pushButton_search_clicked() {
     request_.setRawHeader("Accept", "application/json");
     request_.setRawHeader("Date", Util::getTime().toUtf8().data());
     QUrl url;
-    url = SERVER_REQUEST_URL + QString("/?request=search_user&platform=linux&search=") + account + "&type=account";
+    url = SERVER_DOMAIN + QString("/?request=search_user&platform=linux&search=") + account + "&type=account";
     request_.setUrl(url);
     network_access_mannager->get(request_);
 
@@ -142,7 +142,7 @@ void AddUserPage::dealWithSearchReply(const QJsonObject &json_obj) {
     request_.setRawHeader("Date", Util::getTime().toUtf8().data());
 
     QUrl url;
-    url = searched_user_info_.head_image + "&platform=linux";
+    url = SERVER_DOMAIN + searched_user_info_.head_image + "&platform=linux";
     request_.setUrl(url);
     network_access_mannager->get(request_);
 

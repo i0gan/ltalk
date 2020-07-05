@@ -63,7 +63,7 @@ void Center::requestLogin(QString account, QString password) {
     QByteArray byte_array = json_document.toJson(QJsonDocument::Compact);
     //qDebug() << byte_array;
     QUrl url;
-    url = SERVER_REQUEST_URL + QString("/?request=login&platform=linux");
+    url = SERVER_DOMAIN + QString("/?request=login&platform=linux");
     keep_connect_request_.setUrl(url);
     network_access_mannager->post(keep_connect_request_, byte_array);
 }
@@ -182,7 +182,7 @@ void Center::keepConnect() {
     keep_connect_request_.setRawHeader("Content-Type", "application/json");
     keep_connect_request_.setRawHeader("Accept", "application/json");
     keep_connect_request_.setRawHeader("Date", Util::getTime().toUtf8().data());
-    QString url = SERVER_REQUEST_URL + QString("/?request=keep_connect&platform=linux");
+    QString url = SERVER_DOMAIN + QString("/?request=keep_connect&platform=linux");
     keep_connect_request_.setUrl(url);
     network_access_mannager->get(keep_connect_request_);
 }
@@ -193,7 +193,7 @@ void Center::requestGetUserInfo() {
     request.setRawHeader("Accept", "application/json");
     request.setRawHeader("Date", Util::getTime().toUtf8().data());
     QUrl url;
-    url = SERVER_REQUEST_URL + QString("/?request=get_user_info&platform=linux&account=") + user_.account + "&uid=" + user_.uid + "&token=" + user_.token;
+    url = SERVER_DOMAIN + QString("/?request=get_user_info&platform=linux&account=") + user_.account + "&uid=" + user_.uid + "&token=" + user_.token;
     request.setUrl(url);
     network_access_mannager->get(request);
 }

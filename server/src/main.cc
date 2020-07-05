@@ -4,7 +4,7 @@
 int main(int argv, char **argc) {
 
     if(argv < 2) {
-        std::cout << "-h get more info" << std::endl;
+        std::cout << "--help to get help" << std::endl;
         return 0;
     }
 
