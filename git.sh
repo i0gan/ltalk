@@ -18,9 +18,8 @@ cd ..
 git add .
 git reset HEAD $cancel
 git commit -m "$comment"
-echo $comment
-#git status
-#git push
+git status
+git push
 
 
 #echo $cancel

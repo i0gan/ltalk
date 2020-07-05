@@ -9,6 +9,7 @@ int main(int argv, char **argc) {
     }
 
     Ltalk::StartUp startup;
+    startup.ShowText();
     std::string arg = argc[1];
     if(arg == "-h" || arg == "--help") {
         std::cout << "Usage: ./ltalks [OPTION...] [SECTION] PAGE...\n"

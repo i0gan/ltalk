@@ -7,10 +7,24 @@ extern std::string Data::web_root;
 extern std::string Data::web_page;
 extern std::string Data::web_404_page;
 
-Ltalk::StartUp::StartUp() {
+Work::EventLoop *Data::work_eventloop = nullptr;
+
+Ltalk::StartUp::StartUp():
+    sp_work_eventloop_thread_(new ::Work::EventLoopThread()){
 }
 
 Ltalk::StartUp::~StartUp() {
+}
+
+void Ltalk::StartUp::ShowText() {
+    std::string show_text= ""
+            "\033[40;30m _   _____  _    _     _  __    ____  _____ ______     _______ ____  \n\033[0m"
+            "\033[40;31m| | |_   _|/ \\  | |   | |/ /   / ___|| ____|  _ \\ \\   / / ____|  _ \\  \n\033[0m"
+            "\033[40;32m| |   | | / _ \\ | |   | ' /    \\___ \\|  _| | |_) \\ \\ / /|  _| | |_) | \n\033[0m"
+            "\033[40;33m| |___| |/ ___ \\| |___| . \\     |__) | |___|  _ < \\ V / | |___|  _ <  \n\033[0m"
+            "\033[40;36m|_____|_/_/   \\_\\_____|_|\\_\\   |____/|_____|_| \\_\\ \\_/  |_____|_| \\_\\ \n\033[0m";
+
+    std::cout << show_text;
 }
 bool Ltalk::StartUp::Run() {
     //setbuf(stdout, nullptr);
@@ -29,7 +43,14 @@ bool Ltalk::StartUp::Run() {
         abort();
     }
 
-    std::cout << "tcp port: " << tcp_port_ << "  number of thread: " << number_of_thread_ << '\n';
+    if(false == RunWorkModule()) {
+        std::cout << "Run work module failed!\n";
+        abort();
+    }
+
+    StartBase();
+
+    std::cout << "tcp port: " << tcp_port_ << "  number of net thread: " << number_of_net_thread_ << '\n';
     if(false == this->RunNetworkModule()) {
         std::cout << "Run network module failed!\n";
         abort();
@@ -60,7 +81,7 @@ bool Ltalk::StartUp::LoadConfig() {
     try {
         tcp_port_ = obj["server"]["tcp_port"];
         udp_port_ = obj["server"]["udp_port"];
-        number_of_thread_ = obj["server"]["number_of_thread"];
+        number_of_net_thread_ = obj["server"]["number_of_net_thread"];
         log_path_ = obj["server"]["log_path"];
         db_host_ = obj["database"]["host"];
         db_port_ = obj["database"]["port"];
@@ -77,7 +98,7 @@ bool Ltalk::StartUp::LoadConfig() {
     return true;
 }
 bool Ltalk::StartUp::RunNetworkModule() {
-    Net::Net net(tcp_port_, number_of_thread_);
+    Net::Net net(tcp_port_, number_of_net_thread_);
     net.Start();
     return true;
 }
@@ -86,4 +107,19 @@ bool Ltalk::StartUp::RunDatabaseModule() {
 }
 bool Ltalk::StartUp::RunLoggerModule() {
     return true;
+}
+
+bool Ltalk::StartUp::RunWorkModule() {
+
+    Data::work_eventloop = sp_work_eventloop_thread_->StartLoop();
+    return true;
+}
+
+void Ltalk::StartUp::StartBase() {
+    ::Work::SPEvent event = ::Work::SPEvent(new ::Work::Event(std::bind(&StartUp::KeepConnectDatabase, this), true, 1000 * 120));
+    ::Data::work_eventloop->AddWork(event);
+}
+
+void Ltalk::StartUp::KeepConnectDatabase() {
+    ::Database::Mysql::Ping();
 }

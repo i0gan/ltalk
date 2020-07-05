@@ -136,6 +136,7 @@ extern std::unordered_map<std::string, Group> map_group;
 extern std::string web_root;
 extern std::string web_page;
 extern std::string web_404_page;
+extern Work::EventLoop *work_eventloop;
 }
 
 

@@ -1,6 +1,8 @@
 #pragma once
 #include <time.h>
 #include <sys/time.h>
+#include <iostream>
+#include "../ltalk.hh"
 
 namespace Work {
 class Timer {

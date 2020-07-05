@@ -15,10 +15,13 @@
 #include "ltalk.hh"
 #include "database/mysql.hh"
 
+#include "work/eventloop_thread.hh"
+
 class Ltalk::StartUp final{
 public:
      StartUp();
     ~StartUp();
+    void ShowText();
     bool Run();
     bool Stop();
     bool LoadConfig();
@@ -26,9 +29,10 @@ public:
     bool RunLoggerModule();
     bool RunNetworkModule();
     bool RunWorkModule();
-
+    void StartBase();
+    void KeepConnectDatabase();
 private:
-    int number_of_thread_;
+    int number_of_net_thread_;
     int queue_size_;
     int tcp_port_;
     int udp_port_;
@@ -39,4 +43,6 @@ private:
     std::string db_password_;
     std::string db_name_;
     std::string log_path_;
+
+    std::shared_ptr<::Work::EventLoopThread> sp_work_eventloop_thread_;
 };

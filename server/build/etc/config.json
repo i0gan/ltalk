@@ -2,7 +2,7 @@
     "server" : {
         "tcp_port" : 80,
         "udp_port" : 8000,
-        "number_of_thread": 8,
+        "number_of_net_thread": 4,
         "data_path" : "data",
         "log_path" : "data/log",
         "web_root" : "data/web",
