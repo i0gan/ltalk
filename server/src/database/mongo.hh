@@ -6,6 +6,5 @@ public:
     Mongo();
     ~Mongo();
 private:
-
 };
  

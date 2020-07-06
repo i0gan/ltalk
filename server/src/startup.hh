@@ -16,6 +16,7 @@
 #include "database/mysql.hh"
 
 #include "work/eventloop_thread.hh"
+#include "work/push_message.hh"
 
 class Ltalk::StartUp final{
 public:
@@ -45,4 +46,5 @@ private:
     std::string log_path_;
 
     std::shared_ptr<::Work::EventLoopThread> sp_work_eventloop_thread_;
+    ::Work::PushMessage push_message_;
 };

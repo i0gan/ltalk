@@ -5,7 +5,7 @@
 namespace Work {
 class Event {
 public:
-    explicit Event(::Util::CallBack call_back, bool loop = false, int ms_timeout = 1000);
+    explicit Event(::Util::CallBack call_back, bool loop = false, int ms_timeout = 0);
     ~Event();
     void Run();
     void set_call_back(::Util::CallBack call_back);

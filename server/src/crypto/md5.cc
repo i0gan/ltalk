@@ -57,8 +57,8 @@ Rotation is separate from addition to prevent recomputation.
 
 const byte Crypto::MD5::PADDING[64] = { 0x80 };
 const char Crypto::MD5::HEX[16] = {
-	'0', '1', '2', '3',
-	'4', '5', '6', '7',
+    '0', '1', '2', '3',
+    '4', '5', '6', '7',
     '8', '9', 'A', 'B',
     'C', 'D', 'E', 'F'
 };
@@ -331,4 +331,12 @@ std::string Crypto::MD5::bytesToHexString(const byte *input, size_t length) {
 /* Convert digest to string value */
 std::string Crypto::MD5::toString() {
 	return bytesToHexString(digest(), 16);
+}
+
+std::string Crypto::MD5::toLowercaseString() {
+    std::string str = bytesToHexString(digest(), 16);
+    for (size_t index = 0; index < str.size(); ++index) {
+        str[index] = tolower(str[index]);
+    }
+    return str;
 }

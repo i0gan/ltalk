@@ -119,6 +119,10 @@ void Ltalk::StartUp::StartBase() {
     // 保持数据库连接, 每120 s ping一次
     ::Work::SPEvent event = ::Work::SPEvent(new ::Work::Event(std::bind(&StartUp::KeepConnectDatabase, this), true, 1000 * 120));
     ::Data::work_eventloop->AddWork(event);
+
+    // 消息推送
+    ::Work::SPEvent event_push_message = ::Work::SPEvent(new ::Work::Event(std::bind(&::Work::PushMessage::Send, &push_message_), true));
+    ::Data::work_eventloop->AddWork(event_push_message);
 }
 
 void Ltalk::StartUp::KeepConnectDatabase() {

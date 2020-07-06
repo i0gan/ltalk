@@ -1,12 +1,19 @@
 #include "../ltalk.hh"
 #include "../thread/mutex_lock.hh"
+#include <hiredis/hiredis.h>
 
-class Database::Redis {
+namespace Database {
+extern redisContext *global_redis;
+class Redis{
 public:
     Redis();
     ~Redis();
-    bool Connect();
-    bool Disconnect();
+    static bool Connect(std::string ip, int port);
+    static bool Disconnect();
+    std::string Get(std::string key);
+
 private:
 };
+
+}
 

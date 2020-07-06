@@ -69,6 +69,7 @@ void AddUserPage::on_pushButton_search_clicked() {
     QUrl url;
     url = SERVER_DOMAIN + QString("/?request=search_user&platform=linux&search=") + account + "&type=account";
     request_.setUrl(url);
+    qDebug() << "url: " << url;
     network_access_mannager->get(request_);
 
     ui->label_headImage->hide();

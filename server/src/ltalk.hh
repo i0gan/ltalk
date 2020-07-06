@@ -19,6 +19,7 @@
 #define SERVER_NAME    "LTALK SERVER DEBIAN LINUX x64"
 //#define SERVER_DOMAIN  "http://ltalk.co"
 
+
 namespace Thread {
 class Thread;
 class MutexLock;
@@ -93,65 +94,55 @@ using Json = nlohmann::json;
 
 
 namespace Data {
-class Message {
-public:
+struct Message {
     enum class Type {
         USER,
-        GROUP,
-        SYSTEM
+        GROUP
     };
-  Message::Type type;
-  std::string message;
-  std::string uid;
-  std::string tid;
-  std::string id;
+    Message::Type type;
+    Third::Json content;
+    std::string tid;
+    time_t time;
 };
 
-class User{
+struct User{
 public:
-    void operator=(const User &user) {
-        uid = user.uid;
-        account = user.account;
-        linux_fd = user.linux_fd;
-        windows_fd = user.windows_fd;
-        android_fd = user.android_fd;
-        web_fd = user.web_fd;
+//    void operator=(const User &user) {
+//        uid = user.uid;
+//        account = user.account;
+//        linux_fd = user.linux_fd;
+//        windows_fd = user.windows_fd;
+//        android_fd = user.android_fd;
+//        web_fd = user.web_fd;
 
-        linux_http = user.web_http;
-        windows_http = user.windows_http;
-        android_http = user.android_http;
-        web_http = user.web_http;
+//        linux_http = user.web_http;
+//        windows_http = user.windows_http;
+//        android_http = user.android_http;
+//        web_http = user.web_http;
 
-        linux_token = user.linux_token;
-        windows_token = user.windows_token;
-        android_token = user.android_token;
-        web_token = user.web_token;
-    }
-
+//        linux_token = user.linux_token;
+//        windows_token = user.windows_token;
+//        android_token = user.android_token;
+//        web_token = user.web_token;
+//    }
     std::string uid;
     std::string account;
     int linux_fd;
     int windows_fd;
     int android_fd;
     int web_fd;
-    std::weak_ptr<::Net::Http> linux_http;
-    std::weak_ptr<::Net::Http> windows_http;
-    std::weak_ptr<::Net::Http> android_http;
-    std::weak_ptr<::Net::Http> web_http;
+    std::shared_ptr<::Net::Http> linux_http;
+    std::shared_ptr<::Net::Http> windows_http;
+    std::shared_ptr<::Net::Http> android_http;
+    std::shared_ptr<::Net::Http> web_http;
     std::string linux_token;
     std::string windows_token;
     std::string android_token;
     std::string web_token;
 };
 
-class Group {
+struct Group {
 public:
-    void operator=(const Group &group) {
-        gid = group.gid;
-        account = group.account;
-        member_list = group.member_list;
-    }
-
     std::string gid;
     std::string account;
     std::list<User> member_list;

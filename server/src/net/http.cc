@@ -59,7 +59,6 @@ Net::Http::Http(int fd,EventLoop *eventloop) :
 }
 Net::Http::~Http() {
     std::cout << "~http()\n";
-    DealWithOffline();
     close(fd_);
 }
 
@@ -114,13 +113,13 @@ void Net::Http::HandleRead() {
         //if state as disconnecting will clean th in buffer
         if(http_connection_state_ == HttpConnectionState::DISCONNECTING) {
             //std::cout << "DISCONNECTING\n";
-            in_buffer_.clear();
             break;
         }
 
         if(read_len == 0) {
             http_connection_state_ = HttpConnectionState::DISCONNECTING;
             //std::cout << "recv 0 DISCONNECTING\n";
+            DealWithOffline();
             in_buffer_.clear();
             break;
         }else if(read_len < 0) { // Read data error
@@ -306,18 +305,22 @@ void Net::Http::DealWithOffline() {
     if(platform_ == "linux") {
         user.linux_fd = -1;
         user.linux_token.clear();
+        user.linux_http.reset();
         std::cout << "linux 客户端下线:" << uid_ << "\n";
     }else if(platform_ == "windows") {
         user.windows_fd = -1;
         user.windows_token.clear();
+        user.windows_http.reset();
         std::cout << "windows 客户端下线" << uid_ << "\n";
     }else if(platform_ == "android") {
         user.android_fd = -1;
         user.android_token.clear();
+        user.android_http.reset();
         std::cout << "android 客户端下线" << uid_ << "\n";
     }else if(platform_ == "web") {
         user.web_fd = -1;
         user.web_token.clear();
+        user.web_http.reset();
         std::cout << "web 客户端下线" << uid_ << "\n";
     }
 
@@ -369,6 +372,7 @@ std::string Net::Http::GetSuffix(std::string file_name) {
 }
 
 void Net::Http::SendData(const std::string &type,const std::string &content) {
+    Thread::MutexLockGuard guard(write_data_mutex_lock_);
 
     out_buffer_.clear();
     out_buffer_ << "HTTP/1.1 200 OK\r\n";
@@ -389,6 +393,7 @@ void Net::Http::SendData(const std::string &type,const std::string &content) {
 
 // Send file
 void Net::Http::SendFile(const std::string &file_name) {
+    Thread::MutexLockGuard guard(write_data_mutex_lock_);
     do {
         if(recv_error_ || http_connection_state_ == HttpConnectionState::DISCONNECTED) {
             break;;

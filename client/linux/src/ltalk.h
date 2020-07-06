@@ -6,7 +6,7 @@
 #define DEBUG
 
 #ifdef DEBUG
-#define SERVER_DOMAIN "http://192.168.100.8"
+#define SERVER_DOMAIN "http://192.168.43.47"
 #else
 #define SERVER_DOMAIN "http://ltalk.co"
 #endif

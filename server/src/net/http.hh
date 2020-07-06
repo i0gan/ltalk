@@ -16,7 +16,6 @@
 #include "../work/center.hh"
 #include "../util/vessel.hpp"
 
-
 enum class Net::HttpRecvState {
     PARSE_HEADER = 0,
     RECV_CONTENT,
@@ -137,7 +136,7 @@ private:
     std::weak_ptr<Timer> wp_timer_;
     std::string uid_;      // logined uid for deal with offline
     std::string platform_; // logined uid for deal with offline
-
+    Thread::MutexLock write_data_mutex_lock_;
     void HandleRead();
     void HandleWrite();
     void HandleConnect();

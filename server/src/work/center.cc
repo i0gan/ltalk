@@ -471,7 +471,7 @@ void Work::Center::DealWithLogin() {
         return;
     }
 
-    if(!UpdateUserInfo(db_uid, token)) {
+    if(!UpdateUserInfo(db_uid, token, platform_)) {
         Response(ResponseCode::FAILURE);
         return;
     }
@@ -520,7 +520,7 @@ bool Work::Center::CheckIsLogined(const std::string &uid) {
     return ret_result;
 }
 
-bool Work::Center::UpdateUserInfo(const std::string &uid, const std::string &token) {
+bool Work::Center::UpdateUserInfo(const std::string &uid, const std::string &token, const std::string &platform) {
     http_uid_ = uid;
     Data::User user;
     user.linux_fd = -1;
@@ -533,22 +533,23 @@ bool Work::Center::UpdateUserInfo(const std::string &uid, const std::string &tok
         user = Data::map_user[uid];
     }
 
-    if(platform_ == "linux") {
+    if(platform == "linux") {
         user.linux_fd = fd_;
         user.linux_token = token;
-        user.linux_http = wp_http_;
-    }else if(platform_ == "windows") {
+        user.linux_http = wp_http_.lock();
+        std::cout << "Update ..";
+    }else if(platform == "windows") {
         user.windows_fd = fd_;
         user.windows_token = token;
-        user.windows_http = wp_http_;
-    }else if(platform_ == "android") {
+        user.windows_http = wp_http_.lock();
+    }else if(platform == "android") {
         user.android_fd = fd_;
         user.android_token = token;
-        user.android_http = wp_http_;
-    }else if(platform_ == "web") {
+        user.android_http = wp_http_.lock();
+    }else if(platform == "web") {
         user.web_fd = fd_;
         user.web_token = token;
-        user.web_http = wp_http_;
+        user.web_http = wp_http_.lock();
     }else {
         http_uid_ = "";
         return false;
@@ -881,6 +882,26 @@ void Work::Center::DealWithAddUser() {
         return;
     }
 
+
+
+    Json json_obj = {
+        { "server", SERVER_NAME },
+        { "request", request_ },
+        { "code", 0 },
+        { "datetime" , GetDateTime() }
+    };
+
+//    ::Net::SPHttp http = Data::map_user[uid].linux_http;
+//    // = wp_http_.lock();
+//    if(http == nullptr) {
+//        std::cout << "http null uid " << Data::map_user[uid].uid  << "\n";
+//    }else {
+//        http->SendData(".aa", "OJBK");
+//    }
+    //
+    ::Work::PushMessage::ToUser(uid, json_obj);
+    return;
+
     // 检查是否是自己
     if(target_uid == uid) {
         Response(ResponseCode::FAILURE);
@@ -902,17 +923,14 @@ void Work::Center::DealWithAddUser() {
     }
 
     // 检查对方帐号是否在自己的好友中
-    query.Select("user_friend_", "tid", "uid='" + target_uid + '\'');
-    if(query.Next()) {
-        Response(ResponseCode::EXIST);
-        return;
-    }
+//    query.Select("user_friend_", "tid", "uid='" + target_uid + '\'');
+//    if(query.Next()) {
+//        Response(ResponseCode::EXIST);
+//        return;
+//    }
 
-
-
-
-    std::cout << "okkkk";
-    Response(ResponseCode::SUCCESS);
+    //std::cout << "okkkk";
+    //Response(ResponseCode::SUCCESS);
 }
 
 

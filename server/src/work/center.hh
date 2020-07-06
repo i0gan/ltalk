@@ -16,6 +16,7 @@
 #include <sys/fcntl.h>
 #include "../crypto/md5.hh"
 #include "util.hh"
+#include "push_message.hh"
 
 using Json = Third::Json;
 
@@ -70,7 +71,7 @@ private:
     void DealWithKeepConnect();
     void DealWithSearchUser();
     void DealWithAddUser();
-    bool UpdateUserInfo(const std::string &uid, const std::string &token); // Update memory infomation
+    bool UpdateUserInfo(const std::string &uid, const std::string &token, const std::string &platform); // Update memory infomation
     bool CheckToken(const std::string &uid, const std::string &token);
 
     std::string GetDateTime();

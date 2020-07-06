@@ -12,9 +12,10 @@ Work::Event::~Event() {
 
 void Work::Event::Run() {
     // 执行一次
-    if(loop_ == false) {
+    if(loop_ == false && ms_timeout_ == 0) {
         if(call_back_)
             call_back_();
+        return;
     }
 
     if(!timer_.Timeout()) {

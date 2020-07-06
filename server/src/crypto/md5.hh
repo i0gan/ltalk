@@ -22,6 +22,7 @@ public:
     void update(std::ifstream &in);
 	const byte* digest();
     std::string toString();
+    std::string toLowercaseString();
 	void reset();
 private:
 	void update(const byte *input, size_t length);
