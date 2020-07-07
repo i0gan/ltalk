@@ -29,6 +29,8 @@ bool Database::Mysql::Connect(std::string host,
             std::cout << "mysql_real_connect:" << mysql_error(&global_mysql) << std::endl;
             break;
         }
+        // 设置为可以重连接mysql
+        mysql_options(&global_mysql, MYSQL_OPT_RECONNECT, "none");
         return_value = true;
     } while(false);
     return return_value;

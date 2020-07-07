@@ -8,7 +8,7 @@ class Redis{
 public:
     Redis();
     ~Redis();
-    static bool Connect(std::string ip, int port);
+    static bool Connect(std::string ip = "127.0.0.1", int port = 6379);
     static bool Disconnect();
     std::string Get(std::string key);
 
