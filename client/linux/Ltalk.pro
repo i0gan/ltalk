@@ -19,6 +19,7 @@ DEFINES += QT_DEPRECATED_WARNINGS
 SOURCES += \
     src/add_user_page.cpp \
     src/image_cropper_page.cpp \
+    src/keep_http.cpp \
     src/message_list_item.cpp \
     src/profile_page.cpp \
     src/about_page.cpp \
@@ -40,6 +41,7 @@ SOURCES += \
 HEADERS += \
     src/add_user_page.h \
     src/image_cropper_page.h \
+    src/keep_http.h \
     src/message_list_item.h \
     src/profile_page.h \
     src/about_page.h \

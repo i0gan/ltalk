@@ -291,7 +291,6 @@ Net::HttpParseHeaderResult Net::Http::ParseHeader() {
         // set as lower
         StrLower(key);
         StrLower(value);
-
         map_header_info_[key] = value;
     }
 
@@ -339,6 +338,7 @@ void Net::Http::HandleProcess() {
 }
 
 void Net::Http::HandleWrite() {
+    Thread::MutexLockGuard guard(write_data_mutex_lock_);
     //std::cout << "write: \n";
     __uint32_t &event = sp_channel_->get_event();
     if(http_connection_state_ == HttpConnectionState::DISCONNECTED) {
@@ -372,7 +372,6 @@ std::string Net::Http::GetSuffix(std::string file_name) {
 }
 
 void Net::Http::SendData(const std::string &type,const std::string &content) {
-    Thread::MutexLockGuard guard(write_data_mutex_lock_);
 
     out_buffer_.clear();
     out_buffer_ << "HTTP/1.1 200 OK\r\n";
@@ -393,7 +392,6 @@ void Net::Http::SendData(const std::string &type,const std::string &content) {
 
 // Send file
 void Net::Http::SendFile(const std::string &file_name) {
-    Thread::MutexLockGuard guard(write_data_mutex_lock_);
     do {
         if(recv_error_ || http_connection_state_ == HttpConnectionState::DISCONNECTED) {
             break;;

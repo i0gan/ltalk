@@ -30,6 +30,7 @@ void Center::init() {
     keep_connect_timer_ = new QTimer(this);
     connect(keep_connect_timer_, &QTimer::timeout, this, &Center::keepConnect);
     network_access_mannager = new QNetworkAccessManager(this);
+
     connect(network_access_mannager, &QNetworkAccessManager::finished, this, &Center::requestReply);
 
     add_user_page_ = new AddUserPage();
@@ -122,6 +123,7 @@ void Center::requestReply(QNetworkReply *reply) {
             qDebug() << reply->readAll();
             break;
         }
+        //qDebug() << "recv: " << recved_data_;
         json_object = json_document.object();
         QJsonValue json_value_request = json_object.value("request");
         if(!json_value_request.isString()) {
@@ -137,6 +139,10 @@ void Center::requestReply(QNetworkReply *reply) {
         } else if(request == "get_user_info") {
             qDebug() << "get_user_info: " << recved_data_;
             handleGetUserInfoReply(json_object);
+            break;
+        } else if(request == "add_user") {
+            qDebug() << "add_user: " << recved_data_;
+            handleAddUser(json_object);
             break;
         } else {
             qDebug() << "收到数据出错: " << recved_data_;
@@ -265,6 +271,10 @@ void Center::handleGetUserInfoReply(const QJsonObject &json_obj) {
     main_page_->setUserInfo(user_);
     profile_page_->setUserInfo(user_);
     //qDebug() << "email" << user_.creation_time ;//json_obj;
+}
+
+void Center::handleAddUser(const QJsonObject &json_obj) {
+
 }
 
 void Center::generateUserPath() {

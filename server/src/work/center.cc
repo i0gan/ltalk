@@ -882,26 +882,6 @@ void Work::Center::DealWithAddUser() {
         return;
     }
 
-
-
-    Json json_obj = {
-        { "server", SERVER_NAME },
-        { "request", request_ },
-        { "code", 0 },
-        { "datetime" , GetDateTime() }
-    };
-
-//    ::Net::SPHttp http = Data::map_user[uid].linux_http;
-//    // = wp_http_.lock();
-//    if(http == nullptr) {
-//        std::cout << "http null uid " << Data::map_user[uid].uid  << "\n";
-//    }else {
-//        http->SendData(".aa", "OJBK");
-//    }
-    //
-    ::Work::PushMessage::ToUser(uid, json_obj);
-    return;
-
     // 检查是否是自己
     if(target_uid == uid) {
         Response(ResponseCode::FAILURE);
@@ -923,14 +903,25 @@ void Work::Center::DealWithAddUser() {
     }
 
     // 检查对方帐号是否在自己的好友中
-//    query.Select("user_friend_", "tid", "uid='" + target_uid + '\'');
-//    if(query.Next()) {
-//        Response(ResponseCode::EXIST);
-//        return;
-//    }
+    query.Select("user_friend_", "tid", "uid='" + target_uid + '\'');
+    if(query.Next()) {
+        Response(ResponseCode::EXIST);
+        return;
+    }
 
-    //std::cout << "okkkk";
-    //Response(ResponseCode::SUCCESS);
+    Json json_obj = {
+        { "server", SERVER_NAME },
+        { "request", request_ },
+        { "code", 0 },
+        { "datetime" , GetDateTime() },
+        { "content-type", "message"},
+        { "content" , {
+            "type", "add_user",
+            "uid", uid,
+            "message", verify_message
+        }}
+    };
+    ::Work::PushMessage::ToUser(target_uid, json_obj);
 }
 
 

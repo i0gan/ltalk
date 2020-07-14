@@ -52,6 +52,7 @@ public:
     void requestGetFriendList();
     void requestGetGroupList();
     void handleGetUserInfoReply(const QJsonObject &json_obj);
+    void handleAddUser(const QJsonObject &json_obj);
     void generateUserPath();
     void changeTheme(QString theme);
 

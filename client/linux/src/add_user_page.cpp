@@ -54,6 +54,7 @@ void AddUserPage::mouseMoveEvent(QMouseEvent *event) {
 }
 
 void AddUserPage::on_toolButton_close_clicked() {
+
     hide();
 }
 
@@ -62,7 +63,6 @@ void AddUserPage::on_pushButton_search_clicked() {
     if(account.isEmpty()) {
         return;
     }
-
     request_.setRawHeader("Origin", "http://ltalk.co");
     request_.setRawHeader("Accept", "application/json");
     request_.setRawHeader("Date", Util::getTime().toUtf8().data());

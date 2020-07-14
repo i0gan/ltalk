@@ -147,6 +147,27 @@ created_time  varchar(256)
 
 
 
+
+
+# Redis
+
+### 安装redis
+
+```
+sudo install redis-cli
+git clone https://github.com/redis/hiredis
+cd riredis
+make
+sudo make install
+```
+
+这时会遇到下面问题：
+
+./redis: error while loading shared libraries: libhiredis.so.0.13: cannot open shared object file: No such file or directory
+
+这是因为系统找不到动态库的问题，需要检查/etc/ld.so.conf文件中是否包含需要的动态库目录（如/usr/local/lib），如果没有进行添加。之后执行sudo /sbin/ldconfig，更新系统动态库配置 
+
+
 ## 编译
 
 ```sh

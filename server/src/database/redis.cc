@@ -17,7 +17,6 @@ bool Database::Redis::Connect(std::string ip, int port) {
         std::cout << "connect redis err\n";
         return false;
     }
-
     global_redis = redis_context;
     return true;
 }
@@ -29,13 +28,20 @@ bool Database::Redis::Disconnect() {
     }
     return true;
 }
+bool Database::Redis::SetString(std::string key, std::string value) {
+    return true;
+}
 
-std::string Database::Redis::Get(std::string key) {
+std::string Database::Redis::GetString(std::string key) {
+    std::string ret;
     if(!global_redis) {
         std::cout << "redis not connected!\n";
         return "none";
     }
     std::string exec = "GET " + key;
     redisReply *get_reply = (redisReply*)redisCommand(global_redis, exec.c_str());
+    if(get_reply->type != REDIS_REPLY_STRING)
+        return "none";
+
     return get_reply->str;
 }
