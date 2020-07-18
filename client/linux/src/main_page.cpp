@@ -129,10 +129,12 @@ void MainPage::requestGetFile(QString url, GetWhat what, QString save_file_path,
     if(private_file)
         request_url += "&token" + user_info_.token;
     request_.setUrl(request_url);
+    qDebug() << "request: " << request_url;
     net_mannager_->get(request_);
 }
 
 void MainPage::requestGetFileReply(QNetworkReply *reply) {
+    qDebug() << reply->error();
     QDir dir;
     QString user_images_dir = dir.homePath() + '/' +  DATA_PATH + ('/' + account_) + "/images";
     QString head_image_path = user_images_dir + "/head_image";
@@ -144,6 +146,7 @@ void MainPage::requestGetFileReply(QNetworkReply *reply) {
     head_image_file.open(QIODevice::WriteOnly);
     head_image_file.write(reply->readAll());
     head_image_file.close();
+
     // 设置头像
     QString style = "QLabel{ border-image:";
     style += QString("url(%1); border-radius:30px;} QLabel:hover{ border:4px;}").arg(head_image_path);

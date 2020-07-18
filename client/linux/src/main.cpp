@@ -1,7 +1,8 @@
 #include "center.h"
 
 #include <QApplication>
-#include "user_chat_page.h"
+#include "http.h"
+#include <unistd.h>
 int main(int argc, char *argv[]) {
     QApplication app(argc, argv);
     app.setApplicationName("Ltalk for linux");
@@ -9,6 +10,7 @@ int main(int argc, char *argv[]) {
     app.setOrganizationName("LYXF");
     app.setApplicationDisplayName("Ltalk");
     Center center;
+    //center.test();
     center.init();
     center.changeTheme("default");
     center.start();

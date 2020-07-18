@@ -15,7 +15,6 @@ void Center::init() {
     connect(login_page_, &LoginPage::login, this, &Center::requestLogin);
     connect(login_page_, &LoginPage::logined, this, &Center::dealWithLogined);
     connect(login_page_, &LoginPage::localCmd, this, &Center::dealWithLocalCmd);
-
     connect(main_page_, &MainPage::localCmd, this, &Center::dealWithLocalCmd);
     change_theme_page_ = new ChangeThemePage();
     change_theme_page_->init();
@@ -29,24 +28,26 @@ void Center::init() {
 
     keep_connect_timer_ = new QTimer(this);
     connect(keep_connect_timer_, &QTimer::timeout, this, &Center::keepConnect);
-    network_access_mannager = new QNetworkAccessManager(this);
-
-    connect(network_access_mannager, &QNetworkAccessManager::finished, this, &Center::requestReply);
-
     add_user_page_ = new AddUserPage();
     add_user_page_->init();
     connect(add_user_page_, &AddUserPage::addUser, this, &Center::requestAddUser);
 
+    // 连接服务器
+    http_.connect(SERVER_DOMAIN);
+    connect(&http_, &Http::finished, this, &Center::requestReply);
+    http_.setRawHeader("Accept", "application/json");
 }
 
-void Center::requestAddUser(QString target_account, QString target_uid, QString verify_message) {
-    //qDebug() << "requstlogin : " << account << " " << password;
-    keep_connect_request_.setRawHeader("Origin", "http://ltalk.co");
-    keep_connect_request_.setRawHeader("Content-Type", "application/json");
-    keep_connect_request_.setRawHeader("Accept", "application/json");
-    keep_connect_request_.setRawHeader("Date", Util::getTime().toUtf8().data());
+void Center::test() {
 
-    //mannager->post()
+}
+
+void Center::testRecv() {
+    qDebug() << "recv::: " << http_.data();
+}
+
+
+void Center::requestAddUser(QString target_account, QString target_uid, QString verify_message) {
     QJsonDocument json_document;
     QJsonObject json_object;
     json_object.insert("platform", "linux");
@@ -64,10 +65,9 @@ void Center::requestAddUser(QString target_account, QString target_uid, QString 
     json_document.setObject(json_object);
     QByteArray byte_array = json_document.toJson(QJsonDocument::Compact);
     //qDebug() << byte_array;
-    QUrl url;
-    url = SERVER_DOMAIN + QString("/?request=add_user&platform=linux");
-    keep_connect_request_.setUrl(url);
-    network_access_mannager->post(keep_connect_request_, byte_array);
+    QString url = "/?request=add_user&platform=linux";
+
+    http_.post(url, byte_array);
 }
 
 void Center::start() {
@@ -75,12 +75,6 @@ void Center::start() {
 }
 
 void Center::requestLogin(QString account, QString password) {
-    //qDebug() << "requstlogin : " << account << " " << password;
-    keep_connect_request_.setRawHeader("Origin", "http://ltalk.co");
-    keep_connect_request_.setRawHeader("Content-Type", "application/json");
-    keep_connect_request_.setRawHeader("Accept", "application/json");
-    keep_connect_request_.setRawHeader("Date", Util::getTime().toUtf8().data());
-
     //mannager->post()
     QJsonDocument json_document;
     QJsonObject json_object;
@@ -95,23 +89,19 @@ void Center::requestLogin(QString account, QString password) {
     json_document.setObject(json_object);
     QByteArray byte_array = json_document.toJson(QJsonDocument::Compact);
     //qDebug() << byte_array;
-    QUrl url;
-    url = SERVER_DOMAIN + QString("/?request=login&platform=linux");
-    keep_connect_request_.setUrl(url);
-    network_access_mannager->post(keep_connect_request_, byte_array);
+    QString url;
+    url = "/?request=login&platform=linux";
+    http_.setRawHeader("Content-Type", "application/json");
+    http_.post(url, byte_array);
 }
 
-void Center::requestReply(QNetworkReply *reply) {
+void Center::requestReply() {
     QJsonDocument json_document;
     QJsonObject json_object;
     QJsonParseError json_error;
     do {
-        if(reply->error() == QNetworkReply::NetworkError::ConnectionRefusedError) {
-            qDebug() << "无法连接服务器";
-            break;
-        }
-        if(reply->rawHeader(QString("Content-Type").toUtf8()) == QString("application/json").toUtf8()) {
-            recved_data_ = reply->readAll();
+        if(http_.rawHeader("Content-Type") == "application/json") {
+            recved_data_ = http_.data();
             //qDebug() << recv_data;
             json_document = QJsonDocument::fromJson(recved_data_, &json_error);
             if(json_error.error != QJsonParseError::NoError) {
@@ -120,7 +110,6 @@ void Center::requestReply(QNetworkReply *reply) {
             }
         }else {
             qDebug() << "接收类型不对";
-            qDebug() << reply->readAll();
             break;
         }
         //qDebug() << "recv: " << recved_data_;
@@ -164,7 +153,6 @@ void Center::dealWithLogined(QString account, QString uid, QString token) {
     generateUserPath(); //目录生成
     requestGetUserInfo();
     keep_connect_timer_->start(1000 * 10);
-
 }
 
 void Center::dealWithLocalCmd(LocalCmd cmd) {
@@ -216,24 +204,14 @@ void Center::exit() {
 }
 
 void Center::keepConnect() {
-    keep_connect_request_.setRawHeader("Origin", "http://ltalk.co");
-    keep_connect_request_.setRawHeader("Content-Type", "application/json");
-    keep_connect_request_.setRawHeader("Accept", "application/json");
-    keep_connect_request_.setRawHeader("Date", Util::getTime().toUtf8().data());
-    QString url = SERVER_DOMAIN + QString("/?request=keep_connect&platform=linux");
-    keep_connect_request_.setUrl(url);
-    network_access_mannager->get(keep_connect_request_);
+    QString url = "/?request=keep_connect&platform=linux";
+    http_.get(url);
 }
 
 void Center::requestGetUserInfo() {
-    QNetworkRequest request;
-    request.setRawHeader("Origin", "http://ltalk.co");
-    request.setRawHeader("Accept", "application/json");
-    request.setRawHeader("Date", Util::getTime().toUtf8().data());
-    QUrl url;
-    url = SERVER_DOMAIN + QString("/?request=get_user_info&platform=linux&account=") + user_.account + "&uid=" + user_.uid + "&token=" + user_.token;
-    request.setUrl(url);
-    network_access_mannager->get(request);
+    QString url;
+    url = "/?request=get_user_info&platform=linux&account=" + user_.account + "&uid=" + user_.uid + "&token=" + user_.token;
+    http_.get(url);
 }
 
 void Center::requestGetFriendList() {

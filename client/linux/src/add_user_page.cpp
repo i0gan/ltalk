@@ -63,6 +63,7 @@ void AddUserPage::on_pushButton_search_clicked() {
     if(account.isEmpty()) {
         return;
     }
+
     request_.setRawHeader("Origin", "http://ltalk.co");
     request_.setRawHeader("Accept", "application/json");
     request_.setRawHeader("Date", Util::getTime().toUtf8().data());

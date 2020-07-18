@@ -23,7 +23,6 @@ void TrayIcon::init() {
     menu_.addAction(&action_3_);
     //menu
     system_tray_icon_.setContextMenu(&menu_);
-
 }
 
 void TrayIcon::clickAction_1() {

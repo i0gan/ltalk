@@ -832,6 +832,7 @@ void Work::Center::DealWithSearchUser() {
 }
 
 void Work::Center::DealWithAddUser() {
+
     std::string content_type;
     try {
         content_type = map_header_info_.at("content-type");
@@ -921,6 +922,7 @@ void Work::Center::DealWithAddUser() {
             "message", verify_message
         }}
     };
+    //std::cout << "add_user: \n";
     ::Work::PushMessage::ToUser(target_uid, json_obj);
 }
 

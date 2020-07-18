@@ -23,6 +23,7 @@
 #include "profile_page.h"
 #include "image_cropper_page.h"
 #include "add_user_page.h"
+#include "http.h"
 
 class Center : public QObject
 {
@@ -40,10 +41,11 @@ public:
     explicit Center(QObject *parent = nullptr);
     ~Center();
     void init();
+    void test();
     void start();
     void requestLogin(QString account, QString password);
     void requestAddUser(QString target_account, QString target_uid, QString verify_message);
-    void requestReply(QNetworkReply *reply);
+    void requestReply();
     void dealWithLogined(QString account, QString uid, QString token);
     void exit();
     void keepConnect();
@@ -58,8 +60,10 @@ public:
 
 private slots:
     void dealWithLocalCmd(LocalCmd cmd);
+    void testRecv();
 
 private:
+    Http http_;
     QString theme_;
     LoginPage *login_page_;
     MainPage *main_page_;
@@ -68,9 +72,6 @@ private:
     ProfilePage *profile_page_;
     ImageCropperPage *image_cropper_page_;
     AddUserPage *add_user_page_;
-    QNetworkAccessManager *network_access_mannager;
-    QNetworkRequest keep_connect_request_;
-    QNetworkRequest resource_request_;
     QTimer *keep_connect_timer_;
 
     UserInfo user_;
