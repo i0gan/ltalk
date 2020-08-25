@@ -130,7 +130,7 @@ void Center::requestReply() {
             handleGetUserInfoReply(json_object);
             break;
         } else if(request == "add_user") {
-            qDebug() << "add_user: " << recved_data_;
+            //qDebug() << "add_user: " << recved_data_;
             handleAddUser(json_object);
             break;
         } else {
@@ -252,7 +252,7 @@ void Center::handleGetUserInfoReply(const QJsonObject &json_obj) {
 }
 
 void Center::handleAddUser(const QJsonObject &json_obj) {
-
+    qDebug() << "OKKK";
 }
 
 void Center::generateUserPath() {

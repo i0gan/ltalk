@@ -9,8 +9,7 @@ AddUserPage::AddUserPage(QWidget *parent) :
     ui->setupUi(this);
 }
 
-AddUserPage::~AddUserPage()
-{
+AddUserPage::~AddUserPage() {
     delete ui;
 }
 

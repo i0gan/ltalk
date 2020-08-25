@@ -166,7 +166,7 @@ void MainPage::on_pushButton_changeTheme_clicked() {
 }
 
 void MainPage::addUserListItem(const UserInfo &user_info) {
-    UserListItem *item = new UserListItem();
+    UserListItem *item = new UserListItem(0);
     ui->Widget_userList->layout()->addWidget(item);
 }
 

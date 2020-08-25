@@ -32,6 +32,7 @@ public:
     void setRawHeader(QString key, QString value);
     QString rawHeader(QString key);
     void reset();
+    void setReadBufferSize(quint64 size);
 
 private:
     bool is_connected_ = false;

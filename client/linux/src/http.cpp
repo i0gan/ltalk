@@ -120,3 +120,7 @@ void Http::reset() {
     host_ = "";
     port_ = 0;
 }
+
+void Http::setReadBufferSize(quint64 size) {
+    tcp_socket_->setReadBufferSize(size);
+}

@@ -72,9 +72,11 @@ private:
     void DealWithSearchUser();
     void DealWithAddUser();
     bool UpdateUserInfo(const std::string &uid, const std::string &token, const std::string &platform); // Update memory infomation
-    bool CheckToken(const std::string &uid, const std::string &token);
 
+    bool CheckToken(const std::string &uid, const std::string &token);
+    std::string StoreNewEvent(const std::string &cmd, const std::string &uid, const std::string &tid);
+    void StoreMessage(const std::string &uid, const Json &json);
     std::string GetDateTime();
-    std::string MakeToken(std::string uid);
-    std::string MakeUid(std::string str);
+    std::string MakeToken(const std::string &uid);
+    std::string MakeUid(const std::string &str);
 };

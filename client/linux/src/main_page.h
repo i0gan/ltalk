@@ -44,6 +44,8 @@ public:
     void addUserListItem(const UserInfo &user_info);
     void addGroupListItem();
     void addMessageListItem();
+    void refreshFriendListInfo();
+    void refreshFriendListHeadImage();
 signals:
     void localCmd(LocalCmd cmd);
 

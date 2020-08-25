@@ -372,14 +372,14 @@ void Work::Center::DealWithRegisterUser() {
     SendJson(send_json);
 }
 
-std::string Work::Center::MakeToken(std::string uid) {
+std::string Work::Center::MakeToken(const std::string &uid) {
     time_t t = time(nullptr);
     return Crypto::MD5(std::to_string(t) + uid).toString();
 }
 
-std::string Work::Center::MakeUid(std::string str) {
-    //::Database::MysqlQuery query;
-    //query.Select("user_", "uid", "uid=" )
+std::string Work::Center::MakeUid(const std::string &str) {
+//    ::Database::MysqlQuery query;
+//    query.Select("user_", "uid", "uid=" )
     return Crypto::MD5(str).toString();
 }
 
@@ -409,7 +409,6 @@ void Work::Center::DealWithLogin() {
         Response(ResponseCode::ERROR_PARSING_CONTENT);
         return;
     }
-
 
     if(!CheckJsonContentType(recv_json_obj, "login_info")) {
         Response(ResponseCode::ERROR_JSON_CONTENT_TYPE);
@@ -922,6 +921,7 @@ void Work::Center::DealWithAddUser() {
             "message", verify_message
         }}
     };
+
     //std::cout << "add_user: \n";
     ::Work::PushMessage::ToUser(target_uid, json_obj);
 }
