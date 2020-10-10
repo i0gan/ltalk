@@ -3,12 +3,12 @@
 #include <QString>
 #include <QVector>
 #include <QDateTime>
-#define DEBUG
+//#define DEBUG
 
 #ifdef DEBUG
-#define SERVER_DOMAIN "http://192.168.100.1"
+#define SERVER_DOMAIN "http://192.168.43.47"
 #else
-#define SERVER_DOMAIN "http://ltalk.co"
+#define SERVER_DOMAIN "http://ltalk.co:82"
 #endif
 
 #define SERVER_BASE_URL_VALUE "/?platform=linux"

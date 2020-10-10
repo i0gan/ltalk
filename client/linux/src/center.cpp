@@ -96,6 +96,7 @@ void Center::requestLogin(QString account, QString password) {
 }
 
 void Center::requestReply() {
+    qDebug() << "my_http recv: " << http_.data();
     QJsonDocument json_document;
     QJsonObject json_object;
     QJsonParseError json_error;

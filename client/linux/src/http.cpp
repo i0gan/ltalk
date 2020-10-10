@@ -1,16 +1,13 @@
 #include "http.h"
 
-//Http::Http(QObject *parent) : QObject(parent)
-//{
-
-//}
-
 Http::Http(QObject *parent) : QObject(parent), tcp_socket_(new QTcpSocket) , recv_step_(Step::get_header),
     recv_length_(0)
 {
     //reply_ = new QNetworkReply();
     ::QObject::connect(tcp_socket_, &QTcpSocket::readyRead, this, &Http::recvData);
     ::QObject::connect(tcp_socket_, &QTcpSocket::connected, this, &Http::connected);
+    tcp_socket_->setReadBufferSize(512);
+    //::QObject::connect(&timer_, &QTimer::timeout, this, &Http::handleTimerOut)
 }
 
 void Http::connect(QString host, quint16 port) {
@@ -25,6 +22,8 @@ void Http::connect(QString host, quint16 port) {
     tcp_socket_->connectToHost(host_t, port);
     host_ = host_t;
     port_ = port;
+
+
 }
 
 void Http::get(QString url) {
@@ -63,7 +62,9 @@ void Http::post(QString url, const QByteArray &data) {
 void Http::connected() {
     is_connected_ = true;
 }
+bool Http::parseHeader() {
 
+}
 void Http::recvData() {
 
     //QByteArray recv = tcp_socket_->readAll();

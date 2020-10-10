@@ -48,8 +48,7 @@ grant all privileges on ltalk.* to 'ltalk'@'localhost';
 #### 完成之后, 使用所创建的用户登录
 
 ```sh
-mysql -u ltalk -p
-use ltalk;
+mysql -ultalk -p123456 < src/setup.sql
 ```
 
 #### 创建表
@@ -153,8 +152,8 @@ created_time  varchar(256)
 
 ### 安装redis
 
-```
-sudo install redis-cli
+```bash
+sudo apt install redis-cli
 git clone https://github.com/redis/hiredis
 cd riredis
 make

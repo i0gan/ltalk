@@ -6,10 +6,12 @@
 #include <QMap>
 #include <QByteArray>
 #include <QTcpSocket>
+#include <QTimer>
 #include <string>
 #include <map>
 #include "util.h"
 #include <cstdlib>
+
 class Http : public QObject
 {
     enum class Step {
@@ -22,6 +24,7 @@ class Http : public QObject
 
 signals:
     void finished();
+    void timeout();
 public:
     explicit Http(QObject *parent = nullptr);
     void init();
@@ -33,6 +36,7 @@ public:
     QString rawHeader(QString key);
     void reset();
     void setReadBufferSize(quint64 size);
+    bool parseHeader();
 
 private:
     bool is_connected_ = false;
@@ -41,10 +45,12 @@ private:
     QTcpSocket *tcp_socket_;
     Step recv_step_;
     int recv_length_;
+    QByteArray recv_header_;
     QByteArray recv_data_;
     QByteArray send_data_;
     std::map<std::string, std::string> map_header_send_info_;
     std::map<std::string, std::string> map_header_recv_info_;
+    QTimer timer_;
 
 private slots:
     void recvData();
