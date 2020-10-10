@@ -22,11 +22,9 @@ Work::EventLoop *Work::EventLoopThread::StartLoop() {
     Thread::MutexLockGuard mutex_lock_guard(mutex_lock_);
     while(eventloop_ == nullptr)
         condition_.Wait();
-
     // return a new eventloop object ptr
     return eventloop_;
 }
-
 
 void Work::EventLoopThread::ThreadFunc() {
     // create a new eventloop

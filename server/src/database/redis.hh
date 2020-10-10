@@ -13,9 +13,7 @@ public:
     bool SetString(std::string key, std::string value);
     std::string GetString(std::string key);
 
-
 private:
 };
-
 }
 

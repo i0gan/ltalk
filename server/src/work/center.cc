@@ -378,8 +378,8 @@ std::string Work::Center::MakeToken(const std::string &uid) {
 }
 
 std::string Work::Center::MakeUid(const std::string &str) {
-//    ::Database::MysqlQuery query;
-//    query.Select("user_", "uid", "uid=" )
+    //    ::Database::MysqlQuery query;
+    //    query.Select("user_", "uid", "uid=" )
     return Crypto::MD5(str).toString();
 }
 
@@ -766,7 +766,7 @@ void Work::Center::DealWithSearchUser() {
     std::string type;
 
     std::string db_uid, db_account, db_nickname, db_head_image,
-                db_address, db_network_state, db_email, db_signature;
+            db_address, db_network_state, db_email, db_signature;
 
     try {
         search = map_url_value_info_.at("search");
@@ -916,16 +916,130 @@ void Work::Center::DealWithAddUser() {
         { "datetime" , GetDateTime() },
         { "content-type", "message"},
         { "content" , {
-            "type", "add_user",
-            "uid", uid,
-            "message", verify_message
-        }}
+              "type", "add_user",
+              "uid", uid,
+              "message", verify_message
+          }}
     };
 
     //std::cout << "add_user: \n";
     ::Work::PushMessage::ToUser(target_uid, json_obj);
 }
 
+
+void Work::Center::DealWithSendUserMessage() {
+    std::string content_type;
+    try {
+        content_type = map_header_info_.at("content-type");
+    } catch(std::out_of_range e) {
+        std::cout << "no a content-type\n";
+        Response(ResponseCode::ERROR_HTTP_CONTENT);
+        return;
+    }
+
+    if(content_type != "application/json") {
+        Response(ResponseCode::ERROR_HTTP_CONTENT);
+        return;
+    }
+
+    Json recv_json_obj;
+    try {
+        recv_json_obj = Json::parse(content_);
+    }  catch (Json::parse_error e) {
+        Response(ResponseCode::ERROR_PARSING_CONTENT);
+        return;
+    }
+
+    if(!CheckJsonContentType(recv_json_obj, "send_user_message")) {
+        Response(ResponseCode::ERROR_JSON_CONTENT_TYPE);
+        return;
+    }
+
+    std::string target_account, target_uid, account, uid, token, message;
+    try {
+        target_uid = recv_json_obj["content"]["target_uid"];
+        target_account = recv_json_obj["content"]["target_account"];
+        account = recv_json_obj["content"]["type"];
+        message = recv_json_obj["content"]["message"];
+        uid = recv_json_obj["uid"];
+        token = recv_json_obj["token"];
+    } catch (Json::type_error) {
+        Response(ResponseCode::ERROR_JSON_CONTENT_TYPE);
+        return;
+    }
+
+    if(!CheckToken(uid, token)) {
+        Response(ResponseCode::NO_ACCESS);
+        return;
+    }
+
+    if(message.size() >= 10240) { // 限制字数
+        Response(ResponseCode::FAILURE);
+        return;
+    }
+
+    // 检查是否是自己
+    if(target_uid == uid) {
+        Response(ResponseCode::FAILURE);
+        return;
+    }
+
+    ::Database::MysqlQuery::Escape(target_account);
+    ::Database::MysqlQuery::Escape(target_uid);
+    ::Database::MysqlQuery::Escape(account);
+    ::Database::MysqlQuery::Escape(uid);
+    ::Database::MysqlQuery::Escape(message);
+
+    ::Database::MysqlQuery query;
+
+    // 检查对方帐号是否在自己的好友中
+    query.Select("user_friend_", "tid", "uid='" + target_uid + '\'');
+    if(query.Next()) {
+        Response(ResponseCode::EXIST);
+        return;
+    }
+
+    Json json_obj = {
+        { "server", SERVER_NAME },
+        { "request", request_ },
+        { "code", 0 },
+        { "datetime" , GetDateTime() },
+        { "content-type", "message"},
+        { "content" , {
+              "type", "send_user_message",
+              "uid", uid,
+              "message", message
+          }}
+    };
+
+    //std::cout << "add_user: \n";
+    ::Work::PushMessage::ToUser(target_uid, json_obj);
+}
+
+void Work::Center::DealWithGetFriendList() {
+    std::string account;
+    std::string uid;
+    std::string token;
+    try {
+        account = map_url_value_info_.at("account");
+        uid = map_url_value_info_.at("uid");
+        token = map_url_value_info_.at("token");
+    }  catch (std::out_of_range e) {
+        std::cout << "NO_access\n";
+        Response(ResponseCode::NO_ACCESS);
+        return;
+    }
+
+    if(!CheckToken(uid, token)) {
+        Response(ResponseCode::FAILURE);
+        return;
+    }
+
+    Database::MysqlQuery query;
+    Database::MysqlQuery::Escape(account);
+    Database::MysqlQuery::Escape(uid);
+    query.Select("user_friend", "tid", "uid=" + uid);
+}
 
 
 

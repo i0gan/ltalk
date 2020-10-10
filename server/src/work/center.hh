@@ -71,6 +71,13 @@ private:
     void DealWithKeepConnect();
     void DealWithSearchUser();
     void DealWithAddUser();
+    void DealWithAddUserReply();
+    void DealWithGetFriendList();
+    void DealWithGetGroupList();
+
+    void DealWithSendUserMessage();
+    void DealWithSendGroupMessage();
+
     bool UpdateUserInfo(const std::string &uid, const std::string &token, const std::string &platform); // Update memory infomation
 
     bool CheckToken(const std::string &uid, const std::string &token);

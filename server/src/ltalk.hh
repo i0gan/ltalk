@@ -107,24 +107,6 @@ struct Message {
 
 struct User{
 public:
-//    void operator=(const User &user) {
-//        uid = user.uid;
-//        account = user.account;
-//        linux_fd = user.linux_fd;
-//        windows_fd = user.windows_fd;
-//        android_fd = user.android_fd;
-//        web_fd = user.web_fd;
-
-//        linux_http = user.web_http;
-//        windows_http = user.windows_http;
-//        android_http = user.android_http;
-//        web_http = user.web_http;
-
-//        linux_token = user.linux_token;
-//        windows_token = user.windows_token;
-//        android_token = user.android_token;
-//        web_token = user.web_token;
-//    }
     std::string uid;
     std::string account;
     int linux_fd;
@@ -147,6 +129,7 @@ public:
     std::string account;
     std::list<User> member_list;
 };
+
 extern std::unordered_map<std::string, User> map_user;
 extern std::unordered_map<std::string, Group> map_group;
 extern std::string web_root;
