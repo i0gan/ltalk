@@ -65,17 +65,14 @@ void Net::Epoll::Del(SPChannel sp_channel) {
 
 // 获取所有的Channel
 std::vector<Net::SPChannel> Net::Epoll::GetAllEventChannels() {
-    while (true) {
-        int number_of_events =
-                //get all events
-                epoll_wait(epoll_fd_, &(*v_events_.begin()), v_events_.size(), EPOLL_WAIT_TIME);
-        if(number_of_events < 0)
-            perror("epoll_wait: ");
+    int number_of_events =
+            //get all events
+            epoll_wait(epoll_fd_, &(*v_events_.begin()), v_events_.size(), EPOLL_WAIT_TIME);
+    if(number_of_events < 0)
+        perror("epoll_wait: ");
 
-        std::vector<Net::SPChannel> v_sp_channel_all_events = GetEventChannelsAfterGetEvents(number_of_events);
-        if(v_sp_channel_all_events.size() > 0)
-            return v_sp_channel_all_events;
-    }
+    std::vector<Net::SPChannel> v_sp_channel_all_events = GetEventChannelsAfterGetEvents(number_of_events);
+    return v_sp_channel_all_events;
 }
 
 // 在获取事件后, 获取channel

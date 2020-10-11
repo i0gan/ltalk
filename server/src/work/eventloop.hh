@@ -5,6 +5,7 @@
 #include <vector>
 #include <unistd.h>
 #include <iterator>
+#include <atomic>
 
 namespace Work {
 class EventLoop {
@@ -15,7 +16,7 @@ public:
     void Quit();
     void AddWork(SPEvent event);
 private:
-    bool quit_;
+    std::atomic<bool> quit_;
     std::vector<SPEvent> v_sp_events_;
 };
 }

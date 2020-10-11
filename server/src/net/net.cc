@@ -1,15 +1,22 @@
 #include "net.hh"
 
-Net::Net::Net(int port,int number_of_thread) :
+Net::Net::Net() :
     started_(false),
     listened_(false),
-    port_(port),
-    number_of_thread_(number_of_thread),
-    base_eventloop_(new EventLoop()),
-    listen_fd(Listen()),
-    accept_channel_(new Channel(base_eventloop_)),
-    up_eventloop_threadpool_(new EventLoopThreadPool(base_eventloop_, number_of_thread)) {
+    base_eventloop_(new EventLoop()){
 
+}
+
+Net::Net::~Net() {
+    delete  base_eventloop_;
+}
+
+void Net::Net::Start(int port, int number_of_thread) {
+
+    port_ = port;
+    number_of_thread_ = number_of_thread;
+    listen_fd = Listen(),
+    accept_channel_ =  SPChannel(new Channel(base_eventloop_));
     if(listen_fd == -1) {
         d_cout << "net init fail\n";
         abort();
@@ -22,13 +29,8 @@ Net::Net::Net(int port,int number_of_thread) :
         d_cout << "SetFdNonBlocking error\n";
         abort();
     }
-}
 
-Net::Net::~Net() {
-
-}
-
-void Net::Net::Start() {
+    up_eventloop_threadpool_ = std::unique_ptr<EventLoopThreadPool>(new EventLoopThreadPool(base_eventloop_, number_of_thread));
     up_eventloop_threadpool_->Start();
     accept_channel_->set_event(EPOLLIN | EPOLLET); // Set as accept data event
     accept_channel_->set_read_handler(std::bind(&Net::HandleNewConnection, this));
@@ -111,4 +113,13 @@ void Net::Net::HandleNewConnection() {
 void Net::Net::HandleConnected() {
     //d_cout << "HandleConnected\n";
     base_eventloop_->UpdateEpoll(accept_channel_);
+}
+
+bool Net::Net::Stop() {
+    if(!started_)
+        return false;
+    up_eventloop_threadpool_->Stop();
+    base_eventloop_->Stop();
+    return true;
+
 }

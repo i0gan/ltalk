@@ -59,6 +59,11 @@ bool Ltalk::StartUp::Run() {
     return true;
 }
 
+bool Ltalk::StartUp::Stop() {
+    net_.Stop();
+    sp_work_eventloop_thread_->Stop();
+    return true;
+}
 // Load config file
 bool Ltalk::StartUp::LoadConfig() {
     std::string file_json;
@@ -99,9 +104,7 @@ bool Ltalk::StartUp::LoadConfig() {
     return true;
 }
 bool Ltalk::StartUp::RunNetworkModule() {
-    std::cout << "dbg 2\n";
-    Net::Net net(tcp_port_, number_of_net_thread_);
-    net.Start();
+    net_.Start(tcp_port_, number_of_net_thread_);
     return true;
 }
 bool Ltalk::StartUp::RunDatabaseModule() {
@@ -112,7 +115,6 @@ bool Ltalk::StartUp::RunLoggerModule() {
 }
 
 bool Ltalk::StartUp::RunWorkModule() {
-
     Data::work_eventloop = sp_work_eventloop_thread_->StartLoop();
     std::cout << "run work module 1\n";
     return true;
@@ -125,7 +127,6 @@ void Ltalk::StartUp::StartBase() {
     // 消息推送
 //    ::Work::SPEvent event_push_message = ::Work::SPEvent(new ::Work::Event(std::bind(&::Work::PushMessage::Send, &push_message_), true));
 //    ::Data::work_eventloop->AddWork(event_push_message);
-
 }
 
 void Ltalk::StartUp::KeepConnectDatabase() {

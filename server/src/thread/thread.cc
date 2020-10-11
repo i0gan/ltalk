@@ -15,6 +15,7 @@ Thread::Thread::Thread(const Util::CallBack &call_back, const std::string &name)
 }
 
 Thread::Thread::~Thread() {
+    std::cout << "~Thread()\n";
     if(started_ && !joined_)
         pthread_detach(pthread_id);
 }

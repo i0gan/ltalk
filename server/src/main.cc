@@ -1,14 +1,20 @@
 #include <iostream>
-#include "startup.hh"
+#include <signal.h>
 
+#include "startup.hh"
+Ltalk::StartUp startup;
+
+void quit(int s) {
+    startup.Stop();
+}
 int main(int argv, char **argc) {
 
     if(argv < 2) {
         std::cout << "--help to get help" << std::endl;
         return 0;
     }
-
-    Ltalk::StartUp startup;
+    // 绑定退出
+    signal(SIGINT, quit);
     startup.ShowText();
     std::string arg = argc[1];
     if(arg == "-h" || arg == "--help") {

@@ -1,7 +1,6 @@
 #include "eventloop.hh"
 
 Work::EventLoop::EventLoop() : quit_(false) {
-    quit_ = false;
 }
 
 Work::EventLoop::~EventLoop() {

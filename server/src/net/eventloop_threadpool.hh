@@ -11,6 +11,7 @@ public:
     ~EventLoopThreadPool();
     void Start();
     EventLoop *get_next_eventloop();
+    void Stop();
 private:
     bool started_;
     EventLoop *base_eventloop_;

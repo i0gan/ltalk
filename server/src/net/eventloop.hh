@@ -8,7 +8,7 @@
 #include "util.hh"
 #include <sys/epoll.h>
 #include <sys/eventfd.h>
-
+#include <atomic>
 namespace Net {
 class EventLoop {
     typedef std::function<void()> CallBack;
@@ -17,7 +17,7 @@ public:
     ~EventLoop();
     int CreateEventFd();
     void Loop();
-    void Quit();
+    void Stop();
     void RunInLoop(CallBack &&func);
     void PushBack(CallBack &&func);
     bool IsInLoopThread();              // 判断是否在事件循环的线程中
@@ -29,8 +29,8 @@ public:
 private:
     bool looping_;
     int awake_fd_;
-    bool quit_;
-    bool event_handling_;
+    std::atomic<bool> quit_;
+    std::atomic<bool> event_handling_;
     const pid_t thread_id_;
     SPEpoll sp_epoll_;
     SPChannel sp_awake_channel_;           // 用于唤醒的Channel

@@ -12,6 +12,7 @@ public:
     EventLoopThread();
     ~EventLoopThread();
     EventLoop *StartLoop();
+    void Stop();
 private:
     EventLoop *eventloop_;
     bool exiting_;

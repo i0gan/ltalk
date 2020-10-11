@@ -10,9 +10,10 @@ Net::EventLoopThread::EventLoopThread() :
 }
 
 Net::EventLoopThread::~EventLoopThread() {
+    std::cout << "~EventLoopThread()\n";
     exiting_ = true;
     if(eventloop_ != nullptr) {
-        eventloop_->Quit();
+        eventloop_->Stop();
         thread_.Join();
     }
 }
@@ -36,4 +37,7 @@ void Net::EventLoopThread::ThreadFunc() {
     condition_.Signal(); // Notify Main thread then realize Sync
     eventloop_->Loop();  //run event
     eventloop_ = nullptr;
+}
+void Net::EventLoopThread::Stop() {
+    eventloop_->Stop();
 }

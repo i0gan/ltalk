@@ -13,6 +13,7 @@ public:
      explicit EventLoopThread();
     ~EventLoopThread();
     EventLoop *StartLoop();
+    void Stop();
 
 private:
     EventLoop *eventloop_;

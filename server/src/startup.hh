@@ -47,4 +47,5 @@ private:
 
     std::shared_ptr<::Work::EventLoopThread> sp_work_eventloop_thread_;
     ::Work::PushMessage push_message_;
+    Net::Net net_;
 };

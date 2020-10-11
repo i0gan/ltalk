@@ -72,9 +72,10 @@ void Net::EventLoop::Loop() {
         RunPendingCallBackFunc(); // 运行等待的回调函数
         sp_epoll_->HandleExpiredEvent();
     }
+    std::cout << "event quit\n";
 }
 
-void Net::EventLoop::Quit() {
+void Net::EventLoop::Stop() {
     quit_ = true;
     if(IsInLoopThread() == false) {
         WakeUp();

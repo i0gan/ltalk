@@ -26,6 +26,10 @@ Work::EventLoop *Work::EventLoopThread::StartLoop() {
     return eventloop_;
 }
 
+void Work::EventLoopThread::Stop() {
+    eventloop_->Quit();
+}
+
 void Work::EventLoopThread::ThreadFunc() {
     // create a new eventloop
     EventLoop eventloop;

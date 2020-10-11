@@ -20,11 +20,12 @@
 namespace Net {
 class Net final{
 public:
-    Net(int port,int thread_number);
+    Net();
     ~Net();
-    void Start();
+    void Start(int port, int number_of_thread);
     void HandleNewConnection();
     void HandleConnected();
+    bool Stop();
 private:
     int Listen();    // Bind port_ and listen
     bool started_;   // Store state of net if started

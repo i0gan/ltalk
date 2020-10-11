@@ -37,3 +37,9 @@ void Net::EventLoopThreadPool::Start() {
         v_eventloops_.push_back(sp_eventloop_thread->StartLoop());
     }
 }
+
+void Net::EventLoopThreadPool::Stop() {
+    for(auto et : v_sp_eventloop_threads_) {
+        et->Stop();
+    }
+}
