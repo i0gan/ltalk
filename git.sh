@@ -5,7 +5,7 @@ cancel=$cancel"server/build/data/group/ "
 cancel=$cancel"server/build/data/log/ "
 
 echo $#
-if [[ $# -le 1 ]]; then
+if [[ $# -le 0 ]]; then
 	echo set comment
 	exit
 fi
