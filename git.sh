@@ -8,7 +8,7 @@ if [[ $# -le 0 ]]; then
 	echo set comment
 	exit
 fi
-
+echo $1
 if [[ $1 ]]; then
 	comment=$1
 fi
