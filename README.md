@@ -1,3 +1,5 @@
+
+
 # LTALK 即时通讯
 
 
@@ -35,3 +37,33 @@
 
 联系QQ: 418894113
 
+
+
+## 效果图
+
+###  登录
+
+![img](doc/images/login_01.png)
+
+![img](doc/images/login_02.png)
+
+
+### 主页
+
+
+![img](doc/images/main_page_01.png)
+
+![img](doc/images/pages_01.png)
+
+![img](doc/images/pages_02.png)
+
+### web注册
+
+![img](doc/images/web_page_01.png)
+
+### 服务端
+
+![img](doc/images/server_01.png)
+
+
+![img](doc/images/server_02.png)
