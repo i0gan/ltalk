@@ -6,8 +6,8 @@
         "data_path" : "data",
         "log_path" : "data/log",
         "web_root" : "data/web",
-        "web_page" : "main/index.html",
-        "web_404_page" : "data/web/404.html"
+        "web_page" : "index.html",
+        "web_404_page" : "404.html"
     },
     "database" : {
         "host" : "127.0.0.1",

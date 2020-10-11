@@ -483,10 +483,11 @@ void Net::Http::HandleError(int error_number, std::string message) {
     out_buffer_.clear();
     message = " " + message;
     std::string header_buffer, body_buffer;
-    body_buffer += "<html><title>Bad request</title>";
-    body_buffer += "<body bgcolor=\"dead00\">";
-    body_buffer += std::to_string(error_number) + message;
-    body_buffer += "<hr><em> " +  std::string(SERVER_NAME) + " </em>\n</body></html>";
+    body_buffer += "<html><title>bad request</title>";
+    body_buffer += "<body bgcolor=\"ffffff\"><center>";
+    body_buffer += "<p> " + std::to_string(error_number) + message + " </p>";
+    body_buffer += "<p> " + std::string(SERVER_NAME) + " </p>";
+    body_buffer += "</center></body></html>";
     header_buffer += "HTTP/1.1 " + std::to_string(error_number) + message + "\r\n";
     header_buffer += "Access-Control-Allow-Origin: *\r\n";
     header_buffer += "Server: " + std::string(SERVER_NAME) + "\r\n";
@@ -503,4 +504,18 @@ void Net::Http::StrLower(std::string &str) {
     for (size_t index = 0; index < str.size(); ++index) {
         str[index] = tolower(str[index]);
     }
+}
+
+void Net::Http::Redirect(const std::string &url) {
+    out_buffer_.clear();
+    std::string header_buffer;
+    header_buffer += "HTTP/1.1 " + std::to_string(static_cast<int>(HttpResponseCode::MOVED_PERMANENTLY)) + "\r\n";
+    header_buffer += "Access-Control-Allow-Origin: *\r\n";
+    header_buffer += "Server: " + std::string(SERVER_NAME) + "\r\n";
+    header_buffer += "Connection: Keep-Alive\r\n";
+    header_buffer += "Location: " + url + "\r\n";
+    header_buffer += "Content-Length: 0\r\n";
+    header_buffer += "\r\n";
+    out_buffer_ << header_buffer;
+    HandleWrite();
 }

@@ -16,7 +16,9 @@
 #define EPOLL_WAIT_TIME 10000
 #define MAX_BUF_SIZE 4096
 
-#define SERVER_NAME    "LTALK SERVER DEBIAN LINUX x64"
+#define LTALK_VERSION  "1.2"
+#define SERVER_NAME    "LTALK SERVER LINUX x64 " LTALK_VERSION
+
 //#define SERVER_DOMAIN  "http://ltalk.co"
 
 
@@ -69,6 +71,7 @@ using SPTimer = std::shared_ptr<Work::Timer>;
 
 namespace Crypto {
 class MD5;
+class Url;
 }
 
 

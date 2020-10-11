@@ -38,6 +38,7 @@ HEADERS += \
     \
     crypto/sha256.hh \
     crypto/md5.hh \
+    crypto/url.hh \
 
 SOURCES += \
     main.cc \

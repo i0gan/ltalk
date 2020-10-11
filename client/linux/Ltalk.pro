@@ -30,6 +30,7 @@ SOURCES += \
     src/login_page.cpp \
     src/center.cpp \
     src/main.cpp \
+    src/pull_message.cpp \
     src/tray_icon.cpp \
     src/user_chat_page.cpp \
     src/user_list_item.cpp \
@@ -51,6 +52,7 @@ HEADERS += \
     src/login_page.h \
     src/center.h \ \
     src/ltalk.h \
+    src/pull_message.h \
     src/tray_icon.h \
     src/user_chat_page.h \
     src/user_list_item.h \

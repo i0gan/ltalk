@@ -67,24 +67,24 @@ void Work::Center::HandleGet() {
     std::string path = map_url_info_["path"];
     std::string web_path = Data::web_root;
     RequestType request_type = Request::toEnum(request_);
+    bool web_page_get = false;
     do {
         if(path == "/" && platform_.empty()) {
-            path = Data::web_root + "/" + Data::web_page;
-            SendFile(path);
+            wp_http_.lock()->Redirect("/main/");
             break;
         }
         switch (request_type) {
         case RequestType::register_page: {
-            web_path += "/register/index.html";
-            SendFile(web_path);
+            web_path += "/register/";
+            web_page_get = true;
         } break;
         case RequestType::register_success_page: {
-            web_path += "/register/success/index.html";
-            SendFile(web_path);
+            web_path += "/register/success/";
+            web_page_get = true;
         } break;
         case RequestType::main_page: {
-            web_path += "/main/index.html";
-            SendFile(web_path);
+            web_path += "/main/";
+            web_page_get = true;
         } break;
         case RequestType::keep_connect: {
             DealWithKeepConnect();
@@ -105,8 +105,8 @@ void Work::Center::HandleGet() {
             DealWithSearchUser();
         } break;
         default: {
-            path = Data::web_root + path;
-            SendFile(path);
+            web_path += path;
+            web_page_get = true;
         } break;
         }
     } while(false);
@@ -114,6 +114,13 @@ void Work::Center::HandleGet() {
     if(error) {
         std::cout << "error\n";
         HandleNotFound();
+    }else {
+        if(web_page_get) {
+            if(IsDir(web_path)) {
+                web_path += "index.html";
+            }
+            SendFile(web_path);
+        }
     }
 }
 
@@ -140,6 +147,14 @@ void Work::Center::HandlePost() {
     }
 }
 
+bool Work::Center::IsDir(const std::string &path) {
+    if(path.size() < 1)
+        return false;
+    else if(path.at(path.size() - 1) == '/')
+        return true;
+    return false;
+}
+
 bool Work::Center::ParseUrl() {
     std::string url;
     std::string value_url;
@@ -150,6 +165,9 @@ bool Work::Center::ParseUrl() {
         std::cout << "map_header_info_[url]" << e.what() << '\n';
         return false;
     }
+
+    map_url_info_["url_orignal"] = url;
+    url = Crypto::Url::Decode(url);
     map_url_info_["url"] = url;
     int first_value_pos = url.find("?");
     if(first_value_pos > 0) {
@@ -340,21 +358,42 @@ void Work::Center::DealWithRegisterUser() {
         Response(ResponseCode::EXIST);
         return;
     }
+    // check is have this phone number
+    sql_query.Select("user_", "phone_number", "phone_number = '" + json_phone_number + '\'');
+    if(sql_query.Next()) {
+        Response(ResponseCode::EXIST);
+        return;
+    }
 
     std::string uid = MakeUid(json_email);
     std::string encode_password = Crypto::MD5(json_password).toString();
 
     // Insert into database
-    std::string key_sql = "uid, account, email, name, phone_number, address, occupation, created_time, password";
+    std::string key_sql = "uid, account, email, nickname, name, signature, qq, phone_number,"
+            "address, hometown, occupation, created_time, network_state, last_login,"
+            "head_image, profile_image_1, profile_image_2, profile_image_3, profile_image_4, password";
+
     std::string value_sql = '\'' + uid + "',"; // set uid
-    value_sql += '\'' + json_email + "',";     // init account as email
-    value_sql += '\'' + json_email + "',";
-    value_sql += '\'' + json_name + "',";
-    value_sql += '\'' + json_phone_number + "',";
-    value_sql += '\'' + json_address + "',";
-    value_sql += '\'' + json_occupation + "',";
-    value_sql += '\'' + GetDateTime() + "',";
-    value_sql += '\'' + encode_password + "'";
+    value_sql += '\'' + json_email + "',";     // account
+    value_sql += '\'' + json_email + "',";     // email
+    value_sql += '\'' + json_name + "',";      // nickname
+    value_sql += '\'' + json_name + "',";      // name
+    value_sql += "'unset',";        // signature
+    value_sql += "'unset',";        // qq
+    value_sql += '\'' + json_phone_number + "',"; // phone_number
+    value_sql += '\'' + json_address + "',"; // address
+    value_sql += "'unset',"; // hometown
+    value_sql += '\'' + json_occupation + "',"; // occupation
+    value_sql += '\'' + GetDateTime() + "',"; // created_time
+    value_sql += "'offline',";        // network_state
+    value_sql += "'unlogin',";        // last_login
+    value_sql += "'unset',";          // head_image
+    value_sql += "'unset',";          // profile_image_1
+    value_sql += "'unset',";          // profile_image_2
+    value_sql += "'unset',";          // profile_image_3
+    value_sql += "'unset',";          // profile_image_4
+    value_sql += '\'' + encode_password + "'"; // password
+
     if (!sql_query.Insert("user_", key_sql, value_sql)) {
         Response(ResponseCode::FAILURE);
         return;
@@ -1040,20 +1079,6 @@ void Work::Center::DealWithGetFriendList() {
     Database::MysqlQuery::Escape(uid);
     query.Select("user_friend", "tid", "uid=" + uid);
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 

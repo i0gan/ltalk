@@ -17,7 +17,7 @@
 #include "../crypto/md5.hh"
 #include "util.hh"
 #include "push_message.hh"
-
+#include "../crypto/url.hh"
 using Json = Third::Json;
 
 class Work::Center {
@@ -55,6 +55,7 @@ private:
     bool ParseUrl();
     void HandleNotFound();
     void Response(Work::ResponseCode error_code);
+    bool IsDir(const std::string &path);
     /* */
     void DealWithRegisterUser();
     void GenerateUserPath(const std::string &uid);

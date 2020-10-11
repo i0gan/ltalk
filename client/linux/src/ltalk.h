@@ -3,10 +3,10 @@
 #include <QString>
 #include <QVector>
 #include <QDateTime>
-//#define DEBUG
+#define DEBUG
 
 #ifdef DEBUG
-#define SERVER_DOMAIN "http://192.168.43.47"
+#define SERVER_DOMAIN "http://127.0.0.1"
 #else
 #define SERVER_DOMAIN "http://ltalk.co:82"
 #endif
@@ -59,7 +59,6 @@ enum class LocalCmd {
     main_page_get_group_list,
     get_user_info,
 };
-
 
 enum class ResponseCode {
     SUCCESS = 0,

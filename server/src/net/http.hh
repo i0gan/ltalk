@@ -119,6 +119,7 @@ public:
     void NewEvnet();
     void SendData(const std::string &type,const std::string &content);
     void SendFile(const std::string &file_name);
+    void Redirect(const std::string &url);
 private:
     int fd_;
     EventLoop *eventloop_;

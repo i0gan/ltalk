@@ -65,8 +65,8 @@ void Http::connected() {
 bool Http::parseHeader() {
 
 }
-void Http::recvData() {
 
+void Http::recvData() {
     //QByteArray recv = tcp_socket_->readAll();
     //qDebug() << "recv: " << recv;
     if(recv_step_ == Step::get_header) {
