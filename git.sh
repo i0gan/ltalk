@@ -9,6 +9,7 @@ if [[ $# -le 0 ]]; then
 	exit
 fi
 echo $1
+
 if [[ $1 ]]; then
 	comment=$1
 fi
