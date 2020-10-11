@@ -71,7 +71,6 @@ void Work::PushMessage::SendToUser(::Data::Message &msg) {
         std::cout << "push _message: web\n";
         web_http->SendData(".json", data);
     }
-
 }
 
 void Work::PushMessage::SendToGroup(::Data::Message &msg) {

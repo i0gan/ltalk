@@ -15,8 +15,9 @@ void Net::Net::Start(int port, int number_of_thread) {
 
     port_ = port;
     number_of_thread_ = number_of_thread;
-    listen_fd = Listen(),
+    listen_fd = Listen();
     accept_channel_ =  SPChannel(new Channel(base_eventloop_));
+
     if(listen_fd == -1) {
         d_cout << "net init fail\n";
         abort();

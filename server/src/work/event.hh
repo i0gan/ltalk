@@ -1,6 +1,7 @@
 #pragma once
 #include "../ltalk.hh"
 #include "timer.hh"
+#include <atomic>
 
 namespace Work {
 class Event {
@@ -14,7 +15,7 @@ public:
     bool IsLoop() { return loop_; };
 private:
     ::Util::CallBack call_back_ = nullptr;
-    bool loop_;
+    std::atomic<bool> loop_;
     int ms_timeout_;
     Timer timer_;
 };

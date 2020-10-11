@@ -6,6 +6,7 @@
 #include <unistd.h>
 #include <iterator>
 #include <atomic>
+#include "../thread/mutex_lock.hh"
 
 namespace Work {
 class EventLoop {
@@ -18,5 +19,9 @@ public:
 private:
     std::atomic<bool> quit_;
     std::vector<SPEvent> v_sp_events_;
+    Thread::MutexLock mutex_lock_;
+    std::atomic<bool> handle_;
+    std::atomic<bool> add_event_;
+
 };
 }

@@ -372,7 +372,7 @@ std::string Net::Http::GetSuffix(std::string file_name) {
 }
 
 void Net::Http::SendData(const std::string &type,const std::string &content) {
-
+    //Thread::MutexLockGuard mutex_lock_guard(mutex_lock_);
     out_buffer_.clear();
     out_buffer_ << "HTTP/1.1 200 OK\r\n";
     if (map_header_info_.find("connection") != map_header_info_.end() &&
@@ -392,6 +392,7 @@ void Net::Http::SendData(const std::string &type,const std::string &content) {
 
 // Send file
 void Net::Http::SendFile(const std::string &file_name) {
+    //Thread::MutexLockGuard mutex_lock_guard(mutex_lock_);
     do {
         if(recv_error_ || http_connection_state_ == HttpConnectionState::DISCONNECTED) {
             break;;
@@ -478,6 +479,7 @@ void Net::Http::HandleConnect() {
 }
 
 void Net::Http::HandleError(int error_number, std::string message) {
+    //Thread::MutexLockGuard mutex_lock_guard(mutex_lock_);
     out_buffer_.clear();
     message = " " + message;
     std::string header_buffer, body_buffer;

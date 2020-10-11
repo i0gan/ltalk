@@ -1,7 +1,18 @@
 #include "mutex_lock.hh"
 
 Thread::MutexLock::MutexLock() {
-    pthread_mutex_init(&mutex_, nullptr);
+    /*
+     * 避免:  tpp.c:63: __pthread_tpp_change_priority:
+     *  Assertion `new_prio == -1 || (new_prio >= __sched_fifo_min_prio && new_prio
+     *      <=          __sched_fifo_max_prio)' failed.
+     * 发现是报警模块初始化时， 调用pthread_mutex_lock卡死
+     * 对锁进行初始化
+     *
+    */
+    memset(&mutex_attr_, 0, sizeof(pthread_mutexattr_t));
+    pthread_mutexattr_init(&mutex_attr_);
+    pthread_mutexattr_settype(&mutex_attr_, PTHREAD_MUTEX_RECURSIVE_NP);
+    pthread_mutex_init(&mutex_, &mutex_attr_);
 }
 
 Thread::MutexLock::~MutexLock() {

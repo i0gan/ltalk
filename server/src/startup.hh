@@ -30,7 +30,7 @@ public:
     bool RunLoggerModule();
     bool RunNetworkModule();
     bool RunWorkModule();
-    void StartBase();
+    void StartWork();
     void KeepConnectDatabase();
 private:
     int number_of_net_thread_;
@@ -46,6 +46,8 @@ private:
     std::string log_path_;
 
     std::shared_ptr<::Work::EventLoopThread> sp_work_eventloop_thread_;
-    ::Work::PushMessage push_message_;
     Net::Net net_;
+    ::Work::PushMessage push_message_;
+    ::Work::SPEvent keep_connect_mysql_event_;
+    ::Work::SPEvent push_message_event_;
 };

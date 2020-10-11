@@ -4,6 +4,12 @@ cancel="server/build/data/user/ "
 cancel=$cancel"server/build/data/group/ "
 cancel=$cancel"server/build/data/log/ "
 
+echo $#
+if (($# < 2)); then
+	echo set comment
+	exit
+fi
+
 if [[ $1 ]]; then
 	comment=$1
 fi

@@ -137,6 +137,7 @@ private:
     std::string uid_;      // logined uid for deal with offline
     std::string platform_; // logined uid for deal with offline
     Thread::MutexLock write_data_mutex_lock_;
+    Thread::MutexLock mutex_lock_;
     void HandleRead();
     void HandleWrite();
     void HandleConnect();

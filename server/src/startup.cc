@@ -48,7 +48,7 @@ bool Ltalk::StartUp::Run() {
         abort();
     }
 
-    StartBase();
+    StartWork();
 
     std::cout << "tcp port: " << tcp_port_ << "  number of net thread: " << number_of_net_thread_ << '\n';
     if(false == this->RunNetworkModule()) {
@@ -64,6 +64,7 @@ bool Ltalk::StartUp::Stop() {
     sp_work_eventloop_thread_->Stop();
     return true;
 }
+
 // Load config file
 bool Ltalk::StartUp::LoadConfig() {
     std::string file_json;
@@ -116,17 +117,16 @@ bool Ltalk::StartUp::RunLoggerModule() {
 
 bool Ltalk::StartUp::RunWorkModule() {
     Data::work_eventloop = sp_work_eventloop_thread_->StartLoop();
-    std::cout << "run work module 1\n";
     return true;
 }
 
-void Ltalk::StartUp::StartBase() {
-//    // 保持数据库连接, 每120 s ping一次
-    ::Work::SPEvent event = ::Work::SPEvent(new ::Work::Event(std::bind(&StartUp::KeepConnectDatabase, this), true, 1000 * 120));
-    ::Data::work_eventloop->AddWork(event);
+void Ltalk::StartUp::StartWork() {
+    // 保持数据库连接, 每120 s ping一次
+    keep_connect_mysql_event_ = ::Work::SPEvent(new ::Work::Event(std::bind(&StartUp::KeepConnectDatabase, this), true, 1000 * 1));
+    ::Data::work_eventloop->AddWork(keep_connect_mysql_event_);
     // 消息推送
-//    ::Work::SPEvent event_push_message = ::Work::SPEvent(new ::Work::Event(std::bind(&::Work::PushMessage::Send, &push_message_), true));
-//    ::Data::work_eventloop->AddWork(event_push_message);
+    push_message_event_ = ::Work::SPEvent(new ::Work::Event(std::bind(&::Work::PushMessage::Send, &push_message_), true));
+    ::Data::work_eventloop->AddWork(push_message_event_);
 }
 
 void Ltalk::StartUp::KeepConnectDatabase() {
