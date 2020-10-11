@@ -36,9 +36,6 @@ void MainPage::init() {
     connect(tray_icon_, &TrayIcon::localCmd, this, &MainPage::dealWithLocalCmd);
     tray_icon_->init();
     connect(net_mannager_, &QNetworkAccessManager::finished, this, &MainPage::requestGetFileReply);
-
-    //test
-    addUserListItem(user_info_);
 }
 
 void MainPage::mousePressEvent(QMouseEvent *event) {
@@ -165,11 +162,27 @@ void MainPage::on_pushButton_changeTheme_clicked() {
     emit localCmd(LocalCmd::show_chnage_theme_page);
 }
 
-void MainPage::addUserListItem(const UserInfo &user_info) {
-    UserListItem *item = new UserListItem(0);
+void MainPage::addUserListItem(const UserInfo &info) {
+    auto iter = user_list_items_.find(info.uid);
+    if(iter != user_list_items_.end()) {
+        UserListItem *item = *iter;
+        item->setAccount(info.account);
+        item->setName(info.nickname);
+        return;
+    }
+    UserListItem *item = new UserListItem(info.uid);
+    item->setAccount(info.account);
+    item->setName(info.nickname);
+    user_list_items_[info.uid] = item;
+    connect(item, &UserListItem::doubleClick, this, &MainPage::dealWithClickUserListItem);
     ui->Widget_userList->layout()->addWidget(item);
 }
 
 void MainPage::on_pushButton_addUser_clicked() {
     emit localCmd(LocalCmd::show_add_user_page);
+}
+
+void MainPage::dealWithClickUserListItem(QString uid) {
+    qDebug() << "ttt";
+    emit openUserChatPage(uid);
 }

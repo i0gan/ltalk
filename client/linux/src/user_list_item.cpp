@@ -1,13 +1,13 @@
 #include "user_list_item.h"
 #include "ui_user_list_item.h"
 
-UserListItem::UserListItem(int num, QWidget *parent) :
+UserListItem::UserListItem(QString uid, QWidget *parent) :
     QWidget(parent),
     ui(new Ui::UserListItem)
 {
     ui->setupUi(this);
     this->installEventFilter(this);
-    num_ = num;
+    uid_ = uid;
 }
 
 UserListItem::~UserListItem()
@@ -22,7 +22,7 @@ void UserListItem::init() {
 bool UserListItem:: eventFilter(QObject *obj, QEvent *e) {
     bool ret = true;
     if(obj == this && e->type() == QEvent::MouseButtonDblClick) {
-        qDebug() << "okkk";
+        emit doubleClick(uid_);
     }else
         ret = false;
     return ret;
@@ -39,4 +39,14 @@ void UserListItem::setImage(const QPixmap &pixmap) {
 
 void UserListItem::setImageUrl(QString url) {
     image_url_ = url;
+}
+void UserListItem::setAccount(const QString &account){
+    ui->label_account->setText(account);
+}
+void UserListItem::setName(const QString &name){
+    ui->label_name->setText(name);
+}
+
+void UserListItem::setNetwork(const QString &network) {
+
 }

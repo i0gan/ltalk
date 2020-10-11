@@ -11,6 +11,7 @@
 #include <map>
 #include "util.h"
 #include <cstdlib>
+#include <queue>
 
 class Http : public QObject
 {

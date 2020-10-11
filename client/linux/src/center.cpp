@@ -16,6 +16,7 @@ void Center::init() {
     connect(login_page_, &LoginPage::logined, this, &Center::dealWithLogined);
     connect(login_page_, &LoginPage::localCmd, this, &Center::dealWithLocalCmd);
     connect(main_page_, &MainPage::localCmd, this, &Center::dealWithLocalCmd);
+    connect(main_page_, &MainPage::openUserChatPage, this, &Center::dealWithOpenUserChatPage);
     change_theme_page_ = new ChangeThemePage();
     change_theme_page_->init();
     connect(change_theme_page_, &ChangeThemePage::changed, this, &Center::changeTheme);
@@ -26,8 +27,8 @@ void Center::init() {
     profile_page_ = new ProfilePage();
     profile_page_->init();
 
-    keep_connect_timer_ = new QTimer(this);
-    connect(keep_connect_timer_, &QTimer::timeout, this, &Center::keepConnect);
+    request_step_timer_ = new QTimer(this);
+    connect(request_step_timer_, &QTimer::timeout, this, &Center::requestStep);
     add_user_page_ = new AddUserPage();
     add_user_page_->init();
     connect(add_user_page_, &AddUserPage::addUser, this, &Center::requestAddUser);
@@ -134,6 +135,10 @@ void Center::requestReply() {
             //qDebug() << "add_user: " << recved_data_;
             handleAddUser(json_object);
             break;
+        } else if(request == "get_friend_list") {
+            qDebug() << "get_friend_list: " << recved_data_;
+            handleGetFriendListReply(json_object);
+            break;
         } else {
             qDebug() << "收到数据出错: " << recved_data_;
             break;
@@ -141,7 +146,9 @@ void Center::requestReply() {
     } while(false);
 }
 void Center::dealWithKeepConnectReply() {
+    request_step_ = static_cast<RequestStep>(static_cast<int>(request_step_) + 1);
     qDebug() << "keep";
+
 }
 void Center::dealWithLogined(QString account, QString uid, QString token) {
     user_.account = account;
@@ -152,8 +159,8 @@ void Center::dealWithLogined(QString account, QString uid, QString token) {
     main_page_->init();
     main_page_->show();
     generateUserPath(); //目录生成
-    requestGetUserInfo();
-    keep_connect_timer_->start(1000 * 10);
+    requestStep();
+    request_step_timer_->start(3000);
 }
 
 void Center::dealWithLocalCmd(LocalCmd cmd) {
@@ -213,10 +220,64 @@ void Center::requestGetUserInfo() {
     QString url;
     url = "/?request=get_user_info&platform=linux&account=" + user_.account + "&uid=" + user_.uid + "&token=" + user_.token;
     http_.get(url);
+    qDebug() << "request user info\n";
 }
 
 void Center::requestGetFriendList() {
+    QString url = "/?request=get_friend_list&platform=linux&account=" + user_.account + "&uid=" + user_.uid + "&token=" + user_.token;
+    http_.get(url);
+    qDebug() << "request friend list\n";
+}
+void Center::handleGetFriendListReply(const QJsonObject &json_obj) {
+    request_step_ = static_cast<RequestStep>(static_cast<int>(request_step_) + 1);
+    int code = json_obj.value("code").toInt();
+    if(code != 0) {
+        return;
+    }
+    QJsonObject friend_list_json = json_obj.value("content").toObject();
+    for(auto friend_list_item_json_iter = friend_list_json.begin(); friend_list_item_json_iter != friend_list_json.end(); ++friend_list_item_json_iter) {
+        QJsonObject friend_list_item = friend_list_item_json_iter.value().toObject();
+        UserInfo info;
+        info.uid = friend_list_item["uid"].toString();
+        info.account = friend_list_item["account"].toString();
+        info.email = friend_list_item["email"].toString();
+        info.email = friend_list_item["address"].toString();
+        info.network_state = friend_list_item["network_state"].toString();
+        info.nickname = friend_list_item["nickname"].toString();
+        info.head_image = friend_list_item["head_image"].toString();
+        info.signature = friend_list_item["signature"].toString();
+        friend_list_[info.uid] = info;
+        createUserChatPage(info); // crate user chat page
+    }
 
+    for(auto info : friend_list_)
+        main_page_->addUserListItem(info);
+
+}
+void Center::requestStep() {
+    switch (request_step_) {
+    case RequestStep::keep_connect: {
+        keepConnect();
+    } break;
+    case RequestStep::getUserInfo: {
+        if(is_request_info_) {
+            requestGetUserInfo();
+        }
+        else
+            request_step_ = RequestStep::keep_connect;
+    } break;
+    case RequestStep::getFriendList: {
+        if(is_request_info_)
+            requestGetFriendList();
+        else
+            request_step_ = RequestStep::keep_connect;
+    } break;
+    default: {
+        request_step_ = RequestStep::keep_connect;
+        is_request_info_ = false;
+    }
+        break;
+    }
 }
 
 void Center::requestGetGroupList() {
@@ -224,6 +285,7 @@ void Center::requestGetGroupList() {
 }
 
 void Center::handleGetUserInfoReply(const QJsonObject &json_obj) {
+    request_step_ = static_cast<RequestStep>(static_cast<int>(request_step_) + 1);
     int code = json_obj.value("code").toInt();
     QJsonObject content;
     if(code != 0) {
@@ -273,4 +335,29 @@ void Center::changeTheme(QString theme) {
     profile_page_->setTheme(theme);
     about_page_->setTheme(theme);
     add_user_page_->setTheme(theme);
+}
+void Center::createUserChatPage(const UserInfo &info) {
+    auto iter = friend_window_list_.find(info.uid);
+    if(iter != friend_window_list_.end()){ //存在, 更新信息
+        UserChatPage *user = *iter;
+        user->setInfo(info);
+        return;
+    }
+    UserChatPage *user = new UserChatPage();
+    user->init();
+    connect(user, &UserChatPage::sendMessage, this, &Center::requestSendMessage);
+    friend_window_list_[info.uid] = user;
+}
+
+void Center::requestSendMessage(QString message) {
+
+}
+
+void Center::dealWithOpenUserChatPage(QString uid) {
+    qDebug() << "open chat page: " << uid;
+    auto iter = friend_window_list_.find(uid);
+    if(iter != friend_window_list_.end()){ //存在, 更新信息
+        UserChatPage *p = *iter;
+        p->show();
+    }
 }

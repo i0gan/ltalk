@@ -104,6 +104,9 @@ void Work::Center::HandleGet() {
         case  RequestType::search_user: {
             DealWithSearchUser();
         } break;
+        case RequestType::get_friend_list: {
+            DealWithGetFriendList();
+        } break;
         default: {
             web_path += path;
             web_page_get = true;
@@ -370,8 +373,8 @@ void Work::Center::DealWithRegisterUser() {
 
     // Insert into database
     std::string key_sql = "uid, account, email, nickname, name, signature, qq, phone_number,"
-            "address, hometown, occupation, created_time, network_state, last_login,"
-            "head_image, profile_image_1, profile_image_2, profile_image_3, profile_image_4, password";
+                          "address, hometown, occupation, created_time, network_state, last_login,"
+                          "head_image, profile_image_1, profile_image_2, profile_image_3, profile_image_4, password";
 
     std::string value_sql = '\'' + uid + "',"; // set uid
     value_sql += '\'' + json_email + "',";     // account
@@ -870,7 +873,6 @@ void Work::Center::DealWithSearchUser() {
 }
 
 void Work::Center::DealWithAddUser() {
-
     std::string content_type;
     try {
         content_type = map_header_info_.at("content-type");
@@ -898,9 +900,9 @@ void Work::Center::DealWithAddUser() {
         return;
     }
 
-    std::string target_account, target_uid, account, uid, token, verify_message;
+    std::string target_account, tid, account, uid, token, verify_message;
     try {
-        target_uid = recv_json_obj["content"]["target_uid"];
+        tid = recv_json_obj["content"]["target_uid"];
         target_account = recv_json_obj["content"]["target_account"];
         account = recv_json_obj["content"]["account"];
         verify_message = recv_json_obj["content"]["verify_message"];
@@ -922,27 +924,27 @@ void Work::Center::DealWithAddUser() {
     }
 
     // 检查是否是自己
-    if(target_uid == uid) {
+    if(tid == uid) {
         Response(ResponseCode::FAILURE);
         return;
     }
 
     ::Database::MysqlQuery::Escape(target_account);
-    ::Database::MysqlQuery::Escape(target_uid);
+    ::Database::MysqlQuery::Escape(tid);
     ::Database::MysqlQuery::Escape(account);
     ::Database::MysqlQuery::Escape(uid);
     ::Database::MysqlQuery::Escape(verify_message);
 
     ::Database::MysqlQuery query;
     // 检查对方帐号是否存在
-    query.Select("user_", "uid", "uid='" + target_uid + '\'');
+    query.Select("user_", "uid", "uid='" + tid + '\'');
     if(!query.Next()) {
         Response(ResponseCode::NOT_EXIST);
         return;
     }
 
     // 检查对方帐号是否在自己的好友中
-    query.Select("user_friend_", "tid", "uid='" + target_uid + '\'');
+    query.Select("user_friend_", "tid", "uid='" + tid + '\'');
     if(query.Next()) {
         Response(ResponseCode::EXIST);
         return;
@@ -961,10 +963,86 @@ void Work::Center::DealWithAddUser() {
           }}
     };
 
+    /*
+    `eid` varchar(256) NOT NULL,
+    `uid` varchar(256) NOT NULL,
+    `tid` varchar(256) NOT NULL,
+    `gid` varchar(256) NOT NULL,
+    `request` varchar(256) NOT NULL,
+    `mid` varchar(256) NOT NULL,
+    `remark` varchar(512) NOT NULL,
+    `created_time`  varchar(256) NOT NULL,
+    PRIMARY KEY (`id`)
+     */
+    std::string i_eid = MakeToken(uid), i_uid = uid, i_tid = tid, i_gid = "unset",
+            i_request = "add_user", i_mid = "none", i_remark = "none", i_created_time = GetDateTime();
+    std::string value_sql = '\'' + i_eid + "',"; // set eid
+    value_sql += '\'' + i_uid + "',";        // uid
+    value_sql += '\'' + i_tid + "',";        // tid
+    value_sql += '\'' + i_gid + "',";        // gid
+    value_sql += '\'' + i_request + "',";    // request
+    value_sql += '\'' + i_mid + "',";        // mid
+    value_sql += '\'' + i_remark + "',";     // remark
+    value_sql += '\'' + i_created_time + "'";      // created time
+
+    if(!query.Insert("event_", "eid, uid, tid, gid, request, mid, remark, created_time", value_sql)) {
+        Response(ResponseCode::FAILURE);
+        return;
+    }
+
+    AddTowUserInDb(uid, tid, "friend");
     //std::cout << "add_user: \n";
-    ::Work::PushMessage::ToUser(target_uid, json_obj);
+    ::Work::PushMessage::ToUser(tid, json_obj);
 }
 
+void Work::Center::DealWithAddUserReply() {
+
+}
+
+bool Work::Center::AddTowUserInDb(const std::string &uid, const std::string &tid, const std::string &remark) {
+    if(uid == tid) {
+        return false;
+    }
+    ::Database::MysqlQuery query;
+    // 检查对方帐号是否存在
+    query.Select("user_", "uid", "uid='" + tid + '\'');
+    if(!query.Next()) {
+        return false;
+    }
+    // 检查自己帐号是否存在
+    query.Select("user_", "uid", "uid='" + uid + '\'');
+    if(!query.Next()) {
+        return false;
+    }
+
+    // 检查对方帐号是否在自己的好友中
+    query.Select("user_friend_", "tid", "uid='" + tid + '\'');
+    if(query.Next()) {
+        return false;
+    }
+    std::string datatime = GetDateTime();
+    std::string value_sql = '\'' + uid + "',";    // set eid
+    value_sql += '\'' + tid + "',";               // tid
+    value_sql += '\'' + remark + "',";            // remark
+    value_sql += '\'' + datatime + "'";           // datetime
+
+    if(!query.Insert("user_friend_", "uid, tid, remark, created_time", value_sql)) {
+        Response(ResponseCode::FAILURE);
+        return false;
+    }
+
+    value_sql = '\'' + tid + "',";                // set uid
+    value_sql += '\'' + uid + "',";               // tid
+    value_sql += '\'' + remark + "',";            // remark
+    value_sql += '\'' + datatime + "'";           // datetime
+
+    if(!query.Insert("user_friend_", "uid, tid, remark, created_time", value_sql)) {
+        Response(ResponseCode::FAILURE);
+        return false;
+    }
+
+    return true;
+}
 
 void Work::Center::DealWithSendUserMessage() {
     std::string content_type;
@@ -1055,6 +1133,8 @@ void Work::Center::DealWithSendUserMessage() {
     ::Work::PushMessage::ToUser(target_uid, json_obj);
 }
 
+
+
 void Work::Center::DealWithGetFriendList() {
     std::string account;
     std::string uid;
@@ -1077,7 +1157,53 @@ void Work::Center::DealWithGetFriendList() {
     Database::MysqlQuery query;
     Database::MysqlQuery::Escape(account);
     Database::MysqlQuery::Escape(uid);
-    query.Select("user_friend", "tid", "uid=" + uid);
+
+    query.Select("user_friend_", "tid", "uid='" + uid + '\'');
+    Json send_josn_friend_list;
+    while(query.Next()) {
+        std::string tid = query.Value(0);
+        Database::MysqlQuery query_get;
+        std::string db_uid, db_account, db_email, db_nickname, db_signature, db_head_image, db_network_state, db_address;
+        query_get.Select("user_", "uid, account, email, nickname, signature, head_image, address, network_state", "uid='" + tid + '\'');
+        if(query_get.Next()) {
+            try {
+                db_uid = query_get.Value(0);
+                db_account = query_get.Value(1);
+                db_email = query_get.Value(2);
+                db_nickname = query_get.Value(3);
+                db_signature = query_get.Value(4);
+                db_head_image = query_get.Value(5);
+                db_address = query_get.Value(6);
+                db_network_state = query_get.Value(7);
+            }  catch (::Database::mysql_out_of_range e) {
+                std::cout << e.what() << '\n';
+                Response(ResponseCode::FAILURE);
+                return;
+            }
+            send_josn_friend_list[db_uid] = {
+                {"uid", db_uid },
+                {"account", db_account },
+                {"email", db_email },
+                {"nickname", db_nickname },
+                {"signature", db_signature },
+                {"head_image", db_head_image },
+                {"address", db_address },
+                {"network_state", db_network_state }
+            };
+        }else {
+            Response(ResponseCode::FAILURE);
+            return;
+        }
+    }
+    Json send_json = {
+        { "server", SERVER_NAME },
+        { "request", request_ },
+        { "code", 0 },
+        { "datetime" , GetDateTime() },
+        { "content-type", "friend_list"},
+        { "content" , send_josn_friend_list }
+    };
+    SendJson(send_json);
 }
 
 

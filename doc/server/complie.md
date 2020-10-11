@@ -10,7 +10,6 @@ sudo apt install g++
 sudo apt install mysql-server
 sudo apt install libmysql++
 sudo apt install make
-
 ```
 ### Get open source
 First, you should git clone src to complie

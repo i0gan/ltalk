@@ -16,7 +16,7 @@ UserChatPage::~UserChatPage()
 void UserChatPage::init() {
     setWindowTitle("Ltalk login");
     setWindowIcon(QIcon(":/ui/logo.ico"));
-    ui->pushButton_send->setShortcut(Qt::Key_Return);
+    ui->pushButton_send->setShortcut(Qt::Key_Enter);
     QPoint pos;
     pos.setX((QApplication::desktop()->width() - width()) / 2);
     pos.setY((QApplication::desktop()->height() - height()) / 2);
@@ -25,7 +25,7 @@ void UserChatPage::init() {
     setAttribute(Qt::WA_TranslucentBackground);
     QItemSelectionModel model;
     ui->listWidget_chat->setSelectionMode(QAbstractItemView::NoSelection);
-    //ui->listWidget_chat->setAttribute(Qt::WA_TranslucentBackground);
+    ui->listWidget_chat->setAttribute(Qt::WA_TranslucentBackground);
 }
 
 void UserChatPage::mousePressEvent(QMouseEvent *event) {
@@ -51,6 +51,10 @@ void UserChatPage::on_toolButton_min_clicked() {
     showMinimized();
 }
 
+void UserChatPage::setInfo(const UserInfo &info) {
+
+}
+
 void UserChatPage::on_pushButton_send_clicked()
 {
 
@@ -67,7 +71,7 @@ void UserChatPage::on_pushButton_send_clicked()
     QSize size = m->fontSize();
     item->setSizeHint(size);
     ui->listWidget_chat->setItemWidget(item, m);
-    newMessage("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa");
+    newMessage("你好!!!!");
     ui->plainTextEdit_input->clear();
 }
 

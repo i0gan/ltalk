@@ -7,6 +7,7 @@
 #include <QMouseEvent>
 
 #include "chat_message.h"
+#include "ltalk.h"
 
 namespace Ui {
 class UserChatPage;
@@ -21,12 +22,17 @@ public:
     ~UserChatPage();
     void init();
     void newMessage(QString message);
+    bool isShow() { return is_show_; };
+    void setInfo(const UserInfo &info);
+signals:
+    void sendMessage(QString message);
 private:
     Ui::UserChatPage *ui;
     bool pressed_;
     QPoint mouse_pos_;
     QPixmap my_head_image_;
     QPixmap otherside_head_image_;
+    bool is_show_ = false;
 
 protected:
     void mouseMoveEvent(QMouseEvent *event) override;

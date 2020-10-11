@@ -17,6 +17,7 @@ void Work::Request::Init() {
     Request::umap_type_["get_profile_image"] = RequestType::get_profile_image;
     Request::umap_type_["search_user"] = RequestType::search_user;
     Request::umap_type_["add_user"] = RequestType::add_user;
+    Request::umap_type_["get_friend_list"] = RequestType::get_friend_list;
 }
 
 Work::RequestType Work::Request::toEnum(std::string request) {

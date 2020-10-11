@@ -75,7 +75,7 @@ private:
     void DealWithAddUserReply();
     void DealWithGetFriendList();
     void DealWithGetGroupList();
-
+    bool AddTowUserInDb(const std::string &uid, const std::string &tid, const std::string &remark);
     void DealWithSendUserMessage();
     void DealWithSendGroupMessage();
 

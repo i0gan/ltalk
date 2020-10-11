@@ -33,6 +33,7 @@ enum class Work::RequestType {
     get_profile_image,
     search_user,
     add_user,
+    get_friend_list,
 };
 
 enum class Work::Platform {

@@ -24,17 +24,16 @@
 #include "image_cropper_page.h"
 #include "add_user_page.h"
 #include "http.h"
+#include "user_chat_page.h"
 
 class Center : public QObject
 {
     enum class RequestStep {
-        unlogin,
-        login,
+        keep_connect,
         getUserInfo,
         getFriendList,
         getGroupList,
         getChatMessage,
-        wait
     };
     Q_OBJECT
 public:
@@ -51,16 +50,24 @@ public:
     void keepConnect();
     void dealWithKeepConnectReply();
     void requestGetUserInfo();
-    void requestGetFriendList();
-    void requestGetGroupList();
     void handleGetUserInfoReply(const QJsonObject &json_obj);
+    void requestGetFriendList();
+    void handleGetFriendListReply(const QJsonObject &json_obj);
+    void requestGetGroupList();
+
     void handleAddUser(const QJsonObject &json_obj);
     void generateUserPath();
     void changeTheme(QString theme);
+    void requestStep();
+
+    void createUserChatPage(const UserInfo &info);
+    void requestSendMessage(QString message);
+    void dealWithOpenUserChatPage(QString uid);
 
 private slots:
     void dealWithLocalCmd(LocalCmd cmd);
     void testRecv();
+
 
 private:
     Http http_;
@@ -72,11 +79,12 @@ private:
     ProfilePage *profile_page_;
     ImageCropperPage *image_cropper_page_;
     AddUserPage *add_user_page_;
-    QTimer *keep_connect_timer_;
-
+    QTimer *request_step_timer_;
+    RequestStep request_step_ = RequestStep::getUserInfo;
+    bool is_request_info_ = true;
     UserInfo user_;
-    QVector<UserInfo> friend_list_;
-    QVector<GroupInfo> group_list_;
+    QMap<QString, UserInfo> friend_list_;
+    QMap<QString, UserChatPage *> friend_window_list_;
     QByteArray recved_data_;
 };
 

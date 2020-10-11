@@ -5,6 +5,7 @@ USE `ltalk`;
 DROP TABLE IF EXISTS `user_`;
 DROP TABLE IF EXISTS `group_`;
 DROP TABLE IF EXISTS `user_friend_`;
+DROP TABLE IF EXISTS `message_`;
 DROP TABLE IF EXISTS `group_user_`;
 DROP TABLE IF EXISTS `event_`;
 
@@ -36,3 +37,42 @@ CREATE TABLE `user_` (
     UNIQUE KEY `phone_number` (`phone_number`),
     UNIQUE KEY `email` (`email`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+
+
+CREATE TABLE `user_friend_`(
+    `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+    `uid` varchar(256) NOT NULL,
+    `tid` varchar(256) NOT NULL,
+    `remark` varchar(512),
+    `created_time`  varchar(256) NOT NULL,
+PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+
+CREATE TABLE `message_`(
+    `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+    `mid` varchar(256) NOT NULL,
+    `uid` varchar(256) NOT NULL,
+    `tid` varchar(256) NOT NULL,
+    `type` varchar(256) NOT NULL,
+    `remark` varchar(512) NOT NULL,
+    `message` varchar(4096) NOT NULL,
+    `created_time`  varchar(256) NOT NULL,
+PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+
+CREATE TABLE `event_`(
+    `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+    `eid` varchar(256) NOT NULL,
+    `uid` varchar(256) NOT NULL,
+    `tid` varchar(256) NOT NULL,
+    `gid` varchar(256) NOT NULL,
+    `request` varchar(256) NOT NULL,
+    `mid` varchar(256) NOT NULL,
+    `remark` varchar(512) NOT NULL,
+    `created_time`  varchar(256) NOT NULL,
+PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+

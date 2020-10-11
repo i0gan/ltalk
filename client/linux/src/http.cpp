@@ -23,7 +23,6 @@ void Http::connect(QString host, quint16 port) {
     host_ = host_t;
     port_ = port;
 
-
 }
 
 void Http::get(QString url) {
@@ -62,6 +61,7 @@ void Http::post(QString url, const QByteArray &data) {
 void Http::connected() {
     is_connected_ = true;
 }
+
 bool Http::parseHeader() {
 
 }

@@ -39,15 +39,17 @@ public:
     explicit MainPage(QWidget *parent = nullptr);
     ~MainPage();
     void init();
-    void setUserInfo(const UserInfo &user_info);
+    void setUserInfo(const UserInfo &info);
     void setTheme(QString theme);
-    void addUserListItem(const UserInfo &user_info);
+    void addUserListItem(const UserInfo &info);
     void addGroupListItem();
     void addMessageListItem();
     void refreshFriendListInfo();
     void refreshFriendListHeadImage();
+    void dealWithClickUserListItem(QString uid);
 signals:
     void localCmd(LocalCmd cmd);
+    void openUserChatPage(QString uid);
 
 private:
     Ui::MainPage *ui;
@@ -64,6 +66,7 @@ private:
     void requestGetFile(QString url, GetWhat what, QString save_file_path,  bool private_file = false);
     void requestGetFileReply(QNetworkReply *reply);
     UserInfo user_info_;
+    QMap<QString, UserListItem*> user_list_items_;
 
 protected:
     void mouseMoveEvent(QMouseEvent *event) override;
